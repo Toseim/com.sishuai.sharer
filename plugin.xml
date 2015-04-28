@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension
+        point="org.eclipse.ui.views">
+        <category
+            name="Client Category"
+            id="com.sishuai.sharer">
+        </category>
+        <view
+            name="Client View"
+            icon="icons/sample.gif"
+            category="com.sishuai.sharer"
+            class="com.sishuai.sharer.views.ClientView"
+            id="com.sishuai.sharer.views.ClientView">
+        </view>
+    </extension>
+    <extension
+        point="org.eclipse.ui.perspectiveExtensions">
+        <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+            <view
+                ratio="0.5"
+                relative="org.eclipse.ui.views.ProblemView"
+                relationship="right"
+                id="com.sishuai.sharer.views.ClientView">
+            </view>
+        </perspectiveExtension>
+    </extension>
+    <extension
+        point="org.eclipse.help.contexts">
+        <contexts
+            file="contexts.xml">
+        </contexts>
+    </extension>
+    <extension
+        point="org.eclipse.ui.actionSets">
+        <actionSet
+            id="com.sishuai.sharer.actionSet1"
+            label="openView"
+            visible="true">
+            <action
+                id="com.sishuai.sharer.openView"
+                class="com.sishuai.sharer.action.OpenView"
+                icon="icons/sample.gif"
+                label="open the client view"
+                toolbarPath="normal/additions"
+                tooltip="start your powerful tool">
+            </action>
+        </actionSet>
+    </extension>
+    <extension
+        point="org.eclipse.ui.viewActions">
+        <viewContribution
+            id="com.sishuai.sharer.action.refreshTreeAction"
+            targetID="com.sishuai.sharer.views.ClientView">
+            <action
+                id="com.sishuai.sharer.action.refreshTree"
+                class="com.sishuai.sharer.action.RefreshTree"
+                label="refresh"
+                icon="icons/sample.gif"
+                toolbarPath="additions"
+                style="push">
+            </action>
+        </viewContribution>
+    </extension>
+    <extension
+        point="org.eclipse.ui.popupMenus">
+        <objectContribution
+            id="com.sishuai.sharer.action.TCPconnect"
+            enablesFor="1"
+            objectClass="java.lang.Object">
+            <action
+                id="com.sishuai.sharer.action.TCPConnect"
+                class="com.sishuai.sharer.action.TCPConnect"
+                menubarPath="additions"
+                label="Join In">
+            </action>
+        </objectContribution>
+    </extension>
+
+</plugin>
