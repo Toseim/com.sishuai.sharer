@@ -1,4 +1,4 @@
-package com.sishuai.sharer.modules;
+package com.sishuai.sharer.modules.interfaces;
 
 public interface ItemInfo {
 	//项目类接口

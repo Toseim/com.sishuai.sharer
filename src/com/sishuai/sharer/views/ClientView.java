@@ -27,7 +27,7 @@ import com.sishuai.sharer.modules.ClientTableLabelProvider;
 import com.sishuai.sharer.modules.ClientTreeContentProvider;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.Header;
-import com.sishuai.sharer.modules.ItemInfo;
+import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.MulticastServer;
 
 
@@ -130,7 +130,7 @@ public class ClientView extends ViewPart {
 		//treeColumn5.setText("交互文件数和文件大小");
 		treeColumn5.setWidth(30);
 	
-		new MulticastServer(viewer).run();
+		MulticastServer.getMulticastServer().run();
 		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
 		viewer.setContentProvider(ctcp);
 		viewer.setLabelProvider(new ClientTableLabelProvider());

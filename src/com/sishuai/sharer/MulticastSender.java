@@ -1,7 +1,13 @@
+package com.sishuai.sharer;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Date;
+
+import com.sishuai.sharer.modules.interfaces.Msg;
 
 public class MulticastSender {
 
@@ -15,13 +21,28 @@ public class MulticastSender {
 			System.out.println("发送数据包启动！（启动时间" + new Date() + ")");
 
 			while (true) {
-				String message = "192.168.168.107 " + "hahaha";
-				byte[] buffer = message.getBytes();
-				DatagramPacket dp = new DatagramPacket(buffer, buffer.length,
-						group, port);
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				DataOutputStream dos = new DataOutputStream(baos);
+				dos.writeInt(Msg.MSG_ENTER);
+				dos.writeUTF("192.168.31.192");
+				dos.writeUTF("wo shi shui");
+				dos.flush();
+				byte[] buffer = baos.toByteArray();
+				DatagramPacket dp = new DatagramPacket(buffer, buffer.length, group, port);
 				mss.send(dp);
 				System.out.println("发送数据包给 " + group + ":" + port);
-				Thread.sleep(1000);
+				
+				Thread.sleep(10000);
+				
+				baos = new ByteArrayOutputStream();
+				dos = new DataOutputStream(baos);
+				dos.writeInt(Msg.MSG_EXIT);
+				dos.writeUTF("192.168.31.192");
+				dos.flush();
+				buffer = baos.toByteArray();
+				dp = new DatagramPacket(buffer, buffer.length, group, port);
+				mss.send(dp);
+				System.out.println("exit msg send!");
 				break;
 			}
 		} catch (Exception e) {

@@ -4,6 +4,8 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
+import com.sishuai.sharer.modules.interfaces.ItemInfo;
+
 public class ClientTableLabelProvider implements ITableLabelProvider {
 
 	@Override

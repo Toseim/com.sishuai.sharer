@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
+import com.sishuai.sharer.modules.interfaces.ItemInfo;
+
 
 public class ClientTreeContentProvider
 	implements ITreeContentProvider, IStructuredContentProvider {
@@ -28,7 +30,9 @@ public class ClientTreeContentProvider
 	@Override
 	public boolean hasChildren(Object arg0) {
 		//头结点
-		if (arg0 instanceof Header && ClientInfo.getClients().size() > 0) return true;
+		if (arg0 instanceof Header)
+			if (ClientInfo.getClients().size() > 0) return true;
+			else return false;
 		//先保留，以后如果传输目录的话，估计要改改
 		if (arg0 instanceof FileInfo) return false;
 		//文件为空

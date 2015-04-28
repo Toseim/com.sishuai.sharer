@@ -2,9 +2,9 @@ package com.sishuai.sharer.modules;
 
 import java.util.Date;
 
-import org.eclipse.core.runtime.IAdaptable;
+import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
-public class FileInfo implements IAdaptable, ItemInfo{
+public class FileInfo implements ItemInfo{
 	//1
 	private String filename;
 	//2文件状态标识
@@ -55,12 +55,6 @@ public class FileInfo implements IAdaptable, ItemInfo{
 	}
 	public void setLineEdit(int lineEdit) {
 		this.lineEdit = lineEdit;
-	}
-
-	@Override
-	public Object getAdapter(Class arg0) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	public void showDetail() {

@@ -1,11 +1,11 @@
 package com.sishuai.sharer.modules;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+
+import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
 public class ContentManager implements IPropertyChangeListener{
 	//用来管理数据
