@@ -9,6 +9,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 
 public class OpenView implements IWorkbenchWindowActionDelegate {
+	//用来打开视图的action
 	private IWorkbenchWindow window;
 	
 	@Override

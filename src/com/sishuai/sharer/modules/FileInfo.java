@@ -7,10 +7,10 @@ import org.eclipse.core.runtime.IAdaptable;
 public class FileInfo implements IAdaptable, ItemInfo{
 	//1
 	private String filename;
-	//2
+	//2文件状态标识
 	private int stateIn = 2;
-	public static final String[] state = {"commited", "updated", "new"};
-	//3
+	public static final String[] state = {"commited", "updated", "new","done"};
+	//3编辑的行数
 	private int lineEdit;
 	//4
 	private String fTime;

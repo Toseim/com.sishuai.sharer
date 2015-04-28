@@ -8,6 +8,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import com.sishuai.sharer.modules.ClientInfo;
 
 public class TCPConnect implements IObjectActionDelegate{
+	//用来建立tcp连接
 	private IWorkbenchPart target;
 	private ClientInfo clientInfo;
 	
@@ -20,7 +21,7 @@ public class TCPConnect implements IObjectActionDelegate{
 
 	@Override
 	public void run(IAction arg0) {
-		//打开对话框
+		
 		
 	}
 

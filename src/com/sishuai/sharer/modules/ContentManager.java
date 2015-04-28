@@ -8,26 +8,16 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
 public class ContentManager implements IPropertyChangeListener{
+	//用来管理数据
 	public static ContentManager contentmanager;
 	private ClientTreeContentProvider ctcp;
-	private static HashMap<ItemInfo, ClientInfo> clientCached;
 	
 	
 	public static ContentManager getManager() {
 		if (contentmanager == null) {
 			contentmanager = new ContentManager();
-			clientCached = new HashMap<ItemInfo, ClientInfo>();
 		}
 		return contentmanager;
-	}
-	
-	public void addToCache(ItemInfo item, ClientInfo clientInfo) {
-		clientCached.put(item, clientInfo);
-	}
-	
-	public void pushCache() {
-		for (Entry<ItemInfo, ClientInfo>entry:clientCached.entrySet())
-			addItem(entry.getKey(), entry.getValue());
 	}
 	
 	public Object[] getItems() {
@@ -60,7 +50,7 @@ public class ContentManager implements IPropertyChangeListener{
 			ctcp.itemsChanged(item, clientInfo, 1);
 		}
 	}
-	
+	//暂时没想好，要不要把listener加进来处理
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		//test

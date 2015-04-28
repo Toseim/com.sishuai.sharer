@@ -50,21 +50,7 @@
             </action>
         </actionSet>
     </extension>
-    <extension
-        point="org.eclipse.ui.viewActions">
-        <viewContribution
-            id="com.sishuai.sharer.action.refreshTreeAction"
-            targetID="com.sishuai.sharer.views.ClientView">
-            <action
-                id="com.sishuai.sharer.action.refreshTree"
-                class="com.sishuai.sharer.action.RefreshTree"
-                label="refresh"
-                icon="icons/sample.gif"
-                toolbarPath="additions"
-                style="push">
-            </action>
-        </viewContribution>
-    </extension>
+  
     <extension
         point="org.eclipse.ui.popupMenus">
         <objectContribution

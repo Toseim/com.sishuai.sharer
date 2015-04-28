@@ -70,7 +70,7 @@ public class MulticastServer {
 	public void run() {
 		String ip = getIP();
 		if (ip == null) return;
-		//用户名为haha，以后改
+		//用户名为haha，以后改，让用户设置
 		byte[] buffer = (ip+" haha").getBytes();
 		ClientInfo.getIPList().add(ip);
 		mydp = new DatagramPacket(buffer, buffer.length, group, port);
@@ -80,7 +80,7 @@ public class MulticastServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//加入自己的ip，for test
+		//加入自己的ip，for test，实际完成后不需要
 		ClientInfo.getClients().add(new ClientInfo(ip, "haha"));
 		System.out.println("start");
 		new Thread(new ClientThread()).start();
@@ -107,12 +107,13 @@ public class MulticastServer {
 						ClientInfo.getClients().add(new ClientInfo(s1, s2));
 						ClientInfo.getIPList().add(s1);
 						multicastSocket.send(mydp);
-						//ContentManager.getManager().addToCache(new ClientInfo(s1, s2), null);
+
 						Display.getDefault().asyncExec(new Runnable() {
 							
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
+								//加入
 								ContentManager.getManager().addItem(new ClientInfo(s1,s2), null); 
 							}
 						});

@@ -29,7 +29,7 @@ public class ClientTreeContentProvider
 	public boolean hasChildren(Object arg0) {
 		//头结点
 		if (arg0 instanceof Header && ClientInfo.getClients().size() > 0) return true;
-		//先保留，以后如果同步的目录的话，估计要改改
+		//先保留，以后如果传输目录的话，估计要改改
 		if (arg0 instanceof FileInfo) return false;
 		//文件为空
 		if (((ClientInfo)arg0).getFiles().size() ==0)

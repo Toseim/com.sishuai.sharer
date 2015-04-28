@@ -50,6 +50,7 @@ import com.sishuai.sharer.modules.net.MulticastServer;
  */
 
 public class ClientView extends ViewPart {
+	//主界面
 
 	/**
 	 * The ID of the view as specified by the extension.

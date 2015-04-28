@@ -5,9 +5,9 @@ import java.util.ArrayList;
 public class ClientInfo implements ItemInfo{
 	//1
 	private String name;
-	//2
+	//2用户对话框新信息数
 	private int msgs = 0;
-	//3
+	//3文件新动态数
 	private int newFileCount = 0;
 	//4
 	private String ip;
@@ -22,7 +22,7 @@ public class ClientInfo implements ItemInfo{
 		this.ip = ip;
 		this.name = name;
 	}
-	//新文件夹计数
+
 	public int getNewFileCount() {
 		return newFileCount;
 	}
