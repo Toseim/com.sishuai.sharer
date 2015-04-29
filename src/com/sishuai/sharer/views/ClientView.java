@@ -10,7 +10,9 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -22,6 +24,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
+import com.sishuai.sharer.action.TCPConnect;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ClientTableLabelProvider;
 import com.sishuai.sharer.modules.ClientTreeContentProvider;
@@ -58,6 +61,7 @@ public class ClientView extends ViewPart {
 	public static final String ID = "com.sishuai.sharer.views.ClientView";
 
 	private TreeViewer viewer;
+	private TCPConnect tcpConnect;
 
 	/*
 	 * The content provider class is responsible for
@@ -148,7 +152,6 @@ public class ClientView extends ViewPart {
 				ItemInfo object = ((ItemInfo)((IStructuredSelection) selection).getFirstElement());
 				if (object instanceof ClientInfo && ((ClientInfo)object).isConnected())
 					;
-					
 			}
 		});
 		
@@ -156,6 +159,7 @@ public class ClientView extends ViewPart {
 		//拖拽操作
 		//viewer.addDropSupport(operations, transferTypes, listener);
 		
+		createAction();
         hookContextMenu();
         hookDoubleClickAction();
         contributeToActionBars();
@@ -165,6 +169,13 @@ public class ClientView extends ViewPart {
 
 	}
 	
+	private void createAction() {
+		// TODO Auto-generated method stub
+		TCPConnect.getTcpConnect().setView(this);
+		tcpConnect = TCPConnect.getTcpConnect();
+		
+	}
+
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -186,10 +197,28 @@ public class ClientView extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(new Separator());
+		manager.add(tcpConnect);
 	}
+	
+	public ItemInfo getSelectedItem()
+    {
+        IStructuredSelection selection = 
+            (IStructuredSelection)viewer.getSelection();
+        return (ItemInfo)selection;
+    }
+
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		manager.add(tcpConnect);
+		tcpConnect.setEnabled(false);
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				// TODO Auto-generated method stub
+				tcpConnect.setEnabled(!event.getSelection().isEmpty());
+			}
+		});
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {

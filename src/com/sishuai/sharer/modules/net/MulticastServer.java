@@ -13,6 +13,7 @@ import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
+import com.sishuai.sharer.modules.net.msg.LinkMsg;
 
 public class MulticastServer {
 	private static Pattern pattern1 = Pattern.compile("^192\\.168\\.");
@@ -30,13 +31,16 @@ public class MulticastServer {
 			ms = new MulticastServer();
 		return ms;
 	}
+	public int getPort() {
+		return port;
+	}
 	
 	public void sendMyPacket() {
 		enterMsg.send(multicastSocket, group, port);
 	}
 	
 	public String getIP() {
-		IP = null;
+		if (IP != null) return IP;
 		try {
 			//获得本机所有IP
 			InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
@@ -131,7 +135,7 @@ public class MulticastServer {
 					new ExitMsg().parse(dis);
 					break;
 				case Msg.MSG_LINK:
-					//未完成
+					new LinkMsg().parse(dis);
 					break;
 				default:
 					break;

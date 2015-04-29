@@ -50,20 +50,5 @@
             </action>
         </actionSet>
     </extension>
-  
-    <extension
-        point="org.eclipse.ui.popupMenus">
-        <objectContribution
-            id="com.sishuai.sharer.action.TCPconnect"
-            enablesFor="1"
-            objectClass="java.lang.Object">
-            <action
-                id="com.sishuai.sharer.action.TCPConnect"
-                class="com.sishuai.sharer.action.TCPConnect"
-                menubarPath="additions"
-                label="Join In">
-            </action>
-        </objectContribution>
-    </extension>
 
 </plugin>

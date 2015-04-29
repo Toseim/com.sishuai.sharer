@@ -1,5 +1,6 @@
 package com.sishuai.sharer.modules;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
@@ -15,6 +16,8 @@ public class ClientInfo implements ItemInfo{
 	private String ip;
 	//5
 	private boolean isConnected = false;
+	
+	private Socket socket;
 	
 	private ArrayList<FileInfo> files = new ArrayList<FileInfo>();
 	private static ArrayList<ClientInfo> clients;
@@ -65,6 +68,14 @@ public class ClientInfo implements ItemInfo{
 	//设置连接
 	public void setConnected(boolean isConnected) {
 		this.isConnected = isConnected;
+	}
+	
+	public Socket getSocket() {
+		return socket;
+	}
+	
+	public void setSocket(Socket socket) {
+		this.socket = socket;
 	}
 
 	//获取交互文件
