@@ -1,5 +1,8 @@
 package com.sishuai.sharer.modules;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -18,6 +21,8 @@ public class ClientInfo implements ItemInfo{
 	private boolean isConnected = false;
 	
 	private Socket socket;
+	private DataInputStream dis;
+	private DataOutputStream dos;
 	
 	private ArrayList<FileInfo> files = new ArrayList<FileInfo>();
 	private static ArrayList<ClientInfo> clients;
@@ -35,6 +40,7 @@ public class ClientInfo implements ItemInfo{
 	public void setNewFileCount(int newFileCount) {
 		this.newFileCount = newFileCount;
 	}
+	
 	//用户消息
 	public void incMsg(){
 		msgs++;
@@ -76,6 +82,19 @@ public class ClientInfo implements ItemInfo{
 	
 	public void setSocket(Socket socket) {
 		this.socket = socket;
+		try {
+			this.dis = new DataInputStream(socket.getInputStream());
+			this.dos = new DataOutputStream(socket.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public DataInputStream getDataInputStream() {
+		return dis;
+	}
+	public DataOutputStream getDataOutputStream() {
+		return dos;
 	}
 
 	//获取交互文件
