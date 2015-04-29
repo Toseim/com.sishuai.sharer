@@ -4,15 +4,12 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.Random;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.sishuai.sharer.modules.ClientInfo;
@@ -24,9 +21,9 @@ import com.sishuai.sharer.views.ClientView;
 public class TCPConnect extends Action {
 	//用来建立tcp连接
 	private ClientView view;
-	private IWorkbenchPart target;
 	private ClientInfo clientInfo;
 	private ServerSocket ss;
+	private IWorkbenchPart target;
 	private static TCPConnect tcpConnect;
 	
 	public TCPConnect(String text) {
@@ -47,10 +44,8 @@ System.out.println("tcp inited");
 	public void run() {
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo == null) {
-System.out.println("null");
 			return;
 		}
-System.out.println(clientInfo.getName());
 		ss = NetworkMgr.getManager().getServersocket();
 		
 		//发送尝试连接消息（对方ip ，ip ，port）
@@ -59,8 +54,7 @@ System.out.println(clientInfo.getName());
 				NetworkMgr.getManager().getTCPport());
 		
 		DatagramSocket ds = NetworkMgr.getManager().getDatagramSocket();
-		linkMsg.send(ds, null, NetworkMgr.getManager().getUDPport());
-		
+		linkMsg.send(ds, null, 0);
 		
 		new Thread(new Runnable() {
 			@Override
@@ -70,18 +64,18 @@ System.out.println(clientInfo.getName());
 					public void run() {
 						// TODO Auto-generated method stub
 						try {
-System.out.println("Wait for connecting");
+							//需要修改
 							MessageDialog.openInformation(view.getSite().getShell(), "connecting", "Waiting for answer");
 							Socket socket = ss.accept();
+							clientInfo.setSocket(socket);
 							//拒绝呢。。。直接接受吧
-System.out.println("another user has connected!");
 						} catch (IOException e) {
 							System.out.println("连接失败");
 						}
 					}
 				});
 			}
-		});
+		}).start();
 	}
 
 	public void selectionChanged(IAction arg0, ISelection arg1) {
