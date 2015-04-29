@@ -3,6 +3,7 @@ package com.sishuai.sharer.views;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -155,6 +156,28 @@ public class ClientView extends ViewPart {
 			}
 		});
 		
+		 viewer.addSelectionChangedListener(new ISelectionChangedListener()
+         {
+             public void selectionChanged(SelectionChangedEvent event)
+             {
+                 IStructuredSelection selection =
+                     (IStructuredSelection) event.getSelection();
+                 /*IStatusLineManager statusline = getViewSite().getActionBars()
+                     .getStatusLineManager();
+                     statusline.setmessage*/
+                 Object obj = selection.getFirstElement();
+                 if(obj == null || obj instanceof Header) {
+                	 tcpConnect.setEnabled(false);
+                	 return;
+                 }
+                 tcpConnect.setEnabled(true);
+                 if(obj instanceof ItemInfo)
+                 {
+                     ItemInfo addressItem = (ItemInfo)obj;
+                 }
+             }
+         });
+		
 		
 		//拖拽操作
 		//viewer.addDropSupport(operations, transferTypes, listener);
@@ -197,28 +220,19 @@ public class ClientView extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(new Separator());
-		manager.add(tcpConnect);
 	}
 	
 	public ItemInfo getSelectedItem()
     {
         IStructuredSelection selection = 
             (IStructuredSelection)viewer.getSelection();
-        return (ItemInfo)selection;
+        return ((ItemInfo)selection.getFirstElement());
     }
 
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		manager.add(tcpConnect);
-		tcpConnect.setEnabled(false);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				// TODO Auto-generated method stub
-				tcpConnect.setEnabled(!event.getSelection().isEmpty());
-			}
-		});
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
