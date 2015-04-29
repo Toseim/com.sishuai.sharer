@@ -42,8 +42,7 @@ public class LinkMsg implements Msg {
 			
 			byte[] buf = baos.toByteArray();
 			DatagramPacket dp = new DatagramPacket(buf, buf.length, 
-					new InetSocketAddress(objectIP, MulticastServer.
-							getMulticastServer().getPort()));
+					new InetSocketAddress(objectIP, MulticastServer.port));
 			
 			ds.send(dp);
 		} catch (IOException e) {
