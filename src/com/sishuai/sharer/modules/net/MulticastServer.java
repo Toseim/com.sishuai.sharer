@@ -20,7 +20,7 @@ public class MulticastServer {
 	private static Pattern pattern2 = Pattern.compile("^10\\.");
 	private static Pattern pattern3 = Pattern.compile("^172\\.[0-9]{1,3}\\.");
 	private InetAddress group;
-	private int port = 8647;
+	public  static final int port = 8647;
 	private String IP;
 	private EnterMsg enterMsg;
 	private MulticastSocket multicastSocket;
@@ -31,10 +31,6 @@ public class MulticastServer {
 			ms = new MulticastServer();
 		return ms;
 	}
-	public int getPort() {
-		return port;
-	}
-	
 	public void sendMyPacket() {
 		enterMsg.send(multicastSocket, group, port);
 	}
