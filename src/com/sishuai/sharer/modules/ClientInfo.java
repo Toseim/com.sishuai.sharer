@@ -79,7 +79,6 @@ public class ClientInfo implements ItemInfo{
 	public Socket getSocket() {
 		return socket;
 	}
-	
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 		try {

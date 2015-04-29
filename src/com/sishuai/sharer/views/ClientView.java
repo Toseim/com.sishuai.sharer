@@ -7,7 +7,6 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -25,6 +24,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
+import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.action.TCPConnect;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ClientTableLabelProvider;
@@ -63,38 +63,9 @@ public class ClientView extends ViewPart {
 
 	private TreeViewer viewer;
 	private TCPConnect tcpConnect;
+	private IStatusLineManager statusline;
+	private ChatDialog chatDialog;
 
-	/*
-	 * The content provider class is responsible for
-	 * providing objects to the view. It can wrap
-	 * existing objects in adapters or simply return
-	 * objects as-is. These objects may be sensitive
-	 * to the current input of the view, or ignore
-	 * it and always show the same content 
-	 * (like Task List, for example).
-	 */
-	 
-	/*class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
-		public void dispose() {
-		}
-		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
-		}
-	}
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().
-					getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}*/
 	class NameSorter extends ViewerSorter {
 	}
 
@@ -134,8 +105,10 @@ public class ClientView extends ViewPart {
 		TreeColumn treeColumn5 = new TreeColumn(tree, SWT.RIGHT);
 		//treeColumn5.setText("交互文件数和文件大小");
 		treeColumn5.setWidth(30);
-	
+		
+		
 		MulticastServer.getMulticastServer().run();
+		
 		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
 		viewer.setContentProvider(ctcp);
 		viewer.setLabelProvider(new ClientTableLabelProvider());
@@ -148,7 +121,7 @@ public class ClientView extends ViewPart {
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				// 双击（未实现）
+				
 				ISelection selection = viewer.getSelection();
 				ItemInfo object = ((ItemInfo)((IStructuredSelection) selection).getFirstElement());
 				if (object instanceof ClientInfo && ((ClientInfo)object).isConnected())
@@ -162,19 +135,14 @@ public class ClientView extends ViewPart {
              {
                  IStructuredSelection selection =
                      (IStructuredSelection) event.getSelection();
-                 /*IStatusLineManager statusline = getViewSite().getActionBars()
-                     .getStatusLineManager();
-                     statusline.setmessage*/
+                 statusline = getViewSite().getActionBars().getStatusLineManager();
+         		 //eclipse 下面的状态栏，哈哈，我们征用你了
                  Object obj = selection.getFirstElement();
-                 if(obj == null || obj instanceof Header) {
+                 if(obj == null || !(obj instanceof ClientInfo)) {
                 	 tcpConnect.setEnabled(false);
                 	 return;
                  }
                  tcpConnect.setEnabled(true);
-                 if(obj instanceof ItemInfo)
-                 {
-                     ItemInfo addressItem = (ItemInfo)obj;
-                 }
              }
          });
 		
@@ -196,6 +164,9 @@ public class ClientView extends ViewPart {
 		// TODO Auto-generated method stub
 		TCPConnect.getTcpConnect().setView(this);
 		tcpConnect = TCPConnect.getTcpConnect();
+		
+		ChatDialog.getDialog().setView(this);
+		chatDialog = ChatDialog.getDialog();
 		
 	}
 
@@ -242,11 +213,9 @@ public class ClientView extends ViewPart {
 	private void hookDoubleClickAction() {
 	}
 	
-	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Client View",
-			message);
+	
+	public void showMessage(String notification) {
+		statusline.setMessage(notification);
 	}
 
 	/**

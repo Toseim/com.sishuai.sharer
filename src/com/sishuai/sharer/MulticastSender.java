@@ -51,8 +51,7 @@ public class MulticastSender {
 						break;
 					}
 				}
-				Socket socket = new Socket("192.168.31.193", 18888);
-				
+			 	Socket socket = new Socket("192.168.31.193",18888);
 				
 				Thread.sleep(10000);
 				

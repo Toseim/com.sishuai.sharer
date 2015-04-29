@@ -56,24 +56,20 @@ System.out.println("tcp inited");
 		DatagramSocket ds = NetworkMgr.getManager().getDatagramSocket();
 		linkMsg.send(ds, null, 0);
 		
+		MessageDialog.openInformation(view.getSite().getShell(), "connecting", "Waiting for answer");
+		view.showMessage("wait for answer");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						try {
-							//需要修改
-							MessageDialog.openInformation(view.getSite().getShell(), "connecting", "Waiting for answer");
-							Socket socket = ss.accept();
-							clientInfo.setSocket(socket);
-							//拒绝呢。。。直接接受吧
-						} catch (IOException e) {
-							System.out.println("连接失败");
-						}
-					}
-				});
+				try {
+					Socket socket = ss.accept();
+					clientInfo.setSocket(socket);
+					clientInfo.setConnected(true);
+					view.showMessage("We connect!");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}).start();
 	}
