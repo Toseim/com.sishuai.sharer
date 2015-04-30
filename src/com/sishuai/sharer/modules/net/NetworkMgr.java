@@ -22,7 +22,7 @@ public class NetworkMgr {
 	private DatagramSocket datagramSocket;
 	
 	public ServerSocket getServersocket() {
-		if (serverSocket == null) {
+		if (serverSocket == null || serverSocket.isClosed()) {
 			while (true) {
 				try {
 					serverSocket = new ServerSocket(getTCPport());

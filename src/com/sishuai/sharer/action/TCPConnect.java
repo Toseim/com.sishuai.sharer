@@ -5,11 +5,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 import com.sishuai.sharer.modules.ClientInfo;
+import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.views.ClientView;
 
@@ -58,7 +58,34 @@ public class TCPConnect extends Action {
 					Socket socket = ss.accept();
 					clientInfo.setSocket(socket);
 					clientInfo.setConnected(true);
-					view.showMessage("We connect!");
+					
+					Display.getDefault().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							//加入树结构
+							ContentManager.getManager().addItem(clientInfo, null);
+							// TODO Auto-generated method stub
+							view.showMessage("We connect!");
+						}
+					});
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}).start();
+		ConnectThread ct = new ConnectThread();
+		new Thread(ct).start();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					Thread.sleep(30000);
+					ct.ss.close();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -66,13 +93,35 @@ public class TCPConnect extends Action {
 			}
 		}).start();
 	}
-
-	public void selectionChanged(IAction arg0, ISelection arg1) {
-		// TODO Auto-generated method stub
+	class ConnectThread implements Runnable {
+		volatile ServerSocket ss = TCPConnect.this.ss;
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			try {
+				Socket socket = ss.accept();
+				clientInfo.setSocket(socket);
+				clientInfo.setConnected(true);
+				
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						//加入树结构
+						ContentManager.getManager().addItem(clientInfo, null);
+						// TODO Auto-generated method stub
+						view.showMessage("We connect!");
+					}
+				});
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
+					}
+				});
+			}
+		}
 	}
-
-	public void setActivePart(IAction arg0, IWorkbenchPart arg1) {
-		// TODO Auto-generated method stub
-	}
-
 }

@@ -23,8 +23,6 @@ import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.net.NetworkMgr;
-import com.sishuai.sharer.utils.TimeDecThread;
-import com.sishuai.sharer.utils.TimeOutException;
 import com.sishuai.sharer.views.ClientView;
 
 /**
@@ -149,43 +147,66 @@ public class OthLink extends Action {
 
 		serverSocket = NetworkMgr.getManager().getServersocket();
 		NetworkMgr.getManager().attempLink(objectIP);
-		view.showMessage("等待对面的用户想一块去");
+		view.showMessage("等待对面的用户想到一块去");
+		ConnectionThread ct = new ConnectionThread();
+		new Thread(ct).start();
 		new Thread(new Runnable() {
+			
 			@Override
 			public void run() {
+				// TODO Auto-generated method stub
 				try {
-					try {
-						//处理超时的操作
-						TimeDecThread tdt = new TimeDecThread(60);
-						new Thread(tdt).start();
-						Socket socket = serverSocket.accept();
-						tdt.cancel();
-						//连接后取消计时
-						ClientInfo clientInfo = new ClientInfo(objectIP, "null"); //名字的获取方式暂定
-						clientInfo.setSocket(socket);
-						clientInfo.setConnected(true);
-						
-						//试一下
-						Display.getDefault().asyncExec(new Runnable() {
-							@Override
-							public void run() {
-								//加入树结构
-								ContentManager.getManager().addItem(clientInfo, null);
-								// TODO Auto-generated method stub
-								view.showMessage("We connect!");
-							}
-						});
-					} catch (TimeOutException e) {
-						// TODO Auto-generated catch block
-						MessageDialog.openError(view.getSite().getShell(), "TIME OUT", "连接超时");
-					}
-					
+					Thread.sleep(30000);
+					ct.socket.close();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					MessageDialog.openError(view.getSite().getShell(), "UNKNOWN HOST", "主机不存在"); 
+					e.printStackTrace();
 				}
-				state = false;
 			}
 		}).start();
+		
+		state = false;
+	}
+	
+	class ConnectionThread implements Runnable {
+		volatile ServerSocket socket = OthLink.serverSocket;
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			try {
+				//处理超时的操作
+				Socket socket = serverSocket.accept();
+		
+				//连接后取消计时
+				ClientInfo clientInfo = new ClientInfo(objectIP, "null"); //名字的获取方式暂定
+				clientInfo.setSocket(socket);
+				clientInfo.setConnected(true);
+				
+				//试一下
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						//加入树结构
+						ContentManager.getManager().addItem(clientInfo, null);
+						// TODO Auto-generated method stub
+						view.showMessage("We connect!");
+					}
+				});
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Display.getDefault().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
+						view.showMessage("");
+					}
+				});
+			}
+		}
 	}
 }
