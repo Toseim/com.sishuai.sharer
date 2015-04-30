@@ -1,29 +1,29 @@
 package com.sishuai.sharer.action;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.sishuai.sharer.modules.ClientInfo;
-import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
-import com.sishuai.sharer.modules.net.msg.LinkMsg;
 import com.sishuai.sharer.views.ClientView;
 
+
+/**
+ * 
+ * @author sishuai
+ * 局域网支持广播的前提下，将udp转换成tcp稳定连接
+ */
 public class TCPConnect extends Action {
 	//用来建立tcp连接
 	private ClientView view;
 	private ClientInfo clientInfo;
 	private ServerSocket ss;
-	private IWorkbenchPart target;
 	private static TCPConnect tcpConnect;
 	
 	public TCPConnect(String text) {
@@ -31,9 +31,8 @@ public class TCPConnect extends Action {
 	}
 	
 	public static TCPConnect getTcpConnect() {
-		if (tcpConnect == null) 
-			tcpConnect = new TCPConnect("Join in");
-System.out.println("tcp inited");
+		if (tcpConnect == null)
+			tcpConnect = new TCPConnect("加入该网络");
 		return tcpConnect;
 	}
 	
@@ -42,22 +41,16 @@ System.out.println("tcp inited");
 	}
 
 	public void run() {
+		//if (网络处于组播支持的环境下)
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo == null) {
 			return;
 		}
+		//if (网络
 		ss = NetworkMgr.getManager().getServersocket();
 		
 		//发送尝试连接消息（对方ip ，ip ，port）
-		LinkMsg linkMsg = new LinkMsg(clientInfo.getIp(), 
-				MulticastServer.getMulticastServer().getIP(), 
-				NetworkMgr.getManager().getTCPport());
-		
-		DatagramSocket ds = NetworkMgr.getManager().getDatagramSocket();
-		linkMsg.send(ds, null, 0);
-		
-		MessageDialog.openInformation(view.getSite().getShell(), "connecting", "Waiting for answer");
-		view.showMessage("wait for answer");
+		NetworkMgr.getManager().attempLink(clientInfo.getIp());
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -76,12 +69,10 @@ System.out.println("tcp inited");
 
 	public void selectionChanged(IAction arg0, ISelection arg1) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void setActivePart(IAction arg0, IWorkbenchPart arg1) {
 		// TODO Auto-generated method stub
-		this.target = arg1;
 	}
 
 }
