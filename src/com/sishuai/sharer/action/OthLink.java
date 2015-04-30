@@ -21,15 +21,18 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.modules.ClientInfo;
+import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.net.NetworkMgr;
+import com.sishuai.sharer.utils.TimeDecThread;
+import com.sishuai.sharer.utils.TimeOutException;
 import com.sishuai.sharer.views.ClientView;
 
 /**
- * @author sishuai
+ * @author 四帅
  * 此菜单选项适用于局域网广播禁用的情况，提供手动添加ip地址的功能
  */
 public class OthLink extends Action {
-	public static OthLink othLink;
+	private static OthLink othLink;
 	private static ServerSocket serverSocket;
 	private ClientView view;
 	private String objectIP;
@@ -151,23 +154,37 @@ public class OthLink extends Action {
 			@Override
 			public void run() {
 				try {
-					Socket socket = serverSocket.accept();
-					ClientInfo clientInfo = new ClientInfo(objectIP, "null");
-					clientInfo.setSocket(socket);
-					clientInfo.setConnected(true);
-					//试一下
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							view.showMessage("We connect!");
-						}
-					});
-					state = false;
+					try {
+						//处理超时的操作
+						TimeDecThread tdt = new TimeDecThread(60);
+						new Thread(tdt).start();
+						Socket socket = serverSocket.accept();
+						tdt.cancel();
+						//连接后取消计时
+						ClientInfo clientInfo = new ClientInfo(objectIP, "null"); //名字的获取方式暂定
+						clientInfo.setSocket(socket);
+						clientInfo.setConnected(true);
+						
+						//试一下
+						Display.getDefault().asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								//加入树结构
+								ContentManager.getManager().addItem(clientInfo, null);
+								// TODO Auto-generated method stub
+								view.showMessage("We connect!");
+							}
+						});
+					} catch (TimeOutException e) {
+						// TODO Auto-generated catch block
+						MessageDialog.openError(view.getSite().getShell(), "TIME OUT", "连接超时");
+					}
+					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					MessageDialog.openError(view.getSite().getShell(), "UNKNOWN HOST", "主机不存在"); 
 				}
+				state = false;
 			}
 		}).start();
 	}
