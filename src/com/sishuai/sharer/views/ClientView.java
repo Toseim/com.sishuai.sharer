@@ -25,6 +25,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
 import com.sishuai.sharer.action.ChatDialog;
+import com.sishuai.sharer.action.OthLink;
 import com.sishuai.sharer.action.TCPConnect;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ClientTableLabelProvider;
@@ -32,7 +33,7 @@ import com.sishuai.sharer.modules.ClientTreeContentProvider;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.Header;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
-import com.sishuai.sharer.modules.net.MulticastServer;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 
 
 /**
@@ -65,6 +66,7 @@ public class ClientView extends ViewPart {
 	private TCPConnect tcpConnect;
 	private IStatusLineManager statusline;
 	private ChatDialog chatDialog;
+	private OthLink othLink;
 
 	class NameSorter extends ViewerSorter {
 	}
@@ -107,7 +109,7 @@ public class ClientView extends ViewPart {
 		treeColumn5.setWidth(30);
 		
 		
-		MulticastServer.getMulticastServer().run();
+		NetworkMgr.getMulticastServer().run();
 		
 		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
 		viewer.setContentProvider(ctcp);
@@ -165,6 +167,9 @@ public class ClientView extends ViewPart {
 		TCPConnect.getTcpConnect().setView(this);
 		tcpConnect = TCPConnect.getTcpConnect();
 		
+		OthLink.getOthLink().setView(this);
+		othLink = OthLink.getOthLink();
+		
 		ChatDialog.getDialog().setView(this);
 		chatDialog = ChatDialog.getDialog();
 		
@@ -190,7 +195,7 @@ public class ClientView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(new Separator());
+		//manager.add(new Separator());
 	}
 	
 	public ItemInfo getSelectedItem()
@@ -204,6 +209,7 @@ public class ClientView extends ViewPart {
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		manager.add(tcpConnect);
+		manager.add(othLink);
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
