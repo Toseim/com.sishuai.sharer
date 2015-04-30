@@ -1,5 +1,7 @@
 package com.sishuai.sharer;
 
+import java.awt.Toolkit;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -8,7 +10,10 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle
  */
 public class Activator extends AbstractUIPlugin {
-
+	
+	public static final int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+	public static final int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+	
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.sishuai.sharer"; //$NON-NLS-1$
 
