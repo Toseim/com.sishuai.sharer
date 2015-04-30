@@ -66,7 +66,6 @@ public class EnterMsg implements Msg {
 							public void run() {
 								// TODO Auto-generated method stub
 								ContentManager.getManager().addItem(new ClientInfo(uIP, nickName), null);
-								//MulticastServer.getMulticastServer().sendMyPacket();   //回复自己的IP
 							}
 						});
 					}

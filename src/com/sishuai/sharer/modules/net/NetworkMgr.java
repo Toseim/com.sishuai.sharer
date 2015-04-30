@@ -17,7 +17,7 @@ public class NetworkMgr {
 	private static NetworkMgr networkMgr;
 	private ServerSocket serverSocket;
 	private int TCPport = 0;
-	private int UDPport = 27384;
+	private int UDPport = 27384;   //默认的端口
 	private static MulticastServer ms;
 	private DatagramSocket datagramSocket;
 	
@@ -36,7 +36,7 @@ public class NetworkMgr {
 	}
 	public int getTCPport() {
 		if (TCPport == 0) 
-			TCPport = random.nextInt(25535) + 10000;
+			TCPport = random.nextInt(55535) + 10000;
 		return TCPport;
 	}
 	
@@ -70,9 +70,9 @@ public class NetworkMgr {
 	}
 	
 	public void attempLink(String objectIP) {
-		LinkMsg linkMsg = new LinkMsg(objectIP, 
-				NetworkMgr.getMulticastServer().getIP(), TCPport);
-		
+		//发送尝试连接的信息
+		LinkMsg linkMsg = new LinkMsg(objectIP, NetworkMgr.getMulticastServer().getIP(), TCPport);
+		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getManager().getDatagramSocket();
 		linkMsg.send(ds, null, 0);
 	}

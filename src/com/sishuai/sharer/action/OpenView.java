@@ -36,7 +36,7 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
+		System.out.println("iadfjaidfj");
 	}
 
 	@Override

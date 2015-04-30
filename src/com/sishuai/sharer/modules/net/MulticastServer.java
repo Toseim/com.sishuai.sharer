@@ -17,7 +17,7 @@ import com.sishuai.sharer.modules.net.msg.LinkMsg;
 public class MulticastServer {
 	
 	private InetAddress group;
-	public  static final int port = 8647;
+	public static final int port = 8647;
 	private String IP;
 	private EnterMsg enterMsg;
 	private MulticastSocket multicastSocket;

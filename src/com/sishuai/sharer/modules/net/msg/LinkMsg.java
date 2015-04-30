@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.MulticastServer;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 
 public class LinkMsg implements Msg {
 	private static int msgType = Msg.MSG_LINK;
@@ -41,7 +42,7 @@ public class LinkMsg implements Msg {
 			
 			byte[] buf = baos.toByteArray();
 			DatagramPacket dp = new DatagramPacket(buf, buf.length, 
-					new InetSocketAddress(objectIP, MulticastServer.port));
+					new InetSocketAddress(objectIP, NetworkMgr.getManager().getUDPport()));
 			
 			ds.send(dp);
 		} catch (IOException e) {
@@ -71,5 +72,4 @@ public class LinkMsg implements Msg {
 			e.printStackTrace();
 		}
 	}
-
 }
