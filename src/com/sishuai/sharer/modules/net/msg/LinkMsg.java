@@ -9,7 +9,6 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Iterator;
 
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.interfaces.Msg;

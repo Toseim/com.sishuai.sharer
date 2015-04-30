@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
-import com.sishuai.sharer.modules.net.MulticastServer;
 
 public class EnterMsg implements Msg {
 	private static int msgType = Msg.MSG_ENTER;

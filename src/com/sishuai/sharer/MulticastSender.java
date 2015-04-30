@@ -16,7 +16,7 @@ import com.sishuai.sharer.modules.interfaces.Msg;
 public class MulticastSender {
 
 	public static void server() throws Exception {
-		InetAddress group = InetAddress.getByName("224.0.0.2");// 组播地址
+		InetAddress group = InetAddress.getByName("224.0.0.47");// 组播地址
 		int port = 8647;
 		MulticastSocket mss = null;
 		
