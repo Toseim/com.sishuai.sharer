@@ -30,29 +30,6 @@ public class MulticastServer {
 		enterMsg.send(multicastSocket, group, port);
 	}
 	
-	public String getIP() {
-		if (IP != null) return IP;
-		try {
-			//获得本机所有IP
-			InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
-					getLocalHost().getHostName());
-			for (int i=0; i< addresses.length; i++) {
-				String s = addresses[i].getHostAddress();
-				//正则匹配
-				if (NetworkMgr.pattern1.matcher(s).find() || NetworkMgr.pattern2.matcher(s).find() 
-						|| NetworkMgr.pattern3.matcher(s).find()) {
-					IP = s;
-					break;
-				}
-			}
-			return IP;
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public void disConnect() {
 		try {
 			//发出离开消息
@@ -68,7 +45,7 @@ public class MulticastServer {
 	public void run() {
 		//获得ip
 		IP = null;
-		if ((IP = getIP()) == null) {
+		if ((IP = NetworkMgr.getMgr().getIP()) == null) {
 			System.out.println("不在局域网内");
 			return;   
 		}

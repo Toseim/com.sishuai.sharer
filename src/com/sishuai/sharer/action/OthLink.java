@@ -7,6 +7,8 @@ import java.net.Socket;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,7 +39,7 @@ public class OthLink extends Action {
 	private boolean state = false;
 	private static final int height = 127;
 	private static final int width = 333;
-	
+
 	public OthLink(String text) {
 		super(text);
 	}
@@ -77,7 +79,6 @@ public class OthLink extends Action {
 		//lblNewLabel.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 14, SWT.NORMAL));
 		lblNewLabel.setBounds(10, 21, 74, 24);
 		lblNewLabel.setText("IP地址");
-		
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.setBounds(117, 55, 80, 27);
@@ -133,7 +134,14 @@ public class OthLink extends Action {
 				}
 			}
 		});
-		
+		//shell直接被关闭的状态调整，之前没考虑到
+		shell.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent arg0) {
+				// TODO Auto-generated method stub
+				state = false;
+			}
+		});
 		shell.open();
 	}
 	

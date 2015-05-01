@@ -117,11 +117,9 @@ public class ClientView extends ViewPart {
 
 		// 测试用的代码
 		{
-			ClientInfo.getClients().add(
-					new ClientInfo("192.168.31.134", "猜猜我是谁"));
+			ClientInfo.getClients().add(new ClientInfo("192.168.31.134", "猜猜我是谁"));
 			ClientInfo clientInfo = new ClientInfo("192.168.31.63", "已连接账户");
-			ClientInfo.getClients()
-					.add(new ClientInfo("192.168.31.23", "哈哈傻逼"));
+			ClientInfo.getClients().add(new ClientInfo("192.168.31.23", "哈哈傻逼"));
 			clientInfo.setConnected(true);
 			clientInfo.setDialogOpened(false);
 			clientInfo.setNewFileCount(21);
@@ -139,18 +137,16 @@ public class ClientView extends ViewPart {
 		viewer.setInput(ContentManager.getManager());
 		ContentManager.getManager().setContentProvider(ctcp);
 		ContentManager.getManager().setTreeViewer(viewer);
-		IOpenListener iOpenListener = new IOpenListener() {
+		viewer.addOpenListener(new IOpenListener() {
 			@Override
 			public void open(OpenEvent arg0) {
 				// TODO Auto-generated method stub
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
 				NetworkMgr.getMgr().getMulticastServer().run();
 				addMonitor(this);
-				System.out.println("monitor added");
+				viewer.removeOpenListener(this);
 			}
-		};
-		viewer.addOpenListener(iOpenListener);
-		
+		});		
 		
 		viewer.setExpandedState(Header.getHeader(), true);
 
@@ -194,9 +190,7 @@ public class ClientView extends ViewPart {
 				System.out.println("double click");
 				ISelection selection = viewer.getSelection();
 				ItemInfo object = ((ItemInfo) ((IStructuredSelection) selection).getFirstElement());
-				if (object instanceof ClientInfo && ((ClientInfo) object).isConnected()
-						&& !((ClientInfo) object).isDialogOpened())
-					chatDialog.run();
+				//...
 			}
 		});
 
@@ -209,6 +203,7 @@ public class ClientView extends ViewPart {
 				// eclipse 下面的状态栏，哈哈，我们征用你了
 				
 				Object obj = selection.getFirstElement();
+				
 				//加入该网络
 				tcpConnect.setEnabled(false);
 				if (obj instanceof ClientInfo
@@ -222,16 +217,13 @@ public class ClientView extends ViewPart {
 					chatDialog.setEnabled(true);
 			}
 		});
+		
 		createAction();
 		hookContextMenu();
-		hookDoubleClickAction();
 		contributeToActionBars();
 
 		// 共享视图查看器中的内容
 		getViewSite().setSelectionProvider(viewer);
-		
-		//移除监听器
-		viewer.removeOpenListener(iOpenListener);
 	}
 
 	private void createAction() {
@@ -282,9 +274,6 @@ public class ClientView extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-	}
-
-	private void hookDoubleClickAction() {
 	}
 
 	public void showMessage(String notification) {
