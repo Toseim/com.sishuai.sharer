@@ -57,7 +57,7 @@ public class OthLink extends Action {
 		}
 		state = true;
 		Display display = Display.getDefault();
-		Shell shell = new Shell(display, SWT.DIALOG_TRIM);
+		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.ON_TOP);
 		//居中显示
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2, width, height);
 		shell.setLayout(null);
@@ -75,7 +75,7 @@ public class OthLink extends Action {
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.SHADOW_IN | SWT.CENTER);
 		//lblNewLabel.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 14, SWT.NORMAL));
-		lblNewLabel.setBounds(10, 19, 74, 24);
+		lblNewLabel.setBounds(10, 21, 74, 24);
 		lblNewLabel.setText("IP地址");
 		
 		
@@ -145,8 +145,8 @@ public class OthLink extends Action {
 		if (objectIP == null)
 			return;
 
-		serverSocket = NetworkMgr.getManager().getServersocket();
-		NetworkMgr.getManager().attempLink(objectIP);
+		serverSocket = NetworkMgr.getMgr().getServersocket();
+		NetworkMgr.getMgr().attempLink(objectIP);
 		view.showMessage("等待对面的用户想到一块去");
 		ConnectionThread ct = new ConnectionThread();
 		new Thread(ct).start();

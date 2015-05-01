@@ -47,33 +47,11 @@ public class TCPConnect extends Action {
 			return;
 		}
 		//if (网络
-		ss = NetworkMgr.getManager().getServersocket();
+		ss = NetworkMgr.getMgr().getServersocket();
 		
 		//发送尝试连接消息（对方ip ，ip ，port）
-		NetworkMgr.getManager().attempLink(clientInfo.getIp());
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Socket socket = ss.accept();
-					clientInfo.setSocket(socket);
-					clientInfo.setConnected(true);
-					
-					Display.getDefault().asyncExec(new Runnable() {
-						@Override
-						public void run() {
-							//加入树结构
-							ContentManager.getManager().addItem(clientInfo, null);
-							// TODO Auto-generated method stub
-							view.showMessage("We connect!");
-						}
-					});
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}).start();
+		NetworkMgr.getMgr().attempLink(clientInfo.getIp());
+		view.showMessage("等待对面的用户想到一块去");
 		ConnectThread ct = new ConnectThread();
 		new Thread(ct).start();
 		new Thread(new Runnable() {
@@ -119,6 +97,7 @@ public class TCPConnect extends Action {
 					public void run() {
 						// TODO Auto-generated method stub
 						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
+						view.showMessage("");
 					}
 				});
 			}

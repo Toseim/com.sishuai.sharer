@@ -9,9 +9,11 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -59,104 +61,119 @@ import com.sishuai.sharer.modules.net.NetworkMgr;
  *
  */
 public class ClientView extends ViewPart {
-	//主界面
+    //主界面
 
-	/**
-	 * The ID of the view as specified by the extension.
-	 */
-	public static final String ID = "com.sishuai.sharer.views.ClientView";
+    /**
+     * The ID of the view as specified by the extension.
+     */
+    public static final String ID = "com.sishuai.sharer.views.ClientView";
 
-	private TreeViewer viewer;
-	private TCPConnect tcpConnect;
-	private IStatusLineManager statusline;
-	private ChatDialog chatDialog;
-	private OthLink othLink;
+    private TreeViewer viewer;
+    private TCPConnect tcpConnect;
+    private IStatusLineManager statusline;
+    private ChatDialog chatDialog;
+    private OthLink othLink;
 
-	class NameSorter extends ViewerSorter {
-	}
+    class NameSorter extends ViewerSorter {
+    }
 
-	/**
-	 * The constructor.
-	 */
-	public ClientView() {
-	}
-	
-	/**
-	 * This is a callback that will allow us
-	 * to create the viewer and initialize it.
-	 */
-	public void createPartControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.FULL_SELECTION);
-		final Tree tree = viewer.getTree();
-		tree.setHeaderVisible(true);
-		TreeColumn treeColumn0 = new TreeColumn(tree, SWT.LEFT);
-		treeColumn0.setWidth(10);
-		TreeColumn treeColumn1 = new TreeColumn(tree, SWT.LEFT);
-		//treeColumn1.setText("Moniker");
-		treeColumn1.setWidth(150);
-		
-		TreeColumn treeColumn2 = new TreeColumn(tree, SWT.LEFT);
-		//treeColumn2.setText("msg和状态");
-		treeColumn2.setWidth(80);
-		
-		TreeColumn treeColumn3 = new TreeColumn(tree, SWT.LEFT);
-		//treeColumn3.setText("file消息和编辑行数");
-		treeColumn3.setWidth(80);
-		
-		TreeColumn treeColumn4 = new TreeColumn(tree, SWT.LEFT);
-		//分页里面有新的消息
-		//treeColumn4.setText("ip和update时间");
-		treeColumn4.setWidth(180);
-		
-		TreeColumn treeColumn5 = new TreeColumn(tree, SWT.RIGHT);
-		//treeColumn5.setText("交互文件数和文件大小");
-		treeColumn5.setWidth(30);
-		
-		//默认使用udp广播
-		NetworkMgr.getMulticastServer().run();
-		
-		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
-		viewer.setContentProvider(ctcp);
-		viewer.setLabelProvider(new ClientTableLabelProvider());
-		
-		viewer.setInput(ContentManager.getManager());
-		ContentManager.getManager().setContentProvider(ctcp);
-		
-		viewer.setExpandedState(Header.getHeader(), true);
-		
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
+    /**
+     * The constructor.
+     */
+    public ClientView() {
+    }
+
+    /**
+     * This is a callback that will allow us
+     * to create the viewer and initialize it.
+     */
+    public void createPartControl(Composite parent) {
+        viewer = new TreeViewer(parent, SWT.FULL_SELECTION);
+        final Tree tree = viewer.getTree();
+        tree.setHeaderVisible(true);
+        TreeColumn treeColumn0 = new TreeColumn(tree, SWT.LEFT);
+        treeColumn0.setWidth(10);
+        TreeColumn treeColumn1 = new TreeColumn(tree, SWT.LEFT);
+        //treeColumn1.setText("Moniker");
+        treeColumn1.setWidth(150);
+
+        TreeColumn treeColumn2 = new TreeColumn(tree, SWT.LEFT);
+        //treeColumn2.setText("msg和状态");
+        treeColumn2.setWidth(80);
+
+        TreeColumn treeColumn3 = new TreeColumn(tree, SWT.LEFT);
+        //treeColumn3.setText("file消息和编辑行数");
+        treeColumn3.setWidth(80);
+
+        TreeColumn treeColumn4 = new TreeColumn(tree, SWT.LEFT);
+        //分页里面有新的消息
+        //treeColumn4.setText("ip和update时间");
+        treeColumn4.setWidth(180);
+
+        TreeColumn treeColumn5 = new TreeColumn(tree, SWT.RIGHT);
+        //treeColumn5.setText("交互文件数和文件大小");
+        treeColumn5.setWidth(30);
+        
+        //测试用的代码
+        {
+            ClientInfo.getClients().add(new ClientInfo("192.168.31.134", "猜猜我是谁"));
+            ClientInfo clientInfo = new ClientInfo("192.168.31.63", "已连接账户");
+            ClientInfo.getClients().add(new ClientInfo("192.168.31.23", "哈哈傻逼"));
+            clientInfo.setConnected(true);
+            clientInfo.setDialogOpened(false);
+            clientInfo.setNewFileCount(21);
+            ClientInfo.getClients().add(clientInfo);
+        }
+
+        ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
+        viewer.setContentProvider(ctcp);
+        viewer.setLabelProvider(new ClientTableLabelProvider());
+
+        viewer.setInput(ContentManager.getManager());
+        ContentManager.getManager().setContentProvider(ctcp);
+        viewer.addOpenListener(new IOpenListener() {
+			
 			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				
-				ISelection selection = viewer.getSelection();
-				ItemInfo object = ((ItemInfo)((IStructuredSelection) selection).getFirstElement());
-				if (object instanceof ClientInfo && ((ClientInfo)object).isConnected())
-					;
+			public void open(OpenEvent arg0) {
+				// TODO Auto-generated method stub
+				NetworkMgr.getMgr().setName(new DefaultName().getName());
+                NetworkMgr.getMgr().getMulticastServer().run();
 			}
 		});
-		
-		 viewer.addSelectionChangedListener(new ISelectionChangedListener()
-         {
-             public void selectionChanged(SelectionChangedEvent event)
-             {
-                 IStructuredSelection selection =
-                     (IStructuredSelection) event.getSelection();
-                 statusline = getViewSite().getActionBars().getStatusLineManager();
-         		 //eclipse 下面的状态栏，哈哈，我们征用你了
-                 Object obj = selection.getFirstElement();
-                 if(obj == null || !(obj instanceof ClientInfo)) {
-                	 tcpConnect.setEnabled(false);
-                	 return;
-                 }
-                 tcpConnect.setEnabled(true);
-             }
-         });
-		
-		
-		//拖拽操作
-		//viewer.addDropSupport(operations, transferTypes, listener);
-		
-		createAction();
+        viewer.setExpandedState(Header.getHeader(), true);
+        viewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+                System.out.println("double click");
+                ISelection selection = viewer.getSelection();
+                ItemInfo object = ((ItemInfo)((IStructuredSelection) selection).getFirstElement());
+                if (object instanceof ClientInfo && ((ClientInfo)object).isConnected()
+                        && !((ClientInfo)object).isDialogOpened())
+                    chatDialog.run();
+            }
+        });
+
+        viewer.addSelectionChangedListener(new ISelectionChangedListener()
+                {
+                    public void selectionChanged(SelectionChangedEvent event)
+                    {
+                        IStructuredSelection selection =
+                            (IStructuredSelection) event.getSelection();
+                        statusline = getViewSite().getActionBars().getStatusLineManager();
+                        //eclipse 下面的状态栏，哈哈，我们征用你了
+                        Object obj = selection.getFirstElement();
+                        if (obj instanceof ClientInfo && !((ClientInfo)obj).isConnected())
+                        	tcpConnect.setEnabled(true);
+                        else tcpConnect.setEnabled(false);
+                    }
+                });
+
+
+
+        //拖拽操作
+        //viewer.addDropSupport(operations, transferTypes, listener);
+
+        createAction();
         hookContextMenu();
         hookDoubleClickAction();
         contributeToActionBars();
@@ -164,45 +181,44 @@ public class ClientView extends ViewPart {
         //共享视图查看器中的内容
         getViewSite().setSelectionProvider(viewer);
 
-	}
-	
-	private void createAction() {
-		// TODO Auto-generated method stub
-		TCPConnect.getTcpConnect().setView(this);
-		tcpConnect = TCPConnect.getTcpConnect();
-		
-		OthLink.getOthLink().setView(this);
-		othLink = OthLink.getOthLink();
-		
-		ChatDialog.getDialog().setView(this);
-		chatDialog = ChatDialog.getDialog();
-		
-	}
+    }
 
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				ClientView.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
-	}
+    private void createAction() {
+        // TODO Auto-generated method stub
+        TCPConnect.getTcpConnect().setView(this);
+        tcpConnect = TCPConnect.getTcpConnect();
 
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
+        OthLink.getOthLink().setView(this);
+        othLink = OthLink.getOthLink();
 
-	private void fillLocalPullDown(IMenuManager manager) {
-		//manager.add(new Separator());
-	}
-	
-	public ItemInfo getSelectedItem()
+        chatDialog = new ChatDialog(this);
+
+    }
+
+    private void hookContextMenu() {
+        MenuManager menuMgr = new MenuManager("#PopupMenu");
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(new IMenuListener() {
+            public void menuAboutToShow(IMenuManager manager) {
+                ClientView.this.fillContextMenu(manager);
+            }
+        });
+        Menu menu = menuMgr.createContextMenu(viewer.getControl());
+        viewer.getControl().setMenu(menu);
+        getSite().registerContextMenu(menuMgr, viewer);
+    }
+
+    private void contributeToActionBars() {
+        IActionBars bars = getViewSite().getActionBars();
+        fillLocalPullDown(bars.getMenuManager());
+        fillLocalToolBar(bars.getToolBarManager());
+    }
+
+    private void fillLocalPullDown(IMenuManager manager) {
+        //manager.add(new Separator());
+    }
+
+    public ItemInfo getSelectedItem()
     {
         IStructuredSelection selection = 
             (IStructuredSelection)viewer.getSelection();
@@ -210,28 +226,28 @@ public class ClientView extends ViewPart {
     }
 
 
-	private void fillContextMenu(IMenuManager manager) {
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		manager.add(tcpConnect);
-		manager.add(othLink);
-	}
-	
-	private void fillLocalToolBar(IToolBarManager manager) {
-	}
+    private void fillContextMenu(IMenuManager manager) {
+        manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        manager.add(tcpConnect);
+        manager.add(othLink);
+    }
+
+    private void fillLocalToolBar(IToolBarManager manager) {
+    }
 
 
-	private void hookDoubleClickAction() {
-	}
-	
-	
-	public void showMessage(String notification) {
-		statusline.setMessage(notification);
-	}
+    private void hookDoubleClickAction() {
+    }
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus() {
-		viewer.getControl().setFocus();
-	}
+
+    public void showMessage(String notification) {
+        statusline.setMessage(notification);
+    }
+
+    /**
+     * Passing the focus request to the viewer's control.
+     */
+    public void setFocus() {
+        viewer.getControl().setFocus();
+    }
 }

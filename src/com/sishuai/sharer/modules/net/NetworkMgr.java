@@ -18,14 +18,29 @@ public class NetworkMgr {
 	public static Pattern pattern2 = Pattern.compile("^10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	public static Pattern pattern3 = Pattern.compile("^172\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	
-	private Random random = new Random();
 	private static NetworkMgr networkMgr;
+	private Random random = new Random();
 	private ServerSocket serverSocket;
 	private int TCPport = 0;
 	private int UDPport = 27384;   //默认的端口
-	private static MulticastServer ms;
+	private MulticastServer ms;
 	private DatagramSocket datagramSocket;
+	private String name;
 	
+	public static NetworkMgr getMgr() {
+		if (networkMgr == null)
+			networkMgr = new NetworkMgr();
+		return networkMgr;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public ServerSocket getServersocket() {
 		if (serverSocket == null || serverSocket.isClosed()) {
 			while (true) {
@@ -59,7 +74,7 @@ public class NetworkMgr {
 		return datagramSocket;
 	}
 
-	public static MulticastServer getMulticastServer() {
+	public MulticastServer getMulticastServer() {
 		if (ms == null)
 			ms = new MulticastServer();
 		return ms;
@@ -68,17 +83,12 @@ public class NetworkMgr {
 	public int getUDPport() {
 		return UDPport;
 	}
-	public static NetworkMgr getManager() {
-		if (networkMgr == null) 
-			networkMgr = new NetworkMgr();
-		return networkMgr;
-	}
 	
 	public void attempLink(String objectIP) {
 		//发送尝试连接的信息
-		LinkMsg linkMsg = new LinkMsg(objectIP, NetworkMgr.getMulticastServer().getIP(), TCPport);
+		LinkMsg linkMsg = new LinkMsg(objectIP, getMulticastServer().getIP(), TCPport);
 		//开放端口来发送文件
-		DatagramSocket ds = NetworkMgr.getManager().getDatagramSocket();
+		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
 		linkMsg.send(ds, null, 0);
 	}
 }

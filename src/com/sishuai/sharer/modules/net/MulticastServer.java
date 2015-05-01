@@ -81,7 +81,7 @@ public class MulticastServer {
 			multicastSocket.joinGroup(group);
 
 			//发送自己的数据包
-			enterMsg = new EnterMsg(IP, "hahaha");
+			enterMsg = new EnterMsg(IP, NetworkMgr.getMgr().getName());
 			enterMsg.send(multicastSocket, group, port);
 			
 			//接收线程启动

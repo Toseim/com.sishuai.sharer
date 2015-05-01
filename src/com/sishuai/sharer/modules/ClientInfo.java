@@ -1,5 +1,7 @@
 package com.sishuai.sharer.modules;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,7 +13,7 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
 /**
  * 
  * @author 四帅
- *
+ * 用来存放用户相关信息的类
  */
 public class ClientInfo implements ItemInfo{
 	//1
@@ -24,6 +26,9 @@ public class ClientInfo implements ItemInfo{
 	private String ip;
 	//5
 	private boolean isConnected = false;
+	
+	//一些与界面相关的信息
+	private boolean isDialogOpened = false;
 	
 	private Socket socket;
 	private DataInputStream dis;
@@ -87,8 +92,9 @@ public class ClientInfo implements ItemInfo{
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 		try {
-			this.dis = new DataInputStream(socket.getInputStream());
-			this.dos = new DataOutputStream(socket.getOutputStream());
+			this.dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+			this.dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			new Thread(new RecvThread()).start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -116,6 +122,14 @@ public class ClientInfo implements ItemInfo{
 		this.name = name;
 	}
 	
+	public boolean isDialogOpened() {
+		return isDialogOpened;
+	}
+
+	public void setDialogOpened(boolean isDialogOpened) {
+		this.isDialogOpened = isDialogOpened;
+	}
+
 	public void showMsg() {
 		//用户之间的对话窗口
 	}
@@ -143,5 +157,34 @@ public class ClientInfo implements ItemInfo{
 		// TODO Auto-generated method stub
 		if (!isConnected) return "No";
 		return files.size()+"";
+	}
+	
+	class RecvThread implements Runnable {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			while (true) {
+				try {
+					dis.readUTF();
+					//对消息进行分类处理
+					//一共两种，一个是普通的文本对话消息，另一个是flie的内容
+					
+					
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					System.out.println("与"+getName()+"的连接已经断开");
+					try {
+						if (dis != null) dis.close();
+						if (dos != null) dos.close();
+						if (socket != null) socket.close();
+					} catch (IOException e_1) {
+						// TODO Auto-generated catch block
+						e_1.printStackTrace();
+					}
+				} 
+			}
+		}
 	}
 }
