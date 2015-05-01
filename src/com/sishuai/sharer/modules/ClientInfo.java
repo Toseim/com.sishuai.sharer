@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
 /**
@@ -29,7 +30,7 @@ public class ClientInfo implements ItemInfo{
 	
 	//一些与界面相关的信息
 	private boolean isDialogOpened = false;
-	
+	private ChatDialog chatDialog;
 	private Socket socket;
 	private DataInputStream dis;
 	private DataOutputStream dos;
@@ -122,6 +123,14 @@ public class ClientInfo implements ItemInfo{
 		this.name = name;
 	}
 	
+	public ChatDialog getChatDialog() {
+		return chatDialog;
+	}
+
+	public void setChatDialog(ChatDialog chatDialog) {
+		this.chatDialog = chatDialog;
+	}
+
 	public boolean isDialogOpened() {
 		return isDialogOpened;
 	}
@@ -130,9 +139,6 @@ public class ClientInfo implements ItemInfo{
 		this.isDialogOpened = isDialogOpened;
 	}
 
-	public void showMsg() {
-		//用户之间的对话窗口
-	}
 	@Override
 	public String getOne() {
 		// TODO Auto-generated method stub
@@ -166,10 +172,15 @@ public class ClientInfo implements ItemInfo{
 			// TODO Auto-generated method stub
 			while (true) {
 				try {
-					dis.readUTF();
+					String string = dis.readUTF();
 					//对消息进行分类处理
 					//一共两种，一个是普通的文本对话消息，另一个是flie的内容
-					
+					if (isDialogOpened)
+						chatDialog.getDialog().append(name+": "+string);
+					else {
+						msgs++;
+						
+					}
 					
 					
 				} catch (IOException e) {

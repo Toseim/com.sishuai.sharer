@@ -4,18 +4,22 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Display;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
+import com.sishuai.sharer.views.ClientView;
 
 /**
  * 显示界面中数据的修改要用到，目前可提供用户的添加和删除
  * @author 四帅
  *
  */
-public class ContentManager implements IPropertyChangeListener{
+public class ContentManager {
 	//用来管理数据
 	public static ContentManager contentmanager;
 	private ClientTreeContentProvider ctcp;
+	private TreeViewer viewer;
 	
 	
 	public static ContentManager getManager() {
@@ -32,6 +36,10 @@ public class ContentManager implements IPropertyChangeListener{
 	
 	public void setContentProvider(ClientTreeContentProvider clientTreeContentProvider) {
 		this.ctcp = clientTreeContentProvider;
+	}
+	
+	public void setTreeViewer(TreeViewer viewer) {
+		this.viewer = viewer;
 	}
 	
 	public void addItem(ItemInfo item, ClientInfo clientInfo) {
@@ -55,11 +63,20 @@ public class ContentManager implements IPropertyChangeListener{
 			ctcp.itemsChanged(item, clientInfo, 1);
 		}
 	}
-	//暂时没想好，要不要把listener加进来处理
-	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		//test
-		return;
+	
+	public void updateItems() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						viewer.refresh();
+					}
+				});
+			}
+		}).start();
 	}
-
 }

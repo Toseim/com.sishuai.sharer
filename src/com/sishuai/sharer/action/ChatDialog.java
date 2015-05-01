@@ -27,18 +27,20 @@ public class ChatDialog extends Action{
 	private ClientView view;
 	private Text dialogText;
 	private Group group;
+	private ClientInfo clientInfo;
 	private static final int size = 600;
 	
 	public ChatDialog(ClientView clientView) {
+		super("打开对话框");
 		this.view = clientView;
 	}
-	
-	public void NetInit() {
-		
+	public Text getDialog() {
+		return dialogText;
 	}
 	
 	public void run() {
-		ClientInfo clientInfo = (ClientInfo) view.getSelectedItem();
+		clientInfo = (ClientInfo) view.getSelectedItem();
+		clientInfo.setChatDialog(this);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.MIN);
 		shell.setBounds((Activator.width-size)/2, (Activator.height-size)/2, size, size);
@@ -148,11 +150,5 @@ public class ChatDialog extends Action{
 				System.out.println("Send button  Selected");
 			}
 		});
-
-		
-	}
-	
-	public void readAndAppend(String string) {
-		
 	}
 }

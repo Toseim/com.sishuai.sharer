@@ -23,6 +23,8 @@ public class DefaultName {
 	private Text text;
 	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();;
 	private String name = null;
+	private final int height = 138;
+	private final int width = 418;
 	
 	public String getName() {
 		BufferedReader br = null;
@@ -74,7 +76,7 @@ public class DefaultName {
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE);
 		shell.setText("欢迎使用我们的插件");
-		shell.setSize(419, 139);
+		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2+100, width, height);
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.CENTER);
 		lblNewLabel.setBounds(10, 0, 383, 38);

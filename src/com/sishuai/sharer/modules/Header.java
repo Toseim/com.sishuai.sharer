@@ -8,7 +8,6 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
  *
  */
 public class Header implements ItemInfo{
-	//树的头结点，因为树不能添加初始节点
 	//可以用来提供信息
 	private static Header header;
 	
