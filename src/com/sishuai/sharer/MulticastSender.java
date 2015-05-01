@@ -12,7 +12,11 @@ import java.util.Date;
 
 import com.sishuai.sharer.modules.interfaces.Msg;
 
-
+/**
+ * 
+ * @author 四帅
+ * 用来单机测试的类，可以随便改
+ */
 public class MulticastSender {
 
 	public static void server() throws Exception {

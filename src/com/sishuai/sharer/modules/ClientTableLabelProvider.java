@@ -5,7 +5,11 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
-
+/**
+ * 如类名所说，标签提供者，正常不用管它
+ * @author 四帅
+ *
+ */
 public class ClientTableLabelProvider implements ITableLabelProvider {
 
 	@Override

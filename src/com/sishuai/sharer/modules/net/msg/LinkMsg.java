@@ -12,9 +12,13 @@ import java.net.UnknownHostException;
 
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.interfaces.Msg;
-import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 
+/**
+ * 用户单独发送给某个其他用户的建立tcp链接的消息
+ * @author 四帅
+ *
+ */
 public class LinkMsg implements Msg {
 	private static int msgType = Msg.MSG_LINK;
 	private String objectIP;

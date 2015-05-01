@@ -7,6 +7,11 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
+/**
+ * 显示界面中数据的修改要用到，目前可提供用户的添加和删除
+ * @author 四帅
+ *
+ */
 public class ContentManager implements IPropertyChangeListener{
 	//用来管理数据
 	public static ContentManager contentmanager;

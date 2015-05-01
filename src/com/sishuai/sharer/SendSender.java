@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
-
+/**
+ * 测试的类
+ * @author 四帅
+ * 
+ */
 public class SendSender {
 	public static void main(String[] args) {
 		try {

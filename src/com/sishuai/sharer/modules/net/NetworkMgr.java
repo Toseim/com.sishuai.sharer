@@ -8,6 +8,11 @@ import java.util.regex.Pattern;
 
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
 
+/**
+ * 网络管理的类，应尽量把网络的相关东西搬到这里，方便管理
+ * @author 四帅
+ *
+ */
 public class NetworkMgr {
 	public static Pattern pattern1 = Pattern.compile("^192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	public static Pattern pattern2 = Pattern.compile("^10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");

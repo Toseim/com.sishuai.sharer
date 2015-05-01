@@ -3,6 +3,7 @@ package com.sishuai.sharer;
 import java.awt.Toolkit;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -42,6 +43,7 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		Display.getDefault().dispose();
 	}
 
 	/**

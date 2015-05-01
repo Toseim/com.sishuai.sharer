@@ -4,6 +4,11 @@ import java.util.Date;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
+/**
+ * 存放文件的信息
+ * @author 四帅
+ *
+ */
 public class FileInfo implements ItemInfo{
 	//1
 	private String filename;

@@ -15,6 +15,11 @@ import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
 
+/**
+ * 用户登入的消息
+ * @author 四帅
+ *
+ */
 public class EnterMsg implements Msg {
 	private static int msgType = Msg.MSG_ENTER;
 	private String IP;

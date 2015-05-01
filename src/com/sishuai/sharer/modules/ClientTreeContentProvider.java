@@ -7,7 +7,11 @@ import org.eclipse.jface.viewers.Viewer;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
-
+/**
+ * 内容提供者，也可以不用管它
+ * @author 四帅
+ *
+ */
 public class ClientTreeContentProvider
 	implements ITreeContentProvider, IStructuredContentProvider {
 	private TreeViewer viewer;

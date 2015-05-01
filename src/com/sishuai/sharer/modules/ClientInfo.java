@@ -8,6 +8,11 @@ import java.util.ArrayList;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
+/**
+ * 
+ * @author 四帅
+ *
+ */
 public class ClientInfo implements ItemInfo{
 	//1
 	private String name;

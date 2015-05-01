@@ -7,7 +7,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
-
+/**
+ * 打开插件的主视图
+ * @author 四帅
+ *
+ */
 public class OpenView implements IWorkbenchWindowActionDelegate {
 	//用来打开视图的action
 	private IWorkbenchWindow window;

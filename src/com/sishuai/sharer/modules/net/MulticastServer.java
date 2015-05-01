@@ -13,7 +13,11 @@ import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
-
+/**
+ * 与局域网相关的网络处理
+ * @author 四帅
+ *
+ */
 public class MulticastServer {
 	
 	private InetAddress group;

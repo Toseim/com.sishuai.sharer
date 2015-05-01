@@ -16,6 +16,11 @@ import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
 
+/**
+ * 用户离开的消息
+ * @author 四帅
+ *
+ */
 public class ExitMsg implements Msg {
 	private static int msgType = Msg.MSG_EXIT;
 	private String IP;

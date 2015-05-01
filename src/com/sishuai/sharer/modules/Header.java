@@ -2,6 +2,11 @@ package com.sishuai.sharer.modules;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
+/**
+ * 树结构的根节点
+ * @author 四帅
+ *
+ */
 public class Header implements ItemInfo{
 	//树的头结点，因为树不能添加初始节点
 	//可以用来提供信息

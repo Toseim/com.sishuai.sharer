@@ -53,7 +53,11 @@ import com.sishuai.sharer.modules.net.NetworkMgr;
  * presented in the same way everywhere.
  * <p>
  */
-
+/**
+ * 主视图类了
+ * @author 四帅
+ *
+ */
 public class ClientView extends ViewPart {
 	//主界面
 
@@ -108,7 +112,7 @@ public class ClientView extends ViewPart {
 		//treeColumn5.setText("交互文件数和文件大小");
 		treeColumn5.setWidth(30);
 		
-		
+		//默认使用udp广播
 		NetworkMgr.getMulticastServer().run();
 		
 		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
