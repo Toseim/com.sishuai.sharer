@@ -196,7 +196,7 @@ public class ClientView extends ViewPart {
 				ItemInfo object = ((ItemInfo) ((IStructuredSelection) selection).getFirstElement());
 				if (object instanceof ClientInfo && ((ClientInfo) object).isConnected()
 						&& !((ClientInfo) object).isDialogOpened())
-					chatDialog.run();
+					;
 			}
 		});
 

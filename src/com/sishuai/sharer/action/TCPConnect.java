@@ -24,6 +24,7 @@ public class TCPConnect extends Action {
 	private ClientView view;
 	private ClientInfo clientInfo;
 	private ServerSocket ss;
+	private Socket socket = null;
 	private static TCPConnect tcpConnect;
 	
 	public TCPConnect(String text) {
@@ -53,6 +54,7 @@ public class TCPConnect extends Action {
 		NetworkMgr.getMgr().attempLink(clientInfo.getIp());
 		view.showMessage("等待对面的用户想到一块去");
 		ConnectThread ct = new ConnectThread();
+		
 		new Thread(ct).start();
 		new Thread(new Runnable() {
 			@Override
@@ -60,7 +62,8 @@ public class TCPConnect extends Action {
 				// TODO Auto-generated method stub
 				try {
 					Thread.sleep(30000);
-					ct.ss.close();
+					if (socket == null)
+						ct.ss.close();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -77,7 +80,7 @@ public class TCPConnect extends Action {
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
-				Socket socket = ss.accept();
+				socket = ss.accept();
 				clientInfo.setSocket(socket);
 				clientInfo.setConnected(true);
 				

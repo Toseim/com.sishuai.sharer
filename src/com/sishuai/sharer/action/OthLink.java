@@ -32,6 +32,7 @@ import com.sishuai.sharer.views.ClientView;
 public class OthLink extends Action {
 	private static OthLink othLink;
 	private static ServerSocket serverSocket;
+	private Socket socket = null;
 	private ClientView view;
 	private String objectIP;
 	private boolean state = false;
@@ -157,7 +158,8 @@ public class OthLink extends Action {
 				// TODO Auto-generated method stub
 				try {
 					Thread.sleep(30000);
-					ct.socket.close();
+					if (socket == null)
+						serverSocket.close();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -172,13 +174,12 @@ public class OthLink extends Action {
 	}
 	
 	class ConnectionThread implements Runnable {
-		volatile ServerSocket socket = OthLink.serverSocket;
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
 				//处理超时的操作
-				Socket socket = serverSocket.accept();
+				socket = serverSocket.accept();
 		
 				//连接后取消计时
 				ClientInfo clientInfo = new ClientInfo(objectIP, "null"); //名字的获取方式暂定
