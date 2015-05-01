@@ -68,21 +68,10 @@ public class ExitMsg implements Msg {
 				int len = ClientInfo.getClients().size();
 				for (int i = 0; i<len; i++) {
 					ClientInfo clientInfo = ClientInfo.getClients().get(i);
-					if (clientInfo.getIp().equals(uIP))
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								Display.getDefault().asyncExec(new Runnable() {
-									@Override
-									public void run() {
-										// TODO Auto-generated method stub
-										ContentManager.getManager().removeItem(clientInfo, null);
-										return;
-									}
-								});
-							}
-						}).start();
+					if (clientInfo.getIp().equals(uIP)) {
+						ClientInfo.getClients().remove(clientInfo);
+						ContentManager.getManager().updateItems();
+					}
 				}
 			}
 		} catch (IOException e) {

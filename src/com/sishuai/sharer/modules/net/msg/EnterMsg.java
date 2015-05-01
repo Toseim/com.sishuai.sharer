@@ -64,17 +64,8 @@ public class EnterMsg implements Msg {
 			String nickName = dis.readUTF();
 			if (!ClientInfo.getIPList().contains(uIP)) {
 				ClientInfo.getIPList().add(uIP);
-				new Thread(new Runnable() {
-					public void run() {
-						// TODO Auto-generated method stub
-						Display.getDefault().asyncExec(new Runnable() {
-							public void run() {
-								// TODO Auto-generated method stub
-								ContentManager.getManager().addItem(new ClientInfo(uIP, nickName), null);
-							}
-						});
-					}
-				}).start();
+				ClientInfo.getClients().add(new ClientInfo(uIP, nickName));
+				ContentManager.getManager().updateItems();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

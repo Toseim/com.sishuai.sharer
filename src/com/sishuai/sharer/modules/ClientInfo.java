@@ -35,7 +35,7 @@ public class ClientInfo implements ItemInfo{
 	private DataInputStream dis;
 	private DataOutputStream dos;
 	
-	private ArrayList<FileInfo> files = new ArrayList<FileInfo>();
+	private ArrayList<FileInfo> files;
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
 	
@@ -110,6 +110,8 @@ public class ClientInfo implements ItemInfo{
 
 	//获取交互文件
 	public ArrayList<FileInfo> getFiles() {
+		if (files == null)
+			files = new ArrayList<FileInfo>();
 		return files;
 	}
 
@@ -178,8 +180,10 @@ public class ClientInfo implements ItemInfo{
 					if (isDialogOpened)
 						chatDialog.getDialog().append(name+": "+string);
 					else {
+						//对话框未打开时，未读消息++
 						msgs++;
-						
+						//存储信息。。呢
+						ContentManager.getManager().updateItems();
 					}
 					
 					

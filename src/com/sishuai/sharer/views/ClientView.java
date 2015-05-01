@@ -6,10 +6,7 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IOpenListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
@@ -130,12 +127,10 @@ public class ClientView extends ViewPart {
 			clientInfo.getFiles().add(fileInfo);
 		}
 
-		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
-		viewer.setContentProvider(ctcp);
+		viewer.setContentProvider(new ClientTreeContentProvider());
 		viewer.setLabelProvider(new ClientTableLabelProvider());
 
 		viewer.setInput(ContentManager.getManager());
-		ContentManager.getManager().setContentProvider(ctcp);
 		ContentManager.getManager().setTreeViewer(viewer);
 		viewer.addOpenListener(new IOpenListener() {
 			@Override
@@ -143,13 +138,16 @@ public class ClientView extends ViewPart {
 				// TODO Auto-generated method stub
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
 				NetworkMgr.getMgr().getMulticastServer().run();
+				NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 				addMonitor(this);
 				viewer.removeOpenListener(this);
 			}
 		});		
-		
-		viewer.setExpandedState(Header.getHeader(), true);
+		//默认不展开根节点（为了获取用户的第一次双击）
+		viewer.setExpandedState(Header.getHeader(), false);
 
+		
+		//for testing
 		{
 			ClientInfo.getClients().add(
 					new ClientInfo("192.168.31.134", "猜猜我是谁"));
@@ -176,7 +174,6 @@ public class ClientView extends ViewPart {
 					});
 				}
 			}).start();
-			;
 		}
 
 		// 拖拽操作
@@ -184,15 +181,6 @@ public class ClientView extends ViewPart {
 	}
 
 	public void addMonitor(IOpenListener iOpenListener) {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				System.out.println("double click");
-				ISelection selection = viewer.getSelection();
-				ItemInfo object = ((ItemInfo) ((IStructuredSelection) selection).getFirstElement());
-				//...
-			}
-		});
 
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -204,17 +192,25 @@ public class ClientView extends ViewPart {
 				
 				Object obj = selection.getFirstElement();
 				
-				//加入该网络
-				tcpConnect.setEnabled(false);
-				if (obj instanceof ClientInfo
-						&& !((ClientInfo) obj).isConnected())
-					tcpConnect.setEnabled(true);
 				
 				//打开对话框
 				chatDialog.setEnabled(false);
 				if (obj instanceof ClientInfo && ((ClientInfo) obj).isConnected()
 						&& !((ClientInfo) obj).isDialogOpened())
 					chatDialog.setEnabled(true);
+				
+				othLink.setEnabled(false);
+				tcpConnect.setEnabled(false);
+				if (NetworkMgr.getState()) return;
+				//加入该网络
+				if (obj instanceof ClientInfo
+						&& !((ClientInfo) obj).isConnected())
+					tcpConnect.setEnabled(true);
+				
+				//建立新网络
+				othLink.setEnabled(true);
+				
+				
 			}
 		});
 		

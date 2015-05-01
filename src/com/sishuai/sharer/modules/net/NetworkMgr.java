@@ -29,6 +29,8 @@ public class NetworkMgr {
 	private DatagramSocket datagramSocket;
 	private String name;
 	private String IP;
+	private static boolean state = false;   
+	//返回用户是否处于尝试连接tcp的阶段，用来阻止其他tcp连接
 	
 	public static NetworkMgr getMgr() {
 		if (networkMgr == null)
@@ -57,6 +59,14 @@ public class NetworkMgr {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static void setState(boolean s) {
+		state = s;
+	}
+	
+	public static boolean getState() {
+		return state;
 	}
 	
 	public String getName() {
@@ -115,6 +125,6 @@ public class NetworkMgr {
 		LinkMsg linkMsg = new LinkMsg(objectIP, getIP(), TCPport);
 		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
-		linkMsg.send(ds, null, 0);
+		linkMsg.send(ds, getName(), 0);
 	}
 }
