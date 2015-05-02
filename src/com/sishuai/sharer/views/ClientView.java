@@ -1,5 +1,7 @@
 package com.sishuai.sharer.views;
 
+import java.awt.Event;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -16,6 +18,8 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
@@ -138,7 +142,7 @@ public class ClientView extends ViewPart {
 		ContentManager.getManager().setTreeViewer(viewer);
 		viewer.addOpenListener(new IOpenListener() {
 			@Override
-			public void open(OpenEvent arg0) {
+			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
 				NetworkMgr.getMgr().getMulticastServer().run();
@@ -186,6 +190,49 @@ public class ClientView extends ViewPart {
 		final FileTransfer fileTransfer = FileTransfer.getInstance();
 		Transfer[] transfers = new Transfer[] {fileTransfer};
 		dropTarget.setTransfer(transfers);
+		dropTarget.addDropListener(new DropTargetListener() {
+			
+			@Override
+			public void dropAccept(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void drop(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragOver(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragOperationChanged(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragLeave(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragEnter(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				if (event.detail == DND.DROP_DEFAULT) {
+					event.detail = DND.DROP_COPY;
+				} else {
+					event.detail = DND.DROP_NONE;
+				}
+			}
+			
+		});
 		
 	}
 
