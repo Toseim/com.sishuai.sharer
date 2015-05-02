@@ -1,5 +1,8 @@
 package com.sishuai.sharer.action;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -17,6 +20,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.modules.ClientInfo;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.views.ClientView;
 /**
  * 用户之间的聊天窗口
@@ -45,7 +49,7 @@ public class ChatDialog extends Action{
 		Shell shell = new Shell(display, SWT.MIN);
 		shell.setBounds((Activator.width-size)/2, (Activator.height-size)/2, size, size);
 		shell.open();
-		shell.setText("ID of the other one");//对话框名称
+		shell.setText(clientInfo.getName());//对话框名称
 		
 		
 		//自己创建一个字体color
@@ -119,6 +123,9 @@ public class ChatDialog extends Action{
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if (e.keyCode == 13) {
+					send(text.getText());
+					
+					
 					String sendMessage = "Message:\n"+ text.getText();
 					dialogText.append("   "+sendMessage+"\n");//该方法不会覆盖掉原来的字符 与setText不同
 					text.setText("");
@@ -141,6 +148,10 @@ public class ChatDialog extends Action{
 				dialogText.setForeground(createdblue);//设置前景色 即字体颜色
 				String sendMessage1 = "   Message:\n";
 				String sendMessage2 = text.getText();
+				
+				send(sendMessage2);
+				
+				
 				dialogText.append(sendMessage1);//该方法不会覆盖掉原来的字符 与setText不同
 				dialogText.setForeground(sysytemBlack);
 				dialogText.append(sendMessage2+"\n");
@@ -151,4 +162,17 @@ public class ChatDialog extends Action{
 			}
 		});
 	}
+	
+	public void send(String string) {
+		try {
+			DataOutputStream dos = clientInfo.getDataOutputStream();
+			dos.writeUTF(string);
+			dos.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//用户已经失去连接
+			NetworkMgr.getMgr().disconnect(clientInfo);
+		}
+	}
+	
 }

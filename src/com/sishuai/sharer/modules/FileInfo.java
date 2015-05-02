@@ -69,7 +69,7 @@ public class FileInfo implements ItemInfo{
 	@Override
 	public String getOne() {
 		// TODO Auto-generated method stub
-		return filename;
+		return "  "+filename;
 	}
 
 	@Override

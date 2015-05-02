@@ -10,8 +10,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 
-import org.eclipse.swt.widgets.Display;
-
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;

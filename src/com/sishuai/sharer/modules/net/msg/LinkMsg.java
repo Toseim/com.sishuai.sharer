@@ -79,13 +79,14 @@ public class LinkMsg implements Msg {
 	@Override
 	public void parse(DataInputStream dis) {
 		// TODO Auto-generated method stub
+		ClientInfo clientInfo = null;
 		try {
 			String remoteIP = dis.readUTF();
 			int remotePort = dis.readInt();
 			String name = dis.readUTF();
 			
 			//创建新对象
-			ClientInfo clientInfo = findClient(remoteIP, name);
+			clientInfo = findClient(remoteIP, name);
 			
 			//连接。。。
 			Socket socket = new Socket(remoteIP, remotePort);
@@ -106,7 +107,7 @@ public class LinkMsg implements Msg {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			NetworkMgr.getMgr().disconnect(clientInfo);
 		}
 	}
 }

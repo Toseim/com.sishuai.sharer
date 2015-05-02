@@ -177,14 +177,10 @@ public class ClientInfo implements ItemInfo{
 					String string = dis.readUTF();
 					//对消息进行分类处理
 					//一共两种，一个是普通的文本对话消息，另一个是flie的内容
-					if (isDialogOpened)
-						chatDialog.getDialog().append(name+": "+string);
-					else {
-						//对话框未打开时，未读消息++
-						msgs++;
-						//存储信息。。呢
-						ContentManager.getManager().updateItems();
-					}
+					chatDialog.getDialog().append(name+": "+string);
+					if (!isDialogOpened) msgs++;
+					
+					ContentManager.getManager().updateItems();
 					
 					
 				} catch (IOException e) {

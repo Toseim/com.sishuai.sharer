@@ -14,6 +14,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -176,12 +180,16 @@ public class ClientView extends ViewPart {
 			}).start();
 		}
 
-		// 拖拽操作
-		// viewer.addDropSupport(operations, transferTypes, listener);
+		//drop 的支持
+		int ops = DND.DROP_COPY | DND.DROP_DEFAULT;
+		DropTarget dropTarget = new DropTarget(tree, ops);
+		final FileTransfer fileTransfer = FileTransfer.getInstance();
+		Transfer[] transfers = new Transfer[] {fileTransfer};
+		dropTarget.setTransfer(transfers);
+		
 	}
 
 	public void addMonitor(IOpenListener iOpenListener) {
-
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();

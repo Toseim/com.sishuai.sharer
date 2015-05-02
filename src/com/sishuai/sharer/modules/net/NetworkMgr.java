@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
 
 /**
@@ -126,5 +127,21 @@ public class NetworkMgr {
 		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
 		linkMsg.send(ds, getName(), 0);
+	}
+	
+	public void disconnect(ClientInfo clientInfo) {
+		if (clientInfo == null) return;
+		try {
+			clientInfo.setConnected(false);
+			if (clientInfo.getDataInputStream() != null)
+				clientInfo.getDataInputStream().close();
+			if (clientInfo.getDataOutputStream() != null)
+				clientInfo.getDataOutputStream().close();
+			if (clientInfo.getSocket() != null)
+				clientInfo.getSocket().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
