@@ -25,7 +25,7 @@ public class NetworkMgr {
 	private Random random = new Random();
 	private ServerSocket serverSocket;
 	private int TCPport = 0;
-	private int UDPport = 27384;   //默认的端口
+	private int UDPport = 37384;   //默认的端口
 	private MulticastServer ms;
 	private DatagramSocket datagramSocket;
 	private String name;
@@ -59,7 +59,13 @@ public class NetworkMgr {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//MessageDialog.openWarning(new Shell(Display.getDefault()), "State", "你现在不处于局域网中");
+		
+		
+		//若不在局域网中可能报空指针错误。。
+		//其实外网也是可以连接的，所以地址，在看看
 		return null;
+		
 	}
 	
 	public static void setState(boolean s) {
@@ -93,7 +99,7 @@ public class NetworkMgr {
 	}
 	public int getTCPport() {
 		if (TCPport == 0) 
-			TCPport = random.nextInt(55535) + 10000;
+			TCPport = random.nextInt(55535) +10000;
 		return TCPport;
 	}
 	
@@ -101,7 +107,8 @@ public class NetworkMgr {
 		if (datagramSocket == null || datagramSocket.isClosed()) {
 			while (true) {
 				try {
-					datagramSocket = new DatagramSocket(getUDPport());
+					datagramSocket = new DatagramSocket(UDPport);
+					new Thread(new RecvThread(datagramSocket, false)).start();
 				} catch (Exception e) {
 					continue;
 				}
@@ -126,6 +133,7 @@ public class NetworkMgr {
 		LinkMsg linkMsg = new LinkMsg(objectIP, getIP(), TCPport);
 		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
+		
 		linkMsg.send(ds, getName(), 0);
 	}
 	

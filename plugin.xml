@@ -50,5 +50,8 @@
             </action>
         </actionSet>
     </extension>
+    <extension
+          point="org.eclipse.ui.viewActions">
+    </extension>
 
 </plugin>

@@ -21,7 +21,7 @@ import com.sishuai.sharer.Activator;
 
 public class DefaultName {
 	private Text text;
-	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();;
+	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
 	private String name = null;
 	private final int height = 138;
 	private final int width = 418;

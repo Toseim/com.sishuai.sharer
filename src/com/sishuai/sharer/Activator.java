@@ -7,6 +7,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.sishuai.sharer.modules.ImageMgr;
+
 /**
  * The activator class controls the plug-in life cycle
  */
@@ -43,6 +45,7 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		ImageMgr.getInstance().dispose();
 		System.out.println("closed");
 		Display.getDefault().dispose();
 	}

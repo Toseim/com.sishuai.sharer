@@ -1,30 +1,31 @@
 package com.sishuai.sharer.modules.net;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
+import org.eclipse.jface.action.Action;
+
 import com.sishuai.sharer.modules.ClientInfo;
-import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
-import com.sishuai.sharer.modules.net.msg.LinkMsg;
 /**
  * 与局域网广播相关的网络处理
  * @author 四帅
  *
  */
-public class MulticastServer {
+public class MulticastServer extends Action{
 	
 	private InetAddress group;
 	public static final int port = 8647;
 	private String IP = null;
 	private EnterMsg enterMsg;
 	private MulticastSocket multicastSocket;
+	
+	public MulticastServer() {
+		super("打开组播");
+	}
 	
 	public void sendMyPacket() {
 		enterMsg.send(multicastSocket, group, port);
@@ -46,13 +47,13 @@ public class MulticastServer {
 		//获得我的ip
 		if ((IP = NetworkMgr.getMgr().getIP()) == null) {
 			System.out.println("不在局域网内");
-			return;   
+			return;
 		}
 		ClientInfo.getIPList().add(IP);
 
 		//初始化
 		try {
-			group = InetAddress.getByName("224.0.1.2");
+			group = InetAddress.getByName("224.2.2.2");
 			multicastSocket = new MulticastSocket(port);
 			multicastSocket.joinGroup(group);
 
@@ -61,7 +62,7 @@ public class MulticastServer {
 			enterMsg.send(multicastSocket, group, port);
 			
 			//接收线程启动
-			new Thread(new ClientThread()).start();
+			new Thread(new RecvThread(multicastSocket, true)).start();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,47 +71,6 @@ public class MulticastServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			disConnect();
-		}
-	}
-	
-	
-	class ClientThread implements Runnable {
-		byte[] buf = new byte[1024];
-		public void run() {
-			DatagramPacket dp;
-			while (true) {
-				try {
-					dp = new DatagramPacket(buf, buf.length);
-					multicastSocket.receive(dp);
-					parse(dp);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} 
-		public void parse(DatagramPacket dp) {
-			ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0, dp.getLength());
-			DataInputStream dis = new DataInputStream(bais);
-			try {
-				int msgType = dis.readInt();
-				switch (msgType) {
-				case Msg.MSG_ENTER:
-					new EnterMsg().parse(dis);
-					break;
-				case Msg.MSG_EXIT:
-					new ExitMsg().parse(dis);
-					break;
-				case Msg.MSG_LINK:
-					new LinkMsg().parse(dis);
-					break;
-				default:
-					break;
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 }

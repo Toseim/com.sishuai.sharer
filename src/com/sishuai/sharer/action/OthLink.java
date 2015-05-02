@@ -99,7 +99,6 @@ public class OthLink extends Action {
 				shell.setVisible(false);
 				shell.dispose();
 				NetworkMgr.setState(false);
-System.out.println("false");
 			}
 		});
 		
@@ -136,8 +135,9 @@ System.out.println("false");
 	public void next() {
 		if (objectIP == null)
 			return;
-
+		//获得或初始化serversocket
 		serverSocket = NetworkMgr.getMgr().getServersocket();
+		//连接对面
 		NetworkMgr.getMgr().attempLink(objectIP);
 		view.showMessage("等待对面的用户想到一块去");
 		new Thread(new ConnectionThread()).start();
@@ -192,6 +192,7 @@ System.out.println("false");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
 				Display.getDefault().asyncExec(new Runnable() {
 					
 					@Override
@@ -202,7 +203,6 @@ System.out.println("false");
 					}
 				});
 			}
-			
 			NetworkMgr.setState(false);
 		}
 	}

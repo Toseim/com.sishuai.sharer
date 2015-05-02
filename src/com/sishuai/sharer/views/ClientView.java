@@ -16,8 +16,8 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
@@ -39,6 +39,7 @@ import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.FileInfo;
 import com.sishuai.sharer.modules.Header;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
+import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 
 /**
@@ -58,6 +59,7 @@ import com.sishuai.sharer.modules.net.NetworkMgr;
  * presented in the same way everywhere.
  * <p>
  */
+
 /**
  * 主视图类了
  * 
@@ -77,6 +79,7 @@ public class ClientView extends ViewPart {
 	private IStatusLineManager statusline;
 	private ChatDialog chatDialog;
 	private OthLink othLink;
+	private MulticastServer multicastServer; 
 
 	class NameSorter extends ViewerSorter {
 	}
@@ -143,12 +146,11 @@ public class ClientView extends ViewPart {
 			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
-				NetworkMgr.getMgr().getMulticastServer().run();
 				NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 				addMonitor(this);
 				viewer.removeOpenListener(this);
 			}
-		});		
+		});
 		//默认不展开根节点（为了获取用户的第一次双击）
 		viewer.setExpandedState(Header.getHeader(), false);
 
@@ -188,47 +190,37 @@ public class ClientView extends ViewPart {
 		final FileTransfer fileTransfer = FileTransfer.getInstance();
 		Transfer[] transfers = new Transfer[] {fileTransfer};
 		dropTarget.setTransfer(transfers);
-		dropTarget.addDropListener(new DropTargetListener() {
-			public void dropAccept(DropTargetEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void drop(DropTargetEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void dragOver(DropTargetEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void dragOperationChanged(DropTargetEvent event) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void dragLeave(DropTargetEvent event) {
-				// TODO Auto-generated method stub
-			}
-			
-			@Override
+		dropTarget.addDropListener(new DropTargetAdapter() {
 			public void dragEnter(DropTargetEvent event) {
-				// TODO Auto-generated method stub
 				if (event.detail == DND.DROP_DEFAULT) {
-					event.detail = DND.DROP_COPY;
-				} else {
-					event.detail = DND.DROP_NONE;
+					if (((ClientInfo)event.item.getData()).isConnected()) {
+						event.detail = DND.DROP_COPY;
+						return;
+					}
+					if ((event.operations & DND.DROP_COPY) != 0) {
+						event.detail = DND.DROP_COPY;
+					} else {
+						event.detail = DND.DROP_NONE;
+					}
 				}
 			}
-			
+			public void drop(DropTargetEvent event) {
+				if (fileTransfer.isSupportedType(event.currentDataType)) {
+					System.out.println(((ClientInfo)event.item.getData()).getIp());
+					System.out.println(event.widget);
+					String[] files = (String[]) event.data;
+					for (int i = 0; i < files.length; i++) {
+						System.out.println(files[i]);
+					}
+				}
+			}
 		});
-		
+		createAction();
+		hookContextMenu();
+		contributeToActionBars();
+
+		// 共享视图查看器中的内容
+		getViewSite().setSelectionProvider(viewer);
 	}
 
 	public void addMonitor(IOpenListener iOpenListener) {
@@ -264,13 +256,6 @@ public class ClientView extends ViewPart {
 				
 			}
 		});
-		
-		createAction();
-		hookContextMenu();
-		contributeToActionBars();
-
-		// 共享视图查看器中的内容
-		getViewSite().setSelectionProvider(viewer);
 	}
 
 	private void createAction() {
@@ -282,6 +267,9 @@ public class ClientView extends ViewPart {
 		othLink = OthLink.getOthLink();
 
 		chatDialog = new ChatDialog(this);
+		
+
+		multicastServer = NetworkMgr.getMgr().getMulticastServer();
 	}
 
 	private void hookContextMenu() {
@@ -305,6 +293,8 @@ public class ClientView extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		// manager.add(new Separator());
+		manager.add(multicastServer);
+		manager.add(othLink);
 	}
 
 	public ItemInfo getSelectedItem() {
