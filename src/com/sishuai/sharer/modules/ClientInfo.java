@@ -35,7 +35,7 @@ public class ClientInfo implements ItemInfo{
 	private DataInputStream dis;
 	private DataOutputStream dos;
 	
-	private ArrayList<FileInfo> files = new ArrayList<FileInfo>();
+	private ArrayList<FileInfo> files;
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
 	
@@ -110,6 +110,8 @@ public class ClientInfo implements ItemInfo{
 
 	//获取交互文件
 	public ArrayList<FileInfo> getFiles() {
+		if (files == null)
+			files = new ArrayList<FileInfo>();
 		return files;
 	}
 
@@ -175,12 +177,10 @@ public class ClientInfo implements ItemInfo{
 					String string = dis.readUTF();
 					//对消息进行分类处理
 					//一共两种，一个是普通的文本对话消息，另一个是flie的内容
-					if (isDialogOpened)
-						chatDialog.getDialog().append(name+": "+string);
-					else {
-						msgs++;
-						
-					}
+					chatDialog.getDialog().append(name+": "+string);
+					if (!isDialogOpened) msgs++;
+					
+					ContentManager.getManager().updateItems();
 					
 					
 				} catch (IOException e) {

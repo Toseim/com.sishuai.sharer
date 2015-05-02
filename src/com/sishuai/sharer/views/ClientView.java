@@ -6,10 +6,7 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IOpenListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
@@ -17,6 +14,12 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
@@ -117,11 +120,9 @@ public class ClientView extends ViewPart {
 
 		// 测试用的代码
 		{
-			ClientInfo.getClients().add(
-					new ClientInfo("192.168.31.134", "猜猜我是谁"));
+			ClientInfo.getClients().add(new ClientInfo("192.168.31.134", "猜猜我是谁"));
 			ClientInfo clientInfo = new ClientInfo("192.168.31.63", "已连接账户");
-			ClientInfo.getClients()
-					.add(new ClientInfo("192.168.31.23", "哈哈傻逼"));
+			ClientInfo.getClients().add(new ClientInfo("192.168.31.23", "哈哈傻逼"));
 			clientInfo.setConnected(true);
 			clientInfo.setDialogOpened(false);
 			clientInfo.setNewFileCount(21);
@@ -132,28 +133,27 @@ public class ClientView extends ViewPart {
 			clientInfo.getFiles().add(fileInfo);
 		}
 
-		ClientTreeContentProvider ctcp = new ClientTreeContentProvider();
-		viewer.setContentProvider(ctcp);
+		viewer.setContentProvider(new ClientTreeContentProvider());
 		viewer.setLabelProvider(new ClientTableLabelProvider());
 
 		viewer.setInput(ContentManager.getManager());
-		ContentManager.getManager().setContentProvider(ctcp);
 		ContentManager.getManager().setTreeViewer(viewer);
-		IOpenListener iOpenListener = new IOpenListener() {
+		viewer.addOpenListener(new IOpenListener() {
 			@Override
-			public void open(OpenEvent arg0) {
+			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
 				NetworkMgr.getMgr().getMulticastServer().run();
+				NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 				addMonitor(this);
-				System.out.println("monitor added");
+				viewer.removeOpenListener(this);
 			}
-		};
-		viewer.addOpenListener(iOpenListener);
-		
-		
-		viewer.setExpandedState(Header.getHeader(), true);
+		});		
+		//默认不展开根节点（为了获取用户的第一次双击）
+		viewer.setExpandedState(Header.getHeader(), false);
 
+		
+		//for testing
 		{
 			ClientInfo.getClients().add(
 					new ClientInfo("192.168.31.134", "猜猜我是谁"));
@@ -180,26 +180,59 @@ public class ClientView extends ViewPart {
 					});
 				}
 			}).start();
-			;
 		}
 
-		// 拖拽操作
-		// viewer.addDropSupport(operations, transferTypes, listener);
+		//drop 的支持
+		int ops = DND.DROP_COPY | DND.DROP_DEFAULT;
+		DropTarget dropTarget = new DropTarget(tree, ops);
+		final FileTransfer fileTransfer = FileTransfer.getInstance();
+		Transfer[] transfers = new Transfer[] {fileTransfer};
+		dropTarget.setTransfer(transfers);
+		dropTarget.addDropListener(new DropTargetListener() {
+			public void dropAccept(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void drop(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragOver(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragOperationChanged(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void dragLeave(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void dragEnter(DropTargetEvent event) {
+				// TODO Auto-generated method stub
+				if (event.detail == DND.DROP_DEFAULT) {
+					event.detail = DND.DROP_COPY;
+				} else {
+					event.detail = DND.DROP_NONE;
+				}
+			}
+			
+		});
+		
 	}
 
 	public void addMonitor(IOpenListener iOpenListener) {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				System.out.println("double click");
-				ISelection selection = viewer.getSelection();
-				ItemInfo object = ((ItemInfo) ((IStructuredSelection) selection).getFirstElement());
-				if (object instanceof ClientInfo && ((ClientInfo) object).isConnected()
-						&& !((ClientInfo) object).isDialogOpened())
-					;
-			}
-		});
-
+		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
@@ -209,29 +242,35 @@ public class ClientView extends ViewPart {
 				// eclipse 下面的状态栏，哈哈，我们征用你了
 				
 				Object obj = selection.getFirstElement();
-				//加入该网络
-				tcpConnect.setEnabled(false);
-				if (obj instanceof ClientInfo
-						&& !((ClientInfo) obj).isConnected())
-					tcpConnect.setEnabled(true);
+				
 				
 				//打开对话框
 				chatDialog.setEnabled(false);
 				if (obj instanceof ClientInfo && ((ClientInfo) obj).isConnected()
 						&& !((ClientInfo) obj).isDialogOpened())
 					chatDialog.setEnabled(true);
+				
+				othLink.setEnabled(false);
+				tcpConnect.setEnabled(false);
+				if (NetworkMgr.getState()) return;
+				//加入该网络
+				if (obj instanceof ClientInfo
+						&& !((ClientInfo) obj).isConnected())
+					tcpConnect.setEnabled(true);
+				
+				//建立新网络
+				othLink.setEnabled(true);
+				
+				
 			}
 		});
+		
 		createAction();
 		hookContextMenu();
-		hookDoubleClickAction();
 		contributeToActionBars();
 
 		// 共享视图查看器中的内容
 		getViewSite().setSelectionProvider(viewer);
-		
-		//移除监听器
-		viewer.removeOpenListener(iOpenListener);
 	}
 
 	private void createAction() {
@@ -282,9 +321,6 @@ public class ClientView extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-	}
-
-	private void hookDoubleClickAction() {
 	}
 
 	public void showMessage(String notification) {

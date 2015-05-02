@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.sishuai.sharer.modules.ClientInfo;
+import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 
@@ -34,7 +35,7 @@ public class LinkMsg implements Msg {
 	}
 
 	@Override
-	public void send(DatagramSocket ds, Object other, int port) {
+	public void send(DatagramSocket ds, Object name, int port) {
 		// TODO Auto-generated method stub
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -42,6 +43,7 @@ public class LinkMsg implements Msg {
 			dos.writeInt(msgType);
 			dos.writeUTF(localIP);
 			dos.writeInt(localPort);
+			dos.writeUTF((String)name);
 			dos.flush();
 			
 			byte[] buf = baos.toByteArray();
@@ -54,26 +56,58 @@ public class LinkMsg implements Msg {
 			e.printStackTrace();
 		}
 	}
+	
+	public ClientInfo findClient(String IP, String name) {
+		ClientInfo clientInfo = null;
+		if (ClientInfo.getIPList().contains(IP)) {
+			
+			//使用已有显示的账户连接
+			for (int i = 0; i < ClientInfo.getClients().size(); i++) {
+				ClientInfo c = ClientInfo.getClients().get(i);
+				if (c.getIp().equals(IP))
+						return c;
+			}
+		}
 
+		//添加新的账户并连接
+		clientInfo = new ClientInfo(IP, name);
+		ClientInfo.getClients().add(clientInfo);
+		ClientInfo.getIPList().add(IP);
+		return clientInfo;
+	}
+	
 	@Override
 	public void parse(DataInputStream dis) {
 		// TODO Auto-generated method stub
+		ClientInfo clientInfo = null;
 		try {
 			String remoteIP = dis.readUTF();
 			int remotePort = dis.readInt();
-			for (int i = 0; i < ClientInfo.getClients().size(); i++) {
-				ClientInfo clientInfo = ClientInfo.getClients().get(i);
-				if (clientInfo.getIp().equals(remoteIP)) {
-					Socket socket = new Socket(remoteIP, remotePort);
-					clientInfo.setSocket(socket);
-				}
-			}
+			String name = dis.readUTF();
+			
+			//创建新对象
+			clientInfo = findClient(remoteIP, name);
+			
+			//连接。。。
+			Socket socket = new Socket(remoteIP, remotePort);
+			clientInfo.setConnected(true);
+			
+			//refresh
+			ContentManager.getManager().updateItems();
+			
+			//架设管道
+			clientInfo.setSocket(socket);
+			
+			//传送发信端名字
+			clientInfo.getDataOutputStream().writeUTF(NetworkMgr.getMgr().getName());
+			clientInfo.getDataOutputStream().flush();
+			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			NetworkMgr.getMgr().disconnect(clientInfo);
 		}
 	}
 }

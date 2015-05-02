@@ -14,7 +14,7 @@ public class FileInfo implements ItemInfo{
 	private String filename;
 	//2文件状态标识
 	private int stateIn = 2;
-	public static final String[] state = {"commited", "updated", "new","done"};
+	public static final String[] state = {"commited", "updated", "new", "done"};
 	//3编辑的行数
 	private int lineEdit;
 	//4
@@ -69,7 +69,7 @@ public class FileInfo implements ItemInfo{
 	@Override
 	public String getOne() {
 		// TODO Auto-generated method stub
-		return filename;
+		return "  "+filename;
 	}
 
 	@Override

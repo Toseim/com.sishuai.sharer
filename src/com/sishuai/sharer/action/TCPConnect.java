@@ -24,7 +24,7 @@ public class TCPConnect extends Action {
 	private ClientView view;
 	private ClientInfo clientInfo;
 	private ServerSocket ss;
-	private Socket socket = null;
+	private Socket socket;
 	private static TCPConnect tcpConnect;
 	
 	public TCPConnect(String text) {
@@ -42,6 +42,8 @@ public class TCPConnect extends Action {
 	}
 
 	public void run() {
+		//网络已经被占用
+		NetworkMgr.setState(true);
 		//if (网络处于组播支持的环境下)
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo == null) {
@@ -53,9 +55,9 @@ public class TCPConnect extends Action {
 		//发送尝试连接消息（对方ip ，ip ，port）
 		NetworkMgr.getMgr().attempLink(clientInfo.getIp());
 		view.showMessage("等待对面的用户想到一块去");
-		ConnectThread ct = new ConnectThread();
-		
-		new Thread(ct).start();
+
+		new Thread(new ConnectThread()).start();
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -63,7 +65,8 @@ public class TCPConnect extends Action {
 				try {
 					Thread.sleep(30000);
 					if (socket == null)
-						ct.ss.close();
+
+						ss.close();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -75,7 +78,6 @@ public class TCPConnect extends Action {
 		}).start();
 	}
 	class ConnectThread implements Runnable {
-		volatile ServerSocket ss = TCPConnect.this.ss;
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -84,12 +86,11 @@ public class TCPConnect extends Action {
 				clientInfo.setSocket(socket);
 				clientInfo.setConnected(true);
 				
+				ContentManager.getManager().updateItems();
+				//未测试过
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						//加入树结构
-						ContentManager.getManager().addItem(clientInfo, null);
-						// TODO Auto-generated method stub
 						view.showMessage("We connect!");
 					}
 				});
@@ -104,6 +105,8 @@ public class TCPConnect extends Action {
 					}
 				});
 			}
+			
+			NetworkMgr.setState(false);
 		}
 	}
 }

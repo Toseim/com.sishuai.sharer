@@ -2,10 +2,7 @@ package com.sishuai.sharer.modules;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-
-import com.sishuai.sharer.modules.interfaces.ItemInfo;
 
 /**
  * 内容提供者，也可以不用管它
@@ -14,8 +11,6 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
  */
 public class ClientTreeContentProvider
 	implements ITreeContentProvider, IStructuredContentProvider {
-	private TreeViewer viewer;
-	private ContentManager manager;
 	
 	@Override
 	public Object[] getChildren(Object arg0) {
@@ -28,7 +23,8 @@ public class ClientTreeContentProvider
 
 	@Override
 	public Object getParent(Object arg0) {
-		return null;
+		if (arg0 instanceof ClientInfo) return Header.getHeader();
+		return null; //没必要
 	}
 
 	@Override
@@ -51,32 +47,8 @@ public class ClientTreeContentProvider
 		
 	}
 	
-	public void itemsChanged(ItemInfo itemInfo, ItemInfo parent, int type) {
-		// TODO �Զ����ɷ������
-		viewer.getTree().setRedraw(false);
-		try{
-			switch (type) {
-			case 0:
-				viewer.add(parent, itemInfo);
-				break;
-			case 1:
-				viewer.remove(itemInfo);
-				break;
-			default:
-				break;
-			}
-		}
-		finally{
-			viewer.getTree().setRedraw(true);
-		}
-	}
-	
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		this.viewer = (TreeViewer)viewer;
-		manager = (ContentManager)newInput;
-		if (manager != null)
-		manager.setContentProvider(this);
 	}
 
 	@Override

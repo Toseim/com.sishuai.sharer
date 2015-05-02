@@ -14,7 +14,7 @@ import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
 /**
- * 与局域网相关的网络处理
+ * 与局域网广播相关的网络处理
  * @author 四帅
  *
  */
@@ -22,35 +22,12 @@ public class MulticastServer {
 	
 	private InetAddress group;
 	public static final int port = 8647;
-	private String IP;
+	private String IP = null;
 	private EnterMsg enterMsg;
 	private MulticastSocket multicastSocket;
 	
 	public void sendMyPacket() {
 		enterMsg.send(multicastSocket, group, port);
-	}
-	
-	public String getIP() {
-		if (IP != null) return IP;
-		try {
-			//获得本机所有IP
-			InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
-					getLocalHost().getHostName());
-			for (int i=0; i< addresses.length; i++) {
-				String s = addresses[i].getHostAddress();
-				//正则匹配
-				if (NetworkMgr.pattern1.matcher(s).find() || NetworkMgr.pattern2.matcher(s).find() 
-						|| NetworkMgr.pattern3.matcher(s).find()) {
-					IP = s;
-					break;
-				}
-			}
-			return IP;
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	public void disConnect() {
@@ -66,9 +43,8 @@ public class MulticastServer {
 	}
 	
 	public void run() {
-		//获得ip
-		IP = null;
-		if ((IP = getIP()) == null) {
+		//获得我的ip
+		if ((IP = NetworkMgr.getMgr().getIP()) == null) {
 			System.out.println("不在局域网内");
 			return;   
 		}
@@ -76,7 +52,7 @@ public class MulticastServer {
 
 		//初始化
 		try {
-			group = InetAddress.getByName("224.0.0.2");
+			group = InetAddress.getByName("224.0.1.2");
 			multicastSocket = new MulticastSocket(port);
 			multicastSocket.joinGroup(group);
 

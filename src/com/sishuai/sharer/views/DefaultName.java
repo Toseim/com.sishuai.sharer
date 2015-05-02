@@ -55,21 +55,27 @@ public class DefaultName {
 		if (!file.exists())
 			try {
 				file.createNewFile();
-				bw = new BufferedWriter(new FileWriter(file));
-				bw.write(name);
-				bw.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} finally {
-				if (bw != null)
-					try {
-						bw.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 			}
+		
+		try {
+			bw = new BufferedWriter(new FileWriter(file));
+			bw.write(name);
+			bw.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (bw != null)
+				try {
+					bw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
 	}
 	
 	public String showView() {
@@ -97,7 +103,7 @@ public class DefaultName {
 				if (text.getText().length() > 0)
 					name = text.getText();
 				if (btnCheckButton.getSelection()) saveName();
-				shell.dispose();
+					shell.dispose();
 			}
 		});
 		
@@ -118,6 +124,6 @@ public class DefaultName {
 			if (!display.readAndDispatch())
 				display.sleep();
 		shell.dispose();
-		return name;
+		return name.trim();
 	}
 }

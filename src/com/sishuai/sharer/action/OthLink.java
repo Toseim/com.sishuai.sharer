@@ -31,14 +31,13 @@ import com.sishuai.sharer.views.ClientView;
  */
 public class OthLink extends Action {
 	private static OthLink othLink;
-	private static ServerSocket serverSocket;
+	private ServerSocket serverSocket;
 	private Socket socket = null;
 	private ClientView view;
 	private String objectIP;
-	private boolean state = false;
 	private static final int height = 127;
 	private static final int width = 333;
-	
+
 	public OthLink(String text) {
 		super(text);
 	}
@@ -52,11 +51,7 @@ public class OthLink extends Action {
 	}
 	
 	public void run() {
-		if (state) {
-			MessageDialog.openError(view.getSite().getShell(), "Warning", "你已经打开这个窗口了");
-			return;
-		}
-		state = true;
+		NetworkMgr.setState(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.ON_TOP);
 		//居中显示
@@ -68,17 +63,16 @@ public class OthLink extends Action {
 			public void shellClosed(ShellEvent arg0) {
 				// TODO Auto-generated method stub
 				shell.dispose();
-				state = false;
+				NetworkMgr.setState(false);
+				System.out.println("false");
 			}
 		});
 		Text text = new Text(shell, SWT.BORDER);
 		text.setBounds(80, 19, 215, 24);
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.SHADOW_IN | SWT.CENTER);
-		//lblNewLabel.setFont(SWTResourceManager.getFont("Microsoft JhengHei UI", 14, SWT.NORMAL));
 		lblNewLabel.setBounds(10, 21, 74, 24);
 		lblNewLabel.setText("IP地址");
-		
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.setBounds(117, 55, 80, 27);
@@ -103,7 +97,9 @@ public class OthLink extends Action {
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				shell.setVisible(false);
-				state = false;
+				shell.dispose();
+				NetworkMgr.setState(false);
+System.out.println("false");
 			}
 		});
 		
@@ -127,7 +123,6 @@ public class OthLink extends Action {
 				// TODO Auto-generated method stub
 				if (btnNewButton.isEnabled()) {
 					objectIP = text.getText();
-					System.out.println(text.getText());
 					shell.setVisible(false);
 					shell.dispose();
 					next();
@@ -138,10 +133,6 @@ public class OthLink extends Action {
 		shell.open();
 	}
 	
-	public boolean getState() {
-		return state;
-	}
-	
 	public void next() {
 		if (objectIP == null)
 			return;
@@ -149,10 +140,8 @@ public class OthLink extends Action {
 		serverSocket = NetworkMgr.getMgr().getServersocket();
 		NetworkMgr.getMgr().attempLink(objectIP);
 		view.showMessage("等待对面的用户想到一块去");
-		ConnectionThread ct = new ConnectionThread();
-		new Thread(ct).start();
+		new Thread(new ConnectionThread()).start();
 		new Thread(new Runnable() {
-			
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -169,8 +158,7 @@ public class OthLink extends Action {
 				}
 			}
 		}).start();
-		
-		state = false;
+		System.out.println(NetworkMgr.getState());
 	}
 	
 	class ConnectionThread implements Runnable {
@@ -178,24 +166,30 @@ public class OthLink extends Action {
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
-				//处理超时的操作
 				socket = serverSocket.accept();
-		
-				//连接后取消计时
-				ClientInfo clientInfo = new ClientInfo(objectIP, "null"); //名字的获取方式暂定
-				clientInfo.setSocket(socket);
-				clientInfo.setConnected(true);
 				
-				//试一下
+				ClientInfo clientInfo = new ClientInfo(objectIP, ""); //名字之后再设定
+				
+				clientInfo.setConnected(true);
+				clientInfo.setSocket(socket);
+				String string = clientInfo.getDataInputStream().readUTF(); 
+				clientInfo.setName(string);   //获得客户端返回的名字
+				
+				//加入表格
+				ClientInfo.getClients().add(clientInfo);
+				ClientInfo.getIPList().add(objectIP);
+				
+				//refresh
+				ContentManager.getManager().updateItems();
+				//消息通知
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						//加入树结构
-						ContentManager.getManager().addItem(clientInfo, null);
 						// TODO Auto-generated method stub
 						view.showMessage("We connect!");
 					}
 				});
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				Display.getDefault().asyncExec(new Runnable() {
@@ -208,6 +202,8 @@ public class OthLink extends Action {
 					}
 				});
 			}
+			
+			NetworkMgr.setState(false);
 		}
 	}
 }

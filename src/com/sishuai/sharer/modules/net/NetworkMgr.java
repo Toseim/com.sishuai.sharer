@@ -2,10 +2,13 @@ package com.sishuai.sharer.modules.net;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
 
 /**
@@ -26,11 +29,45 @@ public class NetworkMgr {
 	private MulticastServer ms;
 	private DatagramSocket datagramSocket;
 	private String name;
+	private String IP;
+	private static boolean state = false;   
+	//返回用户是否处于尝试连接tcp的阶段，用来阻止其他tcp连接
 	
 	public static NetworkMgr getMgr() {
 		if (networkMgr == null)
 			networkMgr = new NetworkMgr();
 		return networkMgr;
+	}
+	
+	public String getIP() {
+		if (IP != null) return IP;
+		try {
+			//获得本机所有IP
+			InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
+					getLocalHost().getHostName());
+			for (int i=0; i< addresses.length; i++) {
+				String s = addresses[i].getHostAddress();
+				//正则匹配
+				if (NetworkMgr.pattern1.matcher(s).find() || NetworkMgr.pattern2.matcher(s).find() 
+						|| NetworkMgr.pattern3.matcher(s).find()) {
+					IP = s;
+					break;
+				}
+			}
+			return IP;
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static void setState(boolean s) {
+		state = s;
+	}
+	
+	public static boolean getState() {
+		return state;
 	}
 	
 	public String getName() {
@@ -61,7 +98,7 @@ public class NetworkMgr {
 	}
 	
 	public DatagramSocket getDatagramSocket() {
-		if (datagramSocket == null) {
+		if (datagramSocket == null || datagramSocket.isClosed()) {
 			while (true) {
 				try {
 					datagramSocket = new DatagramSocket(getUDPport());
@@ -86,9 +123,25 @@ public class NetworkMgr {
 	
 	public void attempLink(String objectIP) {
 		//发送尝试连接的信息
-		LinkMsg linkMsg = new LinkMsg(objectIP, getMulticastServer().getIP(), TCPport);
+		LinkMsg linkMsg = new LinkMsg(objectIP, getIP(), TCPport);
 		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
-		linkMsg.send(ds, null, 0);
+		linkMsg.send(ds, getName(), 0);
+	}
+	
+	public void disconnect(ClientInfo clientInfo) {
+		if (clientInfo == null) return;
+		try {
+			clientInfo.setConnected(false);
+			if (clientInfo.getDataInputStream() != null)
+				clientInfo.getDataInputStream().close();
+			if (clientInfo.getDataOutputStream() != null)
+				clientInfo.getDataOutputStream().close();
+			if (clientInfo.getSocket() != null)
+				clientInfo.getSocket().close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
