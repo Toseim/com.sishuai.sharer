@@ -40,32 +40,30 @@ public class NetworkMgr {
 	}
 	
 	public String getIP() {
-		if (IP != null) return IP;
-		try {
-			//获得本机所有IP
-			InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
-					getLocalHost().getHostName());
-			for (int i=0; i< addresses.length; i++) {
-				String s = addresses[i].getHostAddress();
-				//正则匹配
-				if (NetworkMgr.pattern1.matcher(s).find() || NetworkMgr.pattern2.matcher(s).find() 
-						|| NetworkMgr.pattern3.matcher(s).find()) {
-					IP = s;
-					break;
+		if (IP == null) {
+			try {
+				//获得本机所有IP
+				InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
+						getLocalHost().getHostName());
+				for (int i=0; i< addresses.length; i++) {
+					String s = addresses[i].getHostAddress();
+					//正则匹配
+					if (NetworkMgr.pattern1.matcher(s).find() || NetworkMgr.pattern2.matcher(s).find() 
+							|| NetworkMgr.pattern3.matcher(s).find()) {
+						IP = s;
+						break;
+					}
 				}
+				return IP;
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return IP;
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//MessageDialog.openWarning(new Shell(Display.getDefault()), "State", "你现在不处于局域网中");
+			
 		}
-		//MessageDialog.openWarning(new Shell(Display.getDefault()), "State", "你现在不处于局域网中");
-		
-		
-		//若不在局域网中可能报空指针错误。。
-		//其实外网也是可以连接的，所以地址，在看看
+			//若不在局域网中可能报空指针错误。。
 		return null;
-		
 	}
 	
 	public static void setState(boolean s) {

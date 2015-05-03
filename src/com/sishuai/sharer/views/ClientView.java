@@ -146,6 +146,7 @@ public class ClientView extends ViewPart {
 			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
+				
 				NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 				addMonitor(this);
 				viewer.removeOpenListener(this);
@@ -154,12 +155,10 @@ public class ClientView extends ViewPart {
 		//默认不展开根节点（为了获取用户的第一次双击）
 		viewer.setExpandedState(Header.getHeader(), false);
 
-		
 		//for testing
 		{
 			ClientInfo.getClients().add(
 					new ClientInfo("192.168.31.134", "猜猜我是谁"));
-			System.out.println("添加");
 			new Thread(new Runnable() {
 
 				@Override

@@ -31,18 +31,20 @@ public class RecvThread implements Runnable {
 	}
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		try {
-			DatagramPacket dp = new DatagramPacket(buf, buf.length);
-			if (isMulti && multicastSocket != null)
-				multicastSocket.receive(dp);
-			else if (datagramSocket != null) {
-				datagramSocket.receive(dp);
+		while (true) {
+			// TODO Auto-generated method stub
+			try {
+				DatagramPacket dp = new DatagramPacket(buf, buf.length);
+				if (isMulti && multicastSocket != null)
+					multicastSocket.receive(dp);
+				else if (datagramSocket != null) {
+					datagramSocket.receive(dp);
+				}
+				parse(dp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("multicastServer is closed");
 			}
-			parse(dp);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	public void parse(DatagramPacket dp) {
@@ -68,5 +70,4 @@ public class RecvThread implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
 }

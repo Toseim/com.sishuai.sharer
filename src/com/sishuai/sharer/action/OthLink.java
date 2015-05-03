@@ -192,7 +192,7 @@ public class OthLink extends Action {
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 				Display.getDefault().asyncExec(new Runnable() {
 					
 					@Override

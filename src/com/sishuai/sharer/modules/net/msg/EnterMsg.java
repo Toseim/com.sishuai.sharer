@@ -59,10 +59,10 @@ public class EnterMsg implements Msg {
 		// TODO Auto-generated method stub
 		try {
 			String uIP = dis.readUTF();
-			String nickName = dis.readUTF();
+			String uNickName = dis.readUTF();
 			if (!ClientInfo.getIPList().contains(uIP)) {
 				ClientInfo.getIPList().add(uIP);
-				ClientInfo.getClients().add(new ClientInfo(uIP, nickName));
+				ClientInfo.getClients().add(new ClientInfo(uIP, uNickName));
 				ContentManager.getManager().updateItems();
 			}
 		} catch (IOException e) {

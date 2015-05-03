@@ -22,6 +22,7 @@ public class MulticastServer extends Action{
 	private String IP = null;
 	private EnterMsg enterMsg;
 	private MulticastSocket multicastSocket;
+	private static boolean state = false;
 	
 	public MulticastServer() {
 		super("打开组播");
@@ -44,12 +45,15 @@ public class MulticastServer extends Action{
 	}
 	
 	public void run() {
-		//获得我的ip
-		if ((IP = NetworkMgr.getMgr().getIP()) == null) {
-			System.out.println("不在局域网内");
+		if (!state) {
+			setText("open multicast");
+			if (multicastSocket != null) {
+				multicastSocket.close();
+				multicastSocket = null;
+			}
 			return;
 		}
-		ClientInfo.getIPList().add(IP);
+		setText("close multicast");
 
 		//初始化
 		try {
