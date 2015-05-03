@@ -112,9 +112,9 @@ public class ChatDialog extends Action{
 		text.setBounds(10,22,490,37);
 		text.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent event) {
-				dialogText.append(clientInfo.getName()+": /n"+text.getText()+"\n");
-				text.setText("");
+				dialogText.append(clientInfo.getName()+": \n"+text.getText()+"\n");
 				send(text.getText());
+				text.setText("");
 			}
 		});
 	

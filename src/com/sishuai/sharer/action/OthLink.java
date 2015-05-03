@@ -136,10 +136,12 @@ public class OthLink extends Action {
 		if (objectIP == null)
 			return;
 		//获得或初始化serversocket
-		serverSocket = NetworkMgr.getMgr().getServersocket();
+		serverSocket = NetworkMgr.getMgr().getServersocket();//tcp
 		//连接对面
 		NetworkMgr.getMgr().attempLink(objectIP);
 		view.showMessage("等待对面的用户想到一块去");
+		
+		
 		new Thread(new ConnectionThread()).start();
 		new Thread(new Runnable() {
 			@Override

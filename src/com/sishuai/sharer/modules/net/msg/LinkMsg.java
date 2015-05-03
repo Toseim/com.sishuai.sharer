@@ -47,12 +47,12 @@ System.out.println("send a packet with {" + localIP + "\t" + localPort + "\t" +
 			dos.writeInt(localPort);
 			dos.writeUTF((String)name);
 			dos.flush();
-			
+System.out.println("helloworld");
 			byte[] buf = baos.toByteArray();
 			DatagramPacket dp = new DatagramPacket(buf, buf.length, 
 					new InetSocketAddress(objectIP, NetworkMgr.getMgr().getUDPport()));
 			
-			ds.send(dp);
+			NetworkMgr.getMgr().createTempSend(dp);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

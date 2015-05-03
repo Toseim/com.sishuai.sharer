@@ -27,11 +27,13 @@ public class DefaultName {
 	private final int width = 418;
 	
 	public String getName() {
+System.out.println("getname");
 		BufferedReader br = null;
 		try {
 			if (file.exists()) {
 				br = new BufferedReader(new FileReader(file));
 				name = br.readLine();
+				System.out.println("name  found" + "\t" + name);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -47,6 +49,7 @@ public class DefaultName {
 				}
 		}
 		if (name != null && name.length()>0) return name;
+		System.out.println("show view");
 		return showView();
 	}
 	

@@ -1,6 +1,7 @@
 package com.sishuai.sharer.modules.net;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -25,7 +26,7 @@ public class NetworkMgr {
 	private Random random = new Random();
 	private ServerSocket serverSocket;
 	private int TCPport = 0;
-	private int UDPport = 37384;   //默认的端口
+	private final int UDPport = 37384;   //默认的端口
 	private MulticastServer ms;
 	private DatagramSocket datagramSocket;
 	private String name;
@@ -124,6 +125,20 @@ System.out.println("open a serversocket at " + getTCPport());
 		if (ms == null)
 			ms = new MulticastServer();
 		return ms;
+	}
+	
+	public void createTempSend(DatagramPacket dp) {
+		while (true) {
+			try {
+				DatagramSocket ds = new DatagramSocket(random.nextInt(55535)+10000);
+				ds.send(dp);
+				ds.close();
+				break;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				continue;
+			}
+		}
 	}
 	
 	public int getUDPport() {

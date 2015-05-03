@@ -121,6 +121,11 @@ public class ClientView extends ViewPart {
 		// treeColumn5.setText("交互文件数和文件大小");
 		treeColumn5.setWidth(30);
 
+		// eclipse 下面的状态栏，哈哈，我们征用你了
+		statusline = getViewSite().getActionBars()
+				.getStatusLineManager();
+		
+		
 		// 测试用的代码
 		{
 			ClientInfo.getClients().add(new ClientInfo("192.168.31.134", "猜猜我是谁"));
@@ -145,8 +150,9 @@ public class ClientView extends ViewPart {
 			@Override
 			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
-				NetworkMgr.getMgr().setName(new DefaultName().getName());
-				
+				while (NetworkMgr.getMgr().getName() == null)
+					NetworkMgr.getMgr().setName(new DefaultName().getName());
+					
 				NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 				addMonitor(this);
 				viewer.removeOpenListener(this);
@@ -183,37 +189,7 @@ public class ClientView extends ViewPart {
 			}).start();
 		}
 
-		//drop 的支持
-		int ops = DND.DROP_COPY | DND.DROP_DEFAULT;
-		DropTarget dropTarget = new DropTarget(tree, ops);
-		final FileTransfer fileTransfer = FileTransfer.getInstance();
-		Transfer[] transfers = new Transfer[] {fileTransfer};
-		dropTarget.setTransfer(transfers);
-		dropTarget.addDropListener(new DropTargetAdapter() {
-			public void dragEnter(DropTargetEvent event) {
-				if (event.detail == DND.DROP_DEFAULT) {
-					if (((ClientInfo)event.item.getData()).isConnected()) {
-						event.detail = DND.DROP_COPY;
-						return;
-					}
-					if ((event.operations & DND.DROP_COPY) != 0) {
-						event.detail = DND.DROP_COPY;
-					} else {
-						event.detail = DND.DROP_NONE;
-					}
-				}
-			}
-			public void drop(DropTargetEvent event) {
-				if (fileTransfer.isSupportedType(event.currentDataType)) {
-					System.out.println(((ClientInfo)event.item.getData()).getIp());
-					System.out.println(event.widget);
-					String[] files = (String[]) event.data;
-					for (int i = 0; i < files.length; i++) {
-						System.out.println(files[i]);
-					}
-				}
-			}
-		});
+		
 		createAction();
 		hookContextMenu();
 		contributeToActionBars();
@@ -227,10 +203,6 @@ public class ClientView extends ViewPart {
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				
-				statusline = getViewSite().getActionBars()
-						.getStatusLineManager();
-				// eclipse 下面的状态栏，哈哈，我们征用你了
 				
 				Object obj = selection.getFirstElement();
 				
@@ -266,9 +238,40 @@ public class ClientView extends ViewPart {
 		othLink = OthLink.getOthLink();
 
 		chatDialog = new ChatDialog(this);
-		
-
 		multicastServer = NetworkMgr.getMgr().getMulticastServer();
+		
+		dropSupport();
+	}
+	
+	public void dropSupport() {
+		//drop 的支持
+		int ops = DND.DROP_COPY | DND.DROP_DEFAULT;
+		DropTarget dropTarget = new DropTarget(viewer.getTree(), ops);
+		final FileTransfer fileTransfer = FileTransfer.getInstance();
+		Transfer[] transfers = new Transfer[] {fileTransfer};
+		dropTarget.setTransfer(transfers);
+		dropTarget.addDropListener(new DropTargetAdapter() {
+			public void dragEnter(DropTargetEvent event) {
+				if (event.detail == DND.DROP_DEFAULT) {
+					if ((event.operations & DND.DROP_COPY) != 0) {
+						if (((ClientInfo)event.item.getData()).isConnected()) 
+							event.detail = DND.DROP_COPY;
+					} else {
+						event.detail = DND.DROP_NONE;
+					}
+				}
+			}
+			public void drop(DropTargetEvent event) {
+				if (fileTransfer.isSupportedType(event.currentDataType)) {
+					System.out.println(((ClientInfo)event.item.getData()).getIp());
+					System.out.println(event.widget);
+					String[] files = (String[]) event.data;
+					for (int i = 0; i < files.length; i++) {
+						System.out.println(files[i]);
+					}
+				}
+			}
+		});
 	}
 
 	private void hookContextMenu() {

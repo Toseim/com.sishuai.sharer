@@ -164,7 +164,7 @@ public class ClientInfo implements ItemInfo{
 	public String getFive() {
 		// TODO Auto-generated method stub
 		if (!isConnected) return "No";
-		return files.size()+"";
+		return getFiles().size()+"";
 	}
 	
 	class RecvThread implements Runnable {
@@ -172,8 +172,8 @@ public class ClientInfo implements ItemInfo{
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			while (true) {
-				try {
+			try {
+				while (true) {
 					String string = dis.readUTF();
 					//对消息进行分类处理
 					//一共两种，一个是普通的文本对话消息，另一个是flie的内容
@@ -181,20 +181,20 @@ public class ClientInfo implements ItemInfo{
 					if (!isDialogOpened) msgs++;
 					
 					ContentManager.getManager().updateItems();
+				}
 					
-					
-				} catch (IOException e) {
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("与"+getName()+"的连接已经断开");
+				try {
+					if (dis != null) dis.close();
+					if (dos != null) dos.close();
+					if (socket != null) socket.close();
+				} catch (IOException e_1) {
 					// TODO Auto-generated catch block
-					System.out.println("与"+getName()+"的连接已经断开");
-					try {
-						if (dis != null) dis.close();
-						if (dos != null) dos.close();
-						if (socket != null) socket.close();
-					} catch (IOException e_1) {
-						// TODO Auto-generated catch block
-						e_1.printStackTrace();
-					}
-				} 
+					e_1.printStackTrace();
+				}
 			}
 		}
 	}
