@@ -34,22 +34,26 @@ public class RecvThread implements Runnable {
 		while (true) {
 			// TODO Auto-generated method stub
 			try {
+System.out.println("running a recvthread");
 				DatagramPacket dp = new DatagramPacket(buf, buf.length);
-				if (isMulti && multicastSocket != null)
+				if (isMulti && multicastSocket != null) {
 					multicastSocket.receive(dp);
-				else if (datagramSocket != null) {
+System.out.println("receive a multipacket");
+				} else if (datagramSocket != null) {
 					datagramSocket.receive(dp);
+System.out.println("receive a singlepacket");
 				}
 				parse(dp);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				System.out.println("multicastServer is closed");
+System.out.println("Server is closed");
 			}
 		}
 	}
 	public void parse(DatagramPacket dp) {
 		ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0, dp.getLength());
 		DataInputStream dis = new DataInputStream(bais);
+System.out.println("parse a packet");
 		try {
 			int msgType = dis.readInt();
 			switch (msgType) {
@@ -68,6 +72,14 @@ public class RecvThread implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				if (dis != null) dis.close();
+				if (bais != null) bais.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

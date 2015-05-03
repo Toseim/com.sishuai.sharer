@@ -158,7 +158,6 @@ public class OthLink extends Action {
 				}
 			}
 		}).start();
-		System.out.println(NetworkMgr.getState());
 	}
 	
 	class ConnectionThread implements Runnable {
@@ -168,13 +167,14 @@ public class OthLink extends Action {
 			try {
 				socket = serverSocket.accept();
 				
+System.out.println("a client connect!  " + objectIP);
 				ClientInfo clientInfo = new ClientInfo(objectIP, ""); //名字之后再设定
 				
 				clientInfo.setConnected(true);
 				clientInfo.setSocket(socket);
 				String string = clientInfo.getDataInputStream().readUTF(); 
 				clientInfo.setName(string);   //获得客户端返回的名字
-				
+System.out.println("so it is named " + string);
 				//加入表格
 				ClientInfo.getClients().add(clientInfo);
 				ClientInfo.getIPList().add(objectIP);

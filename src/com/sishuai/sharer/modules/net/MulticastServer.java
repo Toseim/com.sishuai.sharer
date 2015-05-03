@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 
 import org.eclipse.jface.action.Action;
 
-import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
 /**
@@ -64,7 +63,7 @@ public class MulticastServer extends Action{
 			//发送自己的数据包
 			enterMsg = new EnterMsg(IP, NetworkMgr.getMgr().getName());
 			enterMsg.send(multicastSocket, group, port);
-			
+System.out.println("Send a entermsg");
 			//接收线程启动
 			new Thread(new RecvThread(multicastSocket, true)).start();
 		} catch (UnknownHostException e) {

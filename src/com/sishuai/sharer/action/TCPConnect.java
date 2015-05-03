@@ -44,7 +44,6 @@ public class TCPConnect extends Action {
 	public void run() {
 		//网络已经被占用
 		NetworkMgr.setState(true);
-		//if (网络处于组播支持的环境下)
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo == null) {
 			return;
@@ -83,6 +82,7 @@ public class TCPConnect extends Action {
 			// TODO Auto-generated method stub
 			try {
 				socket = ss.accept();
+System.out.println("the other side is connect!");
 				clientInfo.setSocket(socket);
 				clientInfo.setConnected(true);
 				

@@ -54,16 +54,18 @@ public class NetworkMgr {
 						break;
 					}
 				}
+				ClientInfo.getIPList().add(IP);
+System.out.println("I found my ip is " + IP);
 				return IP;
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			//MessageDialog.openWarning(new Shell(Display.getDefault()), "State", "你现在不处于局域网中");
-			
+			return null;
 		}
 			//若不在局域网中可能报空指针错误。。
-		return null;
+		return IP;
 	}
 	
 	public static void setState(boolean s) {
@@ -80,6 +82,7 @@ public class NetworkMgr {
 
 	public void setName(String name) {
 		this.name = name;
+System.out.println("set a name with " + name);
 	}
 
 	public ServerSocket getServersocket() {
@@ -87,6 +90,7 @@ public class NetworkMgr {
 			while (true) {
 				try {
 					serverSocket = new ServerSocket(getTCPport());
+System.out.println("open a serversocket at " + getTCPport());
 				} catch (IOException e) {
 					continue;
 				}
@@ -131,6 +135,7 @@ public class NetworkMgr {
 		LinkMsg linkMsg = new LinkMsg(objectIP, getIP(), TCPport);
 		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
+System.out.println("datagramsocket is in " + getUDPport());
 		
 		linkMsg.send(ds, getName(), 0);
 	}

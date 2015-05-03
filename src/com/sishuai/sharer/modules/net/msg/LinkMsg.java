@@ -40,6 +40,8 @@ public class LinkMsg implements Msg {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream dos = new DataOutputStream(baos);
+System.out.println("send a packet with {" + localIP + "\t" + localPort + "\t" + 
+		name + "\tto " + objectIP + ":" + NetworkMgr.getMgr().getUDPport());
 			dos.writeInt(msgType);
 			dos.writeUTF(localIP);
 			dos.writeInt(localPort);
@@ -84,12 +86,15 @@ public class LinkMsg implements Msg {
 			String remoteIP = dis.readUTF();
 			int remotePort = dis.readInt();
 			String name = dis.readUTF();
+System.out.println("receive a packet\t" + remoteIP + "\t" + remotePort + "\t" + name);
 			
+			boolean exist = ClientInfo.getIPList().contains(remoteIP);
 			//创建新对象
 			clientInfo = findClient(remoteIP, name);
 			
 			//连接。。。
 			Socket socket = new Socket(remoteIP, remotePort);
+System.out.println("succeed to connect " + name);
 			clientInfo.setConnected(true);
 			
 			//refresh
@@ -99,9 +104,10 @@ public class LinkMsg implements Msg {
 			clientInfo.setSocket(socket);
 			
 			//传送发信端名字
-			clientInfo.getDataOutputStream().writeUTF(NetworkMgr.getMgr().getName());
-			clientInfo.getDataOutputStream().flush();
-			
+			if (!exist) {
+				clientInfo.getDataOutputStream().writeUTF(NetworkMgr.getMgr().getName());
+				clientInfo.getDataOutputStream().flush();
+			}
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
