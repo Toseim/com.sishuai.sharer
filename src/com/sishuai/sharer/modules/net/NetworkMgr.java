@@ -65,7 +65,6 @@ System.out.println("I found my ip is " + IP);
 			//MessageDialog.openWarning(new Shell(Display.getDefault()), "State", "你现在不处于局域网中");
 			return null;
 		}
-			//若不在局域网中可能报空指针错误。。
 		return IP;
 	}
 	

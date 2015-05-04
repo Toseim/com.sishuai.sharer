@@ -6,13 +6,11 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeViewerListener;
+import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -129,20 +127,16 @@ public class ClientView extends ViewPart {
 				.getStatusLineManager();
 
 		
-		
-		viewer.addTreeListener(new ITreeViewerListener() {
+		viewer.addOpenListener(new IOpenListener() {
 			@Override
-			public void treeExpanded(TreeExpansionEvent event) {
+			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
-				if (new DefaultName().getName() == null) return;
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
-				
-				
-			}
-			
-			@Override
-			public void treeCollapsed(TreeExpansionEvent event) {
-				// TODO Auto-generated method stub
+				if (NetworkMgr.getMgr().getName()==null)
+					return;
+				addSelectionMonitor();
+				multicastServer.setEnabled(true);
+				viewer.removeOpenListener(this);
 			}
 		});
 		
@@ -167,8 +161,7 @@ public class ClientView extends ViewPart {
 		viewer.setInput(ContentManager.getManager());
 		ContentManager.getManager().setTreeViewer(viewer);
 		NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
-		addMonitor();
-		//默认不展开根节点（为了获取用户的第一次双击）
+		//默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
 
 		//for testing
@@ -208,7 +201,7 @@ public class ClientView extends ViewPart {
 		getViewSite().setSelectionProvider(viewer);
 	}
 
-	public void addMonitor() {
+	public void addSelectionMonitor() {
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -248,6 +241,14 @@ public class ClientView extends ViewPart {
 		multicastServer = NetworkMgr.getMgr().getMulticastServer();
 		
 		dropSupport();
+		setDefaultState();
+	}
+	
+	private void setDefaultState() {
+		chatDialog.setEnabled(false);
+		othLink.setEnabled(false);
+		multicastServer.setEnabled(false);
+		tcpConnect.setEnabled(false);
 	}
 	
 	public void dropSupport() {

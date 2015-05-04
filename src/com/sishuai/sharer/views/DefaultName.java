@@ -126,6 +126,7 @@ public class DefaultName {
 			if (!display.readAndDispatch())
 				display.sleep();
 		shell.dispose();
-		return name.trim();
+		if (name != null) return name.trim();
+		else return null;
 	}
 }

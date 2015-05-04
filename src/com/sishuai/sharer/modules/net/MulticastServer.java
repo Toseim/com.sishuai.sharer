@@ -25,6 +25,7 @@ public class MulticastServer extends Action{
 	
 	public MulticastServer() {
 		super("打开组播");
+		this.IP = NetworkMgr.getMgr().getIP();
 	}
 	
 	public void sendMyPacket() {
