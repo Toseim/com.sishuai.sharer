@@ -10,6 +10,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
@@ -87,7 +92,14 @@ System.out.println("helloworld");
 			int remotePort = dis.readInt();
 			String name = dis.readUTF();
 System.out.println("receive a packet\t" + remoteIP + "\t" + remotePort + "\t" + name);
-			
+			//users can choose whether to accept the link request
+			MessageBox messageBox = new MessageBox(new Shell(Display.getDefault()), 
+					SWT.OK | SWT.CANCEL);
+			//this line may has something wrong   [new Shell()] I can't differ
+			messageBox.setMessage(name + " is trying to connect you, what is your opinion");
+			messageBox.setText("Linking");
+			if (messageBox.open() == SWT.CANCEL) return;
+
 			boolean exist = ClientInfo.getIPList().contains(remoteIP);
 			//创建新对象
 			clientInfo = findClient(remoteIP, name);

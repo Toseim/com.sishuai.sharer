@@ -6,11 +6,13 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.IOpenListener;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.OpenEvent;
+import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -95,6 +97,7 @@ public class ClientView extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		
 		viewer = new TreeViewer(parent, SWT.FULL_SELECTION);
 		final Tree tree = viewer.getTree();
 		tree.setHeaderVisible(true);
@@ -124,7 +127,24 @@ public class ClientView extends ViewPart {
 		// eclipse 下面的状态栏，哈哈，我们征用你了
 		statusline = getViewSite().getActionBars()
 				.getStatusLineManager();
+
 		
+		
+		viewer.addTreeListener(new ITreeViewerListener() {
+			@Override
+			public void treeExpanded(TreeExpansionEvent event) {
+				// TODO Auto-generated method stub
+				if (new DefaultName().getName() == null) return;
+				NetworkMgr.getMgr().setName(new DefaultName().getName());
+				
+				
+			}
+			
+			@Override
+			public void treeCollapsed(TreeExpansionEvent event) {
+				// TODO Auto-generated method stub
+			}
+		});
 		
 		// 测试用的代码
 		{
@@ -146,18 +166,8 @@ public class ClientView extends ViewPart {
 
 		viewer.setInput(ContentManager.getManager());
 		ContentManager.getManager().setTreeViewer(viewer);
-		viewer.addOpenListener(new IOpenListener() {
-			@Override
-			public void open(OpenEvent event) {
-				// TODO Auto-generated method stub
-				while (NetworkMgr.getMgr().getName() == null)
-					NetworkMgr.getMgr().setName(new DefaultName().getName());
-					
-				NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
-				addMonitor(this);
-				viewer.removeOpenListener(this);
-			}
-		});
+		NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
+		addMonitor();
 		//默认不展开根节点（为了获取用户的第一次双击）
 		viewer.setExpandedState(Header.getHeader(), false);
 
@@ -198,14 +208,13 @@ public class ClientView extends ViewPart {
 		getViewSite().setSelectionProvider(viewer);
 	}
 
-	public void addMonitor(IOpenListener iOpenListener) {
+	public void addMonitor() {
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 				
 				Object obj = selection.getFirstElement();
-				
 				
 				//打开对话框
 				chatDialog.setEnabled(false);
@@ -223,8 +232,6 @@ public class ClientView extends ViewPart {
 				
 				//建立新网络
 				othLink.setEnabled(true);
-				
-				
 			}
 		});
 	}
@@ -254,7 +261,7 @@ public class ClientView extends ViewPart {
 			public void dragEnter(DropTargetEvent event) {
 				if (event.detail == DND.DROP_DEFAULT) {
 					if ((event.operations & DND.DROP_COPY) != 0) {
-						if (((ClientInfo)event.item.getData()).isConnected()) 
+						//if (((ClientInfo)event.item.getData()).isConnected()) 
 							event.detail = DND.DROP_COPY;
 					} else {
 						event.detail = DND.DROP_NONE;

@@ -27,7 +27,6 @@ public class DefaultName {
 	private final int width = 418;
 	
 	public String getName() {
-System.out.println("getname");
 		BufferedReader br = null;
 		try {
 			if (file.exists()) {

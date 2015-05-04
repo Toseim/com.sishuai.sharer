@@ -44,6 +44,7 @@ public class MulticastServer extends Action{
 	}
 	
 	public void run() {
+		state = !state;
 		if (!state) {
 			setText("open multicast");
 			if (multicastSocket != null) {
@@ -59,7 +60,7 @@ public class MulticastServer extends Action{
 			group = InetAddress.getByName("224.2.2.2");
 			multicastSocket = new MulticastSocket(port);
 			multicastSocket.joinGroup(group);
-
+			
 			//发送自己的数据包
 			enterMsg = new EnterMsg(IP, NetworkMgr.getMgr().getName());
 			enterMsg.send(multicastSocket, group, port);
