@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
-import sun.util.logging.resources.logging;
-
 import com.sishuai.sharer.Activator;
 
 /**
@@ -64,7 +62,7 @@ public class Logging {
     }
     public static void fatal(String fatal) {
         String subFatal = logger.wrap() + " FATAL: " + fatal;
-        logger.Output(fatal);
+        logger.Output(subFatal);
     }
     public void dispose() {
     	if (bos != null)
