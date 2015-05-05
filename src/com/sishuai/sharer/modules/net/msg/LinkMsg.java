@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import org.eclipse.swt.SWT;
@@ -86,46 +87,61 @@ System.out.println("helloworld");
 	@Override
 	public void parse(DataInputStream dis) {
 		// TODO Auto-generated method stub
-		ClientInfo clientInfo = null;
-		try {
-			String remoteIP = dis.readUTF();
-			int remotePort = dis.readInt();
-			String name = dis.readUTF();
+		//users can choose whether to accept the link request
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						ClientInfo clientInfo = null;
+						try {
+							String remoteIP = dis.readUTF();
+							int remotePort = dis.readInt();
+							String name = dis.readUTF();
 System.out.println("receive a packet\t" + remoteIP + "\t" + remotePort + "\t" + name);
-			//users can choose whether to accept the link request
-			MessageBox messageBox = new MessageBox(new Shell(Display.getDefault()), 
-					SWT.OK | SWT.CANCEL);
-			//this line may has something wrong   [new Shell()] I can't differ
-			messageBox.setMessage(name + " is trying to connect you, what is your opinion");
-			messageBox.setText("Linking");
-			if (messageBox.open() == SWT.CANCEL) return;
+							MessageBox messageBox = new MessageBox(new Shell(Display.getDefault()), 
+									SWT.OK | SWT.CANCEL);
+							//this line may has something wrong   [new Shell()] I can't differ
+							messageBox.setMessage(name + " is trying to connect you, what is your opinion");
+							messageBox.setText("Linking");
+							if (messageBox.open() == SWT.CANCEL) return;
 
-			boolean exist = ClientInfo.getIPList().contains(remoteIP);
-			//创建新对象
-			clientInfo = findClient(remoteIP, name);
-			
-			//连接。。。
-			Socket socket = new Socket(remoteIP, remotePort);
+							boolean exist = ClientInfo.getIPList().contains(remoteIP);
+							//创建新对象
+							clientInfo = findClient(remoteIP, name);
+							
+							//连接。。。
+							Socket socket = new Socket(remoteIP, remotePort);
 System.out.println("succeed to connect " + name);
-			clientInfo.setConnected(true);
-			
-			//refresh
-			ContentManager.getManager().updateItems();
-			
-			//架设管道
-			clientInfo.setSocket(socket);
-			
-			//传送发信端名字
-			if (!exist) {
-				clientInfo.getDataOutputStream().writeUTF(NetworkMgr.getMgr().getName());
-				clientInfo.getDataOutputStream().flush();
+							clientInfo.setConnected(true);
+							
+							//refresh
+							ContentManager.getManager().updateItems();
+							
+							//架设管道
+							clientInfo.setSocket(socket);
+							
+							//传送发信端名字
+							if (!exist) {
+								clientInfo.getDataOutputStream().writeUTF(NetworkMgr.getMgr().getName());
+								clientInfo.getDataOutputStream().flush();
+							}
+						} catch (SocketException e) {
+							NetworkMgr.getMgr().disconnect(clientInfo);
+						} catch (UnknownHostException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							NetworkMgr.getMgr().disconnect(clientInfo);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							NetworkMgr.getMgr().disconnect(clientInfo);
+						}
+					}
+				});
 			}
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			NetworkMgr.getMgr().disconnect(clientInfo);
-		}
+		}).start();
 	}
 }

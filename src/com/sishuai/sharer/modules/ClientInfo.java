@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Display;
+
 import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 
 /**
  * 
@@ -34,6 +37,8 @@ public class ClientInfo implements ItemInfo{
 	private Socket socket;
 	private DataInputStream dis;
 	private DataOutputStream dos;
+	
+	private String temp = "";
 	
 	private ArrayList<FileInfo> files;
 	private static ArrayList<ClientInfo> clients;
@@ -140,6 +145,14 @@ public class ClientInfo implements ItemInfo{
 	public void setDialogOpened(boolean isDialogOpened) {
 		this.isDialogOpened = isDialogOpened;
 	}
+	
+	public String getTempString() {
+		String string = temp;
+		temp = "";
+		msgs = 0;
+		ContentManager.getManager().updateItems();
+		return string;
+	}
 
 	@Override
 	public String getOne() {
@@ -175,11 +188,28 @@ public class ClientInfo implements ItemInfo{
 			try {
 				while (true) {
 					String string = dis.readUTF();
-					//对消息进行分类处理
-					//一共两种，一个是普通的文本对话消息，另一个是flie的内容
-					chatDialog.getDialog().append(name+": "+string);
-					if (!isDialogOpened) msgs++;
 					
+					String sn = NetworkMgr.getMgr().getName() + ": " + string + "\n";
+					//对消息进行分类处理
+					//一共两种，一个是普通的文本对话消息，另一个是file的内容
+					if (isDialogOpened)
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								Display.getDefault().asyncExec(new Runnable() {
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										chatDialog.getDialog().append(sn);
+									}
+								});
+							}
+						}).start();
+					else {
+						msgs++;
+						temp += temp + sn;
+					}
 					ContentManager.getManager().updateItems();
 				}
 					
@@ -191,6 +221,8 @@ public class ClientInfo implements ItemInfo{
 					if (dis != null) dis.close();
 					if (dos != null) dos.close();
 					if (socket != null) socket.close();
+					ClientInfo.getClients().remove(this);
+					ContentManager.getManager().updateItems();
 				} catch (IOException e_1) {
 					// TODO Auto-generated catch block
 					e_1.printStackTrace();

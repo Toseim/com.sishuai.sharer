@@ -17,23 +17,24 @@ public class RecvThread implements Runnable {
 	private MulticastSocket multicastSocket;
 	private DatagramSocket datagramSocket;
 	private byte[] buf = new byte[1024];
-	
+
 	public RecvThread(DatagramSocket ds, boolean isMulti) {
 		// TODO Auto-generated constructor stub
 		this.isMulti = isMulti;
 		this.datagramSocket = ds;
 	}
-	
+
 	public RecvThread(MulticastSocket ms, boolean isMulti) {
 		// TODO Auto-generated constructor stub
 		this.isMulti = isMulti;
 		this.multicastSocket = ms;
 	}
+
 	@Override
 	public void run() {
-		while (true) {
-			// TODO Auto-generated method stub
-			try {
+		// TODO Auto-generated method stub
+		try {
+			while (true) {
 System.out.println("running a recvthread");
 				DatagramPacket dp = new DatagramPacket(buf, buf.length);
 				if (isMulti && multicastSocket != null) {
@@ -44,16 +45,18 @@ System.out.println("receive a multipacket");
 System.out.println("receive a singlepacket");
 				}
 				parse(dp);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-System.out.println("Server is closed");
 			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Server is closed");
 		}
 	}
+
 	public void parse(DatagramPacket dp) {
-		ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0, dp.getLength());
+		ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0,
+				dp.getLength());
 		DataInputStream dis = new DataInputStream(bais);
-System.out.println("parse a packet");
+		System.out.println("parse a packet");
 		try {
 			int msgType = dis.readInt();
 			switch (msgType) {
@@ -74,8 +77,10 @@ System.out.println("parse a packet");
 			e.printStackTrace();
 		} finally {
 			try {
-				if (dis != null) dis.close();
-				if (bais != null) bais.close();
+				if (dis != null)
+					dis.close();
+				if (bais != null)
+					bais.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

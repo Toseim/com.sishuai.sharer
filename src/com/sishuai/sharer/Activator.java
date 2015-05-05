@@ -46,7 +46,6 @@ public class Activator extends AbstractUIPlugin {
 		plugin = null;
 		super.stop(context);
 		ImageMgr.getInstance().dispose();
-		System.out.println("closed");
 		Display.getDefault().dispose();
 	}
 

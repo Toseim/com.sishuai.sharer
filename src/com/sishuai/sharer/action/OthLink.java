@@ -71,7 +71,7 @@ public class OthLink extends Action {
 		text.setBounds(80, 19, 215, 24);
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.SHADOW_IN | SWT.CENTER);
-		lblNewLabel.setBounds(10, 21, 74, 24);
+		lblNewLabel.setBounds(10, 21, 70, 24);
 		lblNewLabel.setText("IP地址");
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
@@ -135,8 +135,8 @@ public class OthLink extends Action {
 	public void next() {
 		if (objectIP == null)
 			return;
-		//获得或初始化serversocket
-		serverSocket = NetworkMgr.getMgr().getServersocket();//tcp
+		//获得或初始化serversocket   //tcp
+		serverSocket = NetworkMgr.getMgr().getServersocket();
 		//连接对面
 		NetworkMgr.getMgr().attempLink(objectIP);
 		view.showMessage("等待对面的用户想到一块去");

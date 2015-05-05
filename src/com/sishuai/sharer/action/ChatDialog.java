@@ -52,6 +52,7 @@ public class ChatDialog extends Action{
 			return;
 		}
 		clientInfo.setChatDialog(this);
+		clientInfo.setDialogOpened(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display,SWT.MIN);
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2, width, height);
@@ -68,6 +69,7 @@ public class ChatDialog extends Action{
 		dialogText.setText("");
 		dialogText.setEditable(false);
 		dialogText.setBounds(10,22, 555, 297);
+		dialogText.setText(clientInfo.getTempString());
 		
 		final Label line1 = new Label(shell,SWT.SEPARATOR|SWT.HORIZONTAL);
 		line1.setBounds(0,333,600,10);
@@ -141,6 +143,7 @@ public class ChatDialog extends Action{
 		}
 		createdblue.dispose();
 		shell.dispose();
+		clientInfo.setDialogOpened(false);
 	}
 	
 	public void send(String string) {

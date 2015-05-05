@@ -74,12 +74,15 @@ public class ClientView extends ViewPart {
 	 */
 	public static final String ID = "com.sishuai.sharer.views.ClientView";
 
+	private boolean getNameFlag = false;
+	
 	private TreeViewer viewer;
 	private TCPConnect tcpConnect;
 	private IStatusLineManager statusline;
 	private ChatDialog chatDialog;
 	private OthLink othLink;
-	private MulticastServer multicastServer; 
+	private MulticastServer multicastServer;
+//	private Transport transport = new Transport();
 
 	class NameSorter extends ViewerSorter {
 	}
@@ -125,18 +128,20 @@ public class ClientView extends ViewPart {
 		// eclipse 下面的状态栏，哈哈，我们征用你了
 		statusline = getViewSite().getActionBars()
 				.getStatusLineManager();
-
 		
 		viewer.addOpenListener(new IOpenListener() {
 			@Override
 			public void open(OpenEvent event) {
 				// TODO Auto-generated method stub
+				if (getNameFlag) return;
+				getNameFlag = true;
 				NetworkMgr.getMgr().setName(new DefaultName().getName());
 				if (NetworkMgr.getMgr().getName()==null)
 					return;
 				addSelectionMonitor();
 				multicastServer.setEnabled(true);
 				viewer.removeOpenListener(this);
+				getNameFlag = false;
 			}
 		});
 		
@@ -163,7 +168,6 @@ public class ClientView extends ViewPart {
 		NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 		//默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
-
 		//for testing
 		{
 			ClientInfo.getClients().add(
@@ -305,6 +309,7 @@ public class ClientView extends ViewPart {
 		// manager.add(new Separator());
 		manager.add(multicastServer);
 		manager.add(othLink);
+//		manager.add(transport);
 	}
 
 	public ItemInfo getSelectedItem() {
