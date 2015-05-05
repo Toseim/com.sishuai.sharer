@@ -41,13 +41,24 @@
             label="openView"
             visible="true">
             <action
-                id="com.sishuai.sharer.openView"
-                class="com.sishuai.sharer.action.OpenView"
-                icon="icons/sample.gif"
-                label="open the client view"
-                toolbarPath="normal/additions"
-                tooltip="start your powerful tool">
+                  class="com.sishuai.sharer.action.OpenView"
+                  icon="icons/sample.gif"
+                  id="com.sishuai.sharer.openView"
+                  label="open the client view"
+                  state="true"
+                  toolbarPath="normal/additions"
+                  tooltip="start your powerful tool">
             </action>
         </actionSet>
+    </extension>
+    <extension
+          point="org.eclipse.ui.editors">
+       <editor
+             default="false"
+             extensions="&quot;java&quot;"
+             icon="icons/sample.gif"
+             id="com.sishuai.sharer.diffeditor"
+             name="diffEditor">
+       </editor>
     </extension>
 </plugin>
