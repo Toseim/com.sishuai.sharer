@@ -21,13 +21,18 @@ public class Logging {
 	private BufferedOutputStream bos;
     private String fileName;
     private SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-d HH:mm:ss]");
-    
     public String wrap() {
         long nowTime = System.currentTimeMillis();
         return sdf.format(nowTime)+" ["+fileName+"]";
     }
     public void setFileName(String filename) {
         this.fileName = filename;
+        try {
+			bos.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 	public static Logging getLogger() {
@@ -47,7 +52,6 @@ public class Logging {
         byte[] content = string.getBytes();
         try {
             bos.write(content, 0, content.length);
-            bos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

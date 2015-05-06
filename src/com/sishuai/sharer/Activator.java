@@ -8,6 +8,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.sishuai.sharer.modules.ImageMgr;
+import com.sishuai.sharer.util.Logging;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -47,6 +48,7 @@ public class Activator extends AbstractUIPlugin {
 		super.stop(context);
 		ImageMgr.getInstance().dispose();
 		Display.getDefault().dispose();
+		Logging.getLogger().dispose();
 	}
 
 	/**

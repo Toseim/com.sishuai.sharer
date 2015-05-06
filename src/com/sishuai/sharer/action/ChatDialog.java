@@ -22,6 +22,7 @@ import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ImageMgr;
 import com.sishuai.sharer.modules.net.NetworkMgr;
+import com.sishuai.sharer.util.Logging;
 import com.sishuai.sharer.views.ClientView;
 /**
  * 用户之间的聊天窗口
@@ -47,11 +48,17 @@ public class ChatDialog extends Action{
 	}
 	
 	public void run() {
+		Logging.getLogger().setFileName("ChatDialog");
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo.isDialogOpened()) {
+			Logging.warning("与"+clientInfo.getName()+"的对话窗口已经打开");
 			return;
 		}
-		clientInfo.setChatDialog(this);
+		if (clientInfo.getChatDialog() == null) {
+			Logging.info("为"+clientInfo.getName()+"设置对话窗口");
+			clientInfo.setChatDialog(this);
+		}
+		Logging.info(clientInfo.getName()+"的窗口打开中");
 		clientInfo.setDialogOpened(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display,SWT.MIN);
@@ -115,6 +122,7 @@ public class ChatDialog extends Action{
 		text.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent event) {
 				dialogText.append(clientInfo.getName()+": \n"+text.getText()+"\n");
+				Logging.info("传送text消息到"+clientInfo.getName());
 				send(text.getText());
 				text.setText("");
 			}
@@ -130,9 +138,9 @@ public class ChatDialog extends Action{
 			public void widgetSelected(SelectionEvent e){
 				dialogText.setForeground(createdblue);
 				dialogText.append(clientInfo.getName()+": /n"+text.getText()+"\n");
-				text.setText("");
-				
+				Logging.info("传送text消息到"+clientInfo.getName());
 				send(text.getText());
+				text.setText("");
 			}
 		});
 		
@@ -141,8 +149,10 @@ public class ChatDialog extends Action{
 				display.sleep();
 			}
 		}
+		Logging.info("内存释放中...");
 		createdblue.dispose();
 		shell.dispose();
+		Logging.info("与"+clientInfo.getName()+"的对话窗口已关闭");
 		clientInfo.setDialogOpened(false);
 	}
 	
@@ -154,7 +164,9 @@ public class ChatDialog extends Action{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//用户已经失去连接
+			Logging.warning("消息传输失败，对方已关闭端口...");
 			NetworkMgr.getMgr().disconnect(clientInfo);
+		
 		}
 	}
 	

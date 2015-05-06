@@ -13,6 +13,7 @@ import java.net.SocketException;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
+import com.sishuai.sharer.util.Logging;
 
 /**
  * 用户离开的消息
@@ -36,7 +37,11 @@ public class ExitMsg implements Msg {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
+			Logging.getLogger().setFileName("ExitMsg");
+			Logging.info("构建用户离开信息包");
+			Logging.info("写入头信息");
 			dos.writeInt(ExitMsg.msgType);
+			Logging.info("写入IP");
 			dos.writeUTF(IP);
 			dos.flush();
 		} catch (IOException e) {
@@ -46,21 +51,26 @@ public class ExitMsg implements Msg {
 		buf = baos.toByteArray();
 		DatagramPacket dp = new DatagramPacket(buf, buf.length, (InetAddress)group, port);
 		try {
+			Logging.info("发送用户离开信息");
 			((MulticastSocket)ds).send(dp);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Logging.fatal("网络连接错误");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Logging.fatal("写入数据包失败");
 		}
 	}
 
 	@Override
 	public void parse(DataInputStream dis) {
 		// TODO Auto-generated method stub
+		Logging.getLogger().setFileName("ExitMsg");
 		try {
 			String uIP = dis.readUTF();
+			Logging.info("移除"+uIP+"地址的用户信息");
 			if (ClientInfo.getIPList().contains(uIP)) {
 				ClientInfo.getIPList().remove(uIP);
 				int len = ClientInfo.getClients().size();
@@ -75,6 +85,7 @@ public class ExitMsg implements Msg {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Logging.fatal("移除过程中发生错误");
 		}
 	}
 

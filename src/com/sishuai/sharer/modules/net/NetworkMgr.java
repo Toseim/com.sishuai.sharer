@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
+import com.sishuai.sharer.util.Logging;
 
 /**
  * 网络管理的类，应尽量把网络的相关东西搬到这里，方便管理
@@ -86,14 +87,16 @@ System.out.println("set a name with " + name);
 	}
 
 	public ServerSocket getServersocket() {
+		Logging.getLogger().setFileName("NetWorkMgr");
 		if (serverSocket == null || serverSocket.isClosed()) {
 			while (true) {
 				try {
 					serverSocket = new ServerSocket(getTCPport());
-System.out.println("open a serversocket at " + getTCPport());
 				} catch (IOException e) {
+					Logging.fatal(getTCPport()+"端口不可用，尝试其他端口");
 					continue;
 				}
+				Logging.info("开启一个serversocket服务，端口在"+getTCPport());
 				break;
 			}
 		}
@@ -114,6 +117,8 @@ System.out.println("open a serversocket at " + getTCPport());
 				} catch (Exception e) {
 					continue;
 				}
+				Logging.getLogger().setFileName("NetWorkMgr");
+				Logging.info("开启一个DatagramSocket服务，端口在"+UDPport);
 				break;
 			}
 		}
@@ -127,14 +132,18 @@ System.out.println("open a serversocket at " + getTCPport());
 	}
 	
 	public void createTempSend(DatagramPacket dp) {
+		Logging.getLogger().setFileName("NetWorkMgr");
 		while (true) {
 			try {
 				DatagramSocket ds = new DatagramSocket(random.nextInt(55535)+10000);
+				Logging.info("打开一个UDP端口，发送数据包");
 				ds.send(dp);
+				Logging.info("端口关闭中..");
 				ds.close();
 				break;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				Logging.fatal("发送数据失败，正在重新发送");
 				continue;
 			}
 		}
@@ -149,7 +158,6 @@ System.out.println("open a serversocket at " + getTCPport());
 		LinkMsg linkMsg = new LinkMsg(objectIP, getIP(), TCPport);
 		//开放端口来发送文件
 		DatagramSocket ds = NetworkMgr.getMgr().getDatagramSocket();
-System.out.println("datagramsocket is in " + getUDPport());
 		
 		linkMsg.send(ds, getName(), 0);
 	}
@@ -157,6 +165,7 @@ System.out.println("datagramsocket is in " + getUDPport());
 	public void disconnect(ClientInfo clientInfo) {
 		if (clientInfo == null) return;
 		try {
+			Logging.warning("正在从用户组中删除"+clientInfo.getName());
 			clientInfo.setConnected(false);
 			if (clientInfo.getDataInputStream() != null)
 				clientInfo.getDataInputStream().close();

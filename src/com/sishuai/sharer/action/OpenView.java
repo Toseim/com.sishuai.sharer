@@ -7,6 +7,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
+
+import com.sishuai.sharer.util.Logging;
 /**
  * 打开插件的主视图
  * @author 四帅
@@ -24,6 +26,8 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 		if (page == null) return;
 		
 		try {
+			Logging.getLogger().setFileName("OpenView");
+			Logging.info("打开主视图");
 			page.showView("com.sishuai.sharer.views.ClientView");
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
@@ -40,7 +44,6 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		System.out.println("iadfjaidfj");
 	}
 
 	@Override

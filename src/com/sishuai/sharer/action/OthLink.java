@@ -11,8 +11,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -23,6 +21,7 @@ import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.net.NetworkMgr;
+import com.sishuai.sharer.util.Logging;
 import com.sishuai.sharer.views.ClientView;
 
 /**
@@ -51,6 +50,8 @@ public class OthLink extends Action {
 	}
 	
 	public void run() {
+		Logging.getLogger().setFileName("OthLink");
+		Logging.info("打开用户自定义网络输入框");
 		NetworkMgr.setState(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.ON_TOP);
@@ -58,15 +59,6 @@ public class OthLink extends Action {
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2, width, height);
 		shell.setLayout(null);
 		
-		shell.addShellListener(new ShellAdapter() {
-			@Override
-			public void shellClosed(ShellEvent arg0) {
-				// TODO Auto-generated method stub
-				shell.dispose();
-				NetworkMgr.setState(false);
-				System.out.println("false");
-			}
-		});
 		Text text = new Text(shell, SWT.BORDER);
 		text.setBounds(80, 19, 215, 24);
 		
@@ -82,6 +74,7 @@ public class OthLink extends Action {
 			public void widgetSelected(SelectionEvent e) {
 				if (btnNewButton.isEnabled()) {
 					objectIP = text.getText();
+					Logging.info("获得用户输入的IP:"+objectIP);
 					shell.setVisible(false);
 					shell.dispose();
 					next();
@@ -96,6 +89,7 @@ public class OthLink extends Action {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
+				Logging.info("自定义输入IP地址已取消");
 				shell.setVisible(false);
 				shell.dispose();
 				NetworkMgr.setState(false);
@@ -122,6 +116,7 @@ public class OthLink extends Action {
 				// TODO Auto-generated method stub
 				if (btnNewButton.isEnabled()) {
 					objectIP = text.getText();
+					Logging.info("获得用户输入的IP:"+objectIP);
 					shell.setVisible(false);
 					shell.dispose();
 					next();
@@ -130,6 +125,11 @@ public class OthLink extends Action {
 		});
 		
 		shell.open();
+		while (!shell.isDisposed())
+			if (!display.readAndDispatch())
+				display.sleep();
+		Logging.info("窗口关闭，释放内存");
+		shell.dispose();
 	}
 	
 	public void next() {
@@ -167,20 +167,23 @@ public class OthLink extends Action {
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
+				Logging.getLogger().setFileName("OthLink");
+				Logging.info("tcp服务端接受连接中");
 				socket = serverSocket.accept();
-				
-System.out.println("a client connect!  " + objectIP);
+				Logging.info("成功接受对方的连接");
 				ClientInfo clientInfo = new ClientInfo(objectIP, ""); //名字之后再设定
 				
+				Logging.info("设置用户的信息");
 				clientInfo.setConnected(true);
 				clientInfo.setSocket(socket);
 				String string = clientInfo.getDataInputStream().readUTF(); 
+				Logging.info("获取到连接的用户名为"+string);
 				clientInfo.setName(string);   //获得客户端返回的名字
-System.out.println("so it is named " + string);
 				//加入表格
 				ClientInfo.getClients().add(clientInfo);
+				Logging.info("用户信息加入用户组中");
 				ClientInfo.getIPList().add(objectIP);
-				
+				Logging.info("Ip加入已知ip列表中");
 				//refresh
 				ContentManager.getManager().updateItems();
 				//消息通知
@@ -191,7 +194,6 @@ System.out.println("so it is named " + string);
 						view.showMessage("We connect!");
 					}
 				});
-				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
@@ -200,6 +202,7 @@ System.out.println("so it is named " + string);
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
+						Logging.fatal("用户连接超时");
 						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
 						view.showMessage("");
 					}

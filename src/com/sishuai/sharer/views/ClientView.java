@@ -21,7 +21,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -36,11 +35,11 @@ import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ClientTableLabelProvider;
 import com.sishuai.sharer.modules.ClientTreeContentProvider;
 import com.sishuai.sharer.modules.ContentManager;
-import com.sishuai.sharer.modules.FileInfo;
 import com.sishuai.sharer.modules.Header;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
+import com.sishuai.sharer.util.Logging;
 
 /**
  * This sample class demonstrates how to plug-in a new
@@ -144,58 +143,15 @@ public class ClientView extends ViewPart {
 				getNameFlag = false;
 			}
 		});
-		
-		// 测试用的代码
-		{
-			ClientInfo.getClients().add(new ClientInfo("192.168.31.134", "猜猜我是谁"));
-			ClientInfo clientInfo = new ClientInfo("192.168.31.63", "已连接账户");
-			ClientInfo.getClients().add(new ClientInfo("192.168.31.23", "哈哈傻逼"));
-			clientInfo.setConnected(true);
-			clientInfo.setDialogOpened(false);
-			clientInfo.setNewFileCount(21);
-			ClientInfo.getClients().add(clientInfo);
-			clientInfo.getFiles().add(new FileInfo("ifajdf.java", 23));
-			clientInfo.getFiles().add(new FileInfo("test.java", 341));
-			FileInfo fileInfo = new FileInfo("ifajdf.java", 234);
-			clientInfo.getFiles().add(fileInfo);
-		}
-
+		Logging.getLogger().setFileName("ClientView");
+		Logging.info("内容装填中...");
 		viewer.setContentProvider(new ClientTreeContentProvider());
 		viewer.setLabelProvider(new ClientTableLabelProvider());
-
 		viewer.setInput(ContentManager.getManager());
 		ContentManager.getManager().setTreeViewer(viewer);
 		NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 		//默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
-		//for testing
-		{
-			ClientInfo.getClients().add(
-					new ClientInfo("192.168.31.134", "猜猜我是谁"));
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					Display.getDefault().asyncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							System.out.println("刷新");
-							viewer.refresh();
-						}
-					});
-				}
-			}).start();
-		}
-
 		
 		createAction();
 		hookContextMenu();
@@ -206,7 +162,8 @@ public class ClientView extends ViewPart {
 	}
 
 	public void addSelectionMonitor() {
-		
+		Logging.getLogger().setFileName("ClientView");
+		Logging.info("加载选择操作。。");
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
@@ -235,6 +192,7 @@ public class ClientView extends ViewPart {
 
 	private void createAction() {
 		// TODO Auto-generated method stub
+		Logging.info("装载上下文，下拉栏操作。。");
 		TCPConnect.getTcpConnect().setView(this);
 		tcpConnect = TCPConnect.getTcpConnect();
 
@@ -257,6 +215,7 @@ public class ClientView extends ViewPart {
 	
 	public void dropSupport() {
 		//drop 的支持
+		Logging.info("添加拖拽支持。。");
 		int ops = DND.DROP_COPY | DND.DROP_DEFAULT;
 		DropTarget dropTarget = new DropTarget(viewer.getTree(), ops);
 		final FileTransfer fileTransfer = FileTransfer.getInstance();

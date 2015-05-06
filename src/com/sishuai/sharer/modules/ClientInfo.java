@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.NetworkMgr;
+import com.sishuai.sharer.util.Logging;
 
 /**
  * 
@@ -70,15 +71,21 @@ public class ClientInfo implements ItemInfo{
 	
 	//获得用户列表
 	public static ArrayList<ClientInfo> getClients() {
-		if (clients == null) 
+		if (clients == null) {
+			Logging.getLogger().setFileName("ClientInfo");
+			Logging.info("初始化用户组");
 			clients = new ArrayList<ClientInfo>();
+		}
 		return clients;
 	}
 	
 	//获得ip列表
 	public static ArrayList<String> getIPList() {
-		if (iptable == null) 
+		if (iptable == null) {
+			Logging.getLogger().setFileName("ClientInfo");
+			Logging.info("初始化已知IP列表");
 			iptable = new ArrayList<String>();
+		}
 		return iptable;
 	}
 	
@@ -98,12 +105,15 @@ public class ClientInfo implements ItemInfo{
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 		try {
+			Logging.getLogger().setFileName("ClientInfo");
+			Logging.info("架设用户的连接管道");
 			this.dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 			this.dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 			new Thread(new RecvThread()).start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Logging.fatal("构建管道失败..");
 		}
 	}
 	public DataInputStream getDataInputStream() {
@@ -115,8 +125,11 @@ public class ClientInfo implements ItemInfo{
 
 	//获取交互文件
 	public ArrayList<FileInfo> getFiles() {
-		if (files == null)
+		if (files == null) {
+			Logging.getLogger().setFileName("ClientInfo");
+			Logging.info("初始化用户文件列表");
 			files = new ArrayList<FileInfo>();
+		}
 		return files;
 	}
 

@@ -34,7 +34,6 @@ public class MulticastServer extends Action{
 	
 	public void disConnect() {
 		try {
-			//发出离开消息
 			if (multicastSocket != null)
 				new ExitMsg(IP).send(multicastSocket, group, port);
 			multicastSocket.leaveGroup(group);

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
+import com.sishuai.sharer.util.Logging;
 
 public class DefaultName {
 	private Text text;
@@ -27,17 +28,20 @@ public class DefaultName {
 	private final int width = 418;
 	
 	public String getName() {
+		Logging.getLogger().setFileName("DefaultName");
 		BufferedReader br = null;
 		try {
 			if (file.exists()) {
+				Logging.info("正在从文件中读取设定的名字");
 				br = new BufferedReader(new FileReader(file));
 				name = br.readLine();
-				System.out.println("name  found" + "\t" + name);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
+			Logging.warning("相关配置文件丢失，读取失败");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			Logging.fatal("从配置文件读取失败");
 		} finally {
 			if (br != null)
 				try {
@@ -53,9 +57,12 @@ public class DefaultName {
 	}
 	
 	public void saveName() {
+		Logging.info("获取用户输入的用户名 "+ name);
+		Logging.info("保存用户名到文件中..");
 		BufferedWriter bw = null;
 		if (!file.exists())
 			try {
+				Logging.info("新建用户文件 " + file.toString());
 				file.createNewFile();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -69,6 +76,7 @@ public class DefaultName {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Logging.fatal("写入失败，用户名无法保存");
 		} finally {
 			if (bw != null)
 				try {

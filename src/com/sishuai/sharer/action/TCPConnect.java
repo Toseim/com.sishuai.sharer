@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.net.NetworkMgr;
+import com.sishuai.sharer.util.Logging;
 import com.sishuai.sharer.views.ClientView;
 
 
@@ -64,7 +65,6 @@ public class TCPConnect extends Action {
 				try {
 					Thread.sleep(30000);
 					if (socket == null)
-
 						ss.close();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -81,8 +81,12 @@ public class TCPConnect extends Action {
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
+				Logging.getLogger().setFileName("TCPConnect");
+				Logging.info("tcp服务端接受连接中");
 				socket = ss.accept();
-System.out.println("the other side is connect!");
+				Logging.info("成功接受对方的连接");
+				
+				Logging.info("设置用户的信息");
 				clientInfo.setSocket(socket);
 				clientInfo.setConnected(true);
 				
@@ -100,6 +104,7 @@ System.out.println("the other side is connect!");
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
+						Logging.fatal("等待用户连接超时");
 						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
 						view.showMessage("");
 					}

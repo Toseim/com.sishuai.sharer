@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Display;
 
+import com.sishuai.sharer.util.Logging;
+
 /**
  * 显示界面中数据的修改要用到，目前可提供用户的添加和删除
  * @author 四帅
@@ -33,6 +35,8 @@ public class ContentManager {
 	}
 	
 	public void updateItems() {
+		Logging.getLogger().setFileName("ContentManager");
+		Logging.info("正在刷新视图元素");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

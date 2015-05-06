@@ -11,6 +11,7 @@ import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
+import com.sishuai.sharer.util.Logging;
 
 public class RecvThread implements Runnable {
 	private boolean isMulti;
@@ -20,14 +21,18 @@ public class RecvThread implements Runnable {
 
 	public RecvThread(DatagramSocket ds, boolean isMulti) {
 		// TODO Auto-generated constructor stub
+		Logging.getLogger().setFileName("RecvThread");
 		this.isMulti = isMulti;
 		this.datagramSocket = ds;
+		Logging.info("创建一个UDP接受线程运行");
 	}
 
 	public RecvThread(MulticastSocket ms, boolean isMulti) {
 		// TODO Auto-generated constructor stub
+		Logging.getLogger().setFileName("RecvThread");
 		this.isMulti = isMulti;
 		this.multicastSocket = ms;
+		Logging.info("创建一个多播接受线程运行");
 	}
 
 	@Override
@@ -35,14 +40,13 @@ public class RecvThread implements Runnable {
 		// TODO Auto-generated method stub
 		try {
 			while (true) {
-System.out.println("running a recvthread");
 				DatagramPacket dp = new DatagramPacket(buf, buf.length);
 				if (isMulti && multicastSocket != null) {
 					multicastSocket.receive(dp);
-System.out.println("receive a multipacket");
+					Logging.info("接收到一个多播包文件");
 				} else if (datagramSocket != null) {
 					datagramSocket.receive(dp);
-System.out.println("receive a singlepacket");
+					Logging.info("接收到一个UDP包文件");
 				}
 				parse(dp);
 			}
@@ -53,10 +57,10 @@ System.out.println("receive a singlepacket");
 	}
 
 	public void parse(DatagramPacket dp) {
-		ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0,
-				dp.getLength());
+		Logging.getLogger().setFileName("RecvThread");
+		Logging.info("正在解包中...");
+		ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0, dp.getLength());
 		DataInputStream dis = new DataInputStream(bais);
-		System.out.println("parse a packet");
 		try {
 			int msgType = dis.readInt();
 			switch (msgType) {
@@ -77,6 +81,7 @@ System.out.println("receive a singlepacket");
 			e.printStackTrace();
 		} finally {
 			try {
+				Logging.info("关闭解包管道");
 				if (dis != null)
 					dis.close();
 				if (bais != null)
