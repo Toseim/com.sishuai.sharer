@@ -238,6 +238,9 @@ public class ClientView extends ViewPart {
 					System.out.println(event.widget);
 					String[] files = (String[]) event.data;
 					for (int i = 0; i < files.length; i++) {
+						((ClientInfo)event.item.getData()).sendFile(files[i]);
+					}
+					for (int i = 0; i < files.length; i++) {
 						System.out.println(files[i]);
 					}
 				}

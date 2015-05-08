@@ -4,6 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ public class ClientInfo implements ItemInfo{
 	
 	//一些与界面相关的信息
 	private boolean isDialogOpened = false;
+	private boolean isChatting = true;
 	private ChatDialog chatDialog;
 	private Socket socket;
 	private DataInputStream dis;
@@ -193,16 +197,53 @@ public class ClientInfo implements ItemInfo{
 		return getFiles().size()+"";
 	}
 	
+	public void sendFile(String filePath) {
+		BufferedInputStream bis = null;
+		try {
+			dos.writeUTF("$");
+			bis = new BufferedInputStream(new FileInputStream(filePath));
+			byte[] buf = new byte[1024];
+			int count = 0;
+			while (bis.read(buf, 0, buf.length) != -1) {
+				count ++;
+				dos.write(buf, 0, buf.length);
+				dos.flush();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (bis != null)
+				try {
+					bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
 	class RecvThread implements Runnable {
 		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
+				byte[] buf = new byte[1024];
 				while (true) {
 					String string = dis.readUTF();
+					if (string.equals("$")) {
+						while (dis.read(buf, 0, buf.length) != -1) {
+							BufferedOutputStream bos = new BufferedOutputStream(
+									new FileOutputStream("filepath"));
+							bos.write(buf, 0, buf.length);
+						}
+						continue;
+					}
 					
-					String sn = NetworkMgr.getMgr().getName() + ": " + string + "\n";
 					//对消息进行分类处理
 					//一共两种，一个是普通的文本对话消息，另一个是file的内容
 					if (isDialogOpened)
@@ -214,14 +255,14 @@ public class ClientInfo implements ItemInfo{
 									@Override
 									public void run() {
 										// TODO Auto-generated method stub
-										chatDialog.getDialog().append(sn);
+										chatDialog.getDialog().append(string);
 									}
 								});
 							}
 						}).start();
 					else {
 						msgs++;
-						temp += temp + sn;
+						temp += temp + string;
 					}
 					ContentManager.getManager().updateItems();
 				}
