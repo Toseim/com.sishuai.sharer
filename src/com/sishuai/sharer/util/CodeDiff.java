@@ -104,6 +104,7 @@ public class CodeDiff {
 					map[i][j].setDirVal(2, map[i][j+1].value+1);
 				if (map[i+1][j].dir != 0)
 					map[i][j].setDirVal(1, map[i+1][j].value+1);
+				map[i][j].check();
 			}
 		}
 		return map[0][0].value;
@@ -152,6 +153,13 @@ class State {
     	if (value <= this.value || this.value == 0) {
     		this.dir = dir;
     		this.value = value;
+    	}
+    	flag = true;
+    }
+    public void check() {
+    	if (!flag) {
+    		value = 1;
+    		dir = 1;
     	}
     }
 }
