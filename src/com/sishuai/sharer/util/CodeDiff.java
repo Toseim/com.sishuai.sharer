@@ -54,8 +54,8 @@ public class CodeDiff {
 
 			System.out.println(handle());
 			
-			for (int i = str1.size()-1; i >= 0; i--) {
-				for (int j = 0; j < str2.size()+1; j++) {
+			for (int i = str1.size(); i >= 0; i--) {
+				for (int j = 0; j < len2+2; j++) {
 					System.out.print(map[i][j].value+" "+map[i][j].dir+"\t");
 				}
 				System.out.println();
@@ -82,12 +82,16 @@ public class CodeDiff {
 	}
 
 	public static int handle() {
-		int len1 = str1.size();
-		int len2 = str2.size();
 		map = new State[len1 + 1][len2 + 2];
+		int n = 0;
+		int m = 0;
 		for (int i = 0; i < len1 + 1; i++)
-			for (int j = 0; j < len2 + 2; j++)
+			for (int j = 0; j < len2 + 2; j++) {
 				map[i][j] = new State(i, j);
+				if (i == len1) map[i][j].value = len2-j;
+				if (j == len2+1) map[i][j].value = len1-1-i;
+			}
+		map[len1][len2+1].value = 0;
 		for (int i = len1 - 1; i >= 0; i--) {
 			for (int j = len2; j >= 0; j--) {
 
@@ -96,9 +100,10 @@ public class CodeDiff {
 					map[i][j].dir = 3;
 					continue;
 				}
-				
-				map[i][j].setDirVal(1, map[i+1][j].value+1);
-		        map[i][j].setDirVal(2, map[i][j+1].value+1);
+				if (map[i][j+1].dir != 0)
+					map[i][j].setDirVal(2, map[i][j+1].value+1);
+				if (map[i+1][j].dir != 0)
+					map[i][j].setDirVal(1, map[i+1][j].value+1);
 			}
 		}
 		return map[0][0].value;
@@ -109,12 +114,8 @@ public class CodeDiff {
 		while (whi.dir != 0) {
 			switch (whi.dir) {
 			case 1:
-				if (whi.y <= str2.size())
-					System.out.println("-" + dict.get(str1.get(whi.x)));
-				if (whi.x+1 == str1.size()-1 && map[len1-1][len2].dir == 1) {
-					System.out.println("-" + dict.get(str1.get(len1-1)));
-					map[len1-1][len2].dir = 0;
-				}
+				System.out.println("-" + dict.get(str1.get(whi.x)));
+				
 				whi = map[whi.x+1][whi.y];
 				break;
 			case 2:
@@ -148,23 +149,9 @@ class State {
 	}
 
     public void setDirVal(int dir, int value) {
-    	if (dir == 2) {
-    		if (value > 1)
-	    		if (!flag || (flag && value < this.value)) {
-	    			this.dir = 2;
-	    			this.value = value;
-	    		}
-    		flag = false;
-    		return;
-    	}
-    	
-    	if (dir == 1 && value > 1) {
-    		this.dir = 1;
+    	if (value <= this.value || this.value == 0) {
+    		this.dir = dir;
     		this.value = value;
-    		flag = true;
-    		return;
     	}
-    	this.dir = 1;
-    	this.value = 1;
     }
 }
