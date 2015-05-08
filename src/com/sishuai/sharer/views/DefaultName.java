@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -52,7 +54,6 @@ public class DefaultName {
 				}
 		}
 		if (name != null && name.length()>0) return name;
-		System.out.println("show view");
 		return showView();
 	}
 	
@@ -110,6 +111,7 @@ public class DefaultName {
 		text.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
+				if (text.getText() == null) return;
 				if (text.getText().length() > 0)
 					name = text.getText();
 				if (btnCheckButton.getSelection()) saveName();
@@ -122,6 +124,7 @@ public class DefaultName {
 		btnNewButton.setText("确认");
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
+				if (text.getText() == null) return;
 				if (text.getText().length() > 0)
 					name = text.getText();
 				if (btnCheckButton.getSelection()) saveName();

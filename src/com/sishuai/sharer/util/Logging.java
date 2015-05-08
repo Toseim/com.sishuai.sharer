@@ -49,7 +49,7 @@ public class Logging {
 	}
 	public void Output(String string) {
         System.out.println(string);
-        byte[] content = string.getBytes();
+        byte[] content = (string+"\n").getBytes();
         try {
             bos.write(content, 0, content.length);
         } catch (IOException e) {

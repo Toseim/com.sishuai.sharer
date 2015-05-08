@@ -1,41 +1,63 @@
 package com.sishuai.sharer;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStream;
+import java.net.URI;
+
+import org.eclipse.core.filesystem.IFileInfo;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.provider.FileStore;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /**
  * 
  * 用来临时测试的地方
  *
  */
-public class Test {
-	public static void main(String[] args){
-		byte[] buf = null;
-		try {
-			buf = "abcdefg\n".getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File("/home/tose/a.txt")));
-			try {
-				bos.write(buf, 0, buf.length);
-				bos.flush();
-				bos.write(buf, 0, buf.length);
- 				bos.flush();
-				bos.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
+public class Test extends FileStore{
+
+	@Override
+	public String[] childNames(int arg0, IProgressMonitor arg1)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IFileInfo fetchInfo(int arg0, IProgressMonitor arg1)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IFileStore getChild(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IFileStore getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public InputStream openInputStream(int arg0, IProgressMonitor arg1)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public URI toURI() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

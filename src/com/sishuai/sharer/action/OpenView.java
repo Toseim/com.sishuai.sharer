@@ -1,12 +1,23 @@
 package com.sishuai.sharer.action;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IDE;
 
 import com.sishuai.sharer.util.Logging;
 /**
@@ -32,6 +43,35 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			MessageDialog.openError(window.getShell(), "Error", "There is Something Wrong!");
+		}
+//		IPath path = new Path("/run/media/tose/GMW/workspace/Test/src/DialogBox2.java");
+//		try {
+//			IDE.openEditorOnFileStore(page,new Test().getFileStore(path));
+//		} catch (PartInitException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("Test");
+		IFile file = project.getFile(new Path("/FindIP.java"));
+		try {
+			IDE.openEditor(page, file);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		}
+	}
+	
+	public void showMethod(IMember member) {
+		try {
+			ICompilationUnit icu = member.getCompilationUnit();
+			IEditorPart javaEditor = JavaUI.openInEditor(icu);
+			JavaUI.revealInEditor(javaEditor, (IJavaElement)member);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

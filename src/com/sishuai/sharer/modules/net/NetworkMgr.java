@@ -57,7 +57,7 @@ public class NetworkMgr {
 					}
 				}
 				ClientInfo.getIPList().add(IP);
-System.out.println("I found my ip is " + IP);
+				Logging.info("");
 				return IP;
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -83,7 +83,6 @@ System.out.println("I found my ip is " + IP);
 
 	public void setName(String name) {
 		this.name = name;
-System.out.println("set a name with " + name);
 	}
 
 	public ServerSocket getServersocket() {
@@ -115,7 +114,7 @@ System.out.println("set a name with " + name);
 					datagramSocket = new DatagramSocket(UDPport);
 					new Thread(new RecvThread(datagramSocket, false)).start();
 				} catch (Exception e) {
-					continue;
+					Logging.fatal("");
 				}
 				Logging.getLogger().setFileName("NetWorkMgr");
 				Logging.info("开启一个DatagramSocket服务，端口在"+UDPport);
