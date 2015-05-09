@@ -137,7 +137,7 @@ public class ChatDialog extends Action{
 			
 			public void widgetSelected(SelectionEvent e){
 				dialogText.setForeground(createdblue);
-				dialogText.append(clientInfo.getName()+": /n"+text.getText()+"\n");
+				dialogText.append(clientInfo.getName()+": \n"+text.getText()+"\n");
 				Logging.info("传送text消息到"+clientInfo.getName());
 				send(text.getText());
 				text.setText("");
@@ -159,7 +159,7 @@ public class ChatDialog extends Action{
 	public void send(String string) {
 		try {
 			DataOutputStream dos = clientInfo.getDataOutputStream();
-			dos.writeUTF(string);
+			dos.writeUTF(clientInfo.getName()+": \n"+text.getText()+"\n");
 			dos.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -3,6 +3,7 @@ package com.sishuai.sharer.modules;
 import java.util.Date;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
+import com.sishuai.sharer.util.Utils;
 
 /**
  * 存放文件的信息
@@ -20,12 +21,15 @@ public class FileInfo implements ItemInfo{
 	//4
 	private String fTime;
 	//5
-	private int len;
+	private String len;
 	
-	public FileInfo(String filename, int len) {
+	private String filePath;
+	
+	public FileInfo(String filePath, String filename, long len) {
+		this.filePath = filePath;
 		this.filename = filename;
-		this.len = len;
-		this.fTime = new Date().toString();
+		this.len = Utils.decimalFormat.format(len / 1024);
+		this.fTime = Utils.simpleDateFormat.format(new Date());
 	}
 	
 	public String getState() {
@@ -48,11 +52,8 @@ public class FileInfo implements ItemInfo{
 	public void setTimes(String times) {
 		this.fTime = times;
 	}
-	public int getLen() {
+	public String getLen() {
 		return len;
-	}
-	public void setLen(int len) {
-		this.len = len;
 	}
 
 	public int getLineEdit() {
@@ -61,9 +62,9 @@ public class FileInfo implements ItemInfo{
 	public void setLineEdit(int lineEdit) {
 		this.lineEdit = lineEdit;
 	}
-	
-	public void showDetail() {
-		
+
+	public String getFilePath() {
+		return filePath;
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class FileInfo implements ItemInfo{
 	@Override
 	public String getFive() {
 		// TODO Auto-generated method stub
-		return len+"";
+		return len+"kb";
 	}
 	
 }

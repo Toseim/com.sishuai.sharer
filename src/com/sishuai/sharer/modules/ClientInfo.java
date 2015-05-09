@@ -4,6 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,7 +16,6 @@ import org.eclipse.swt.widgets.Display;
 
 import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
-import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 
 /**
@@ -163,7 +166,7 @@ public class ClientInfo implements ItemInfo{
 		String string = temp;
 		temp = "";
 		msgs = 0;
-		ContentManager.getManager().updateItems();
+		ContentManager.getMgr().updateItems();
 		return string;
 	}
 
@@ -193,6 +196,64 @@ public class ClientInfo implements ItemInfo{
 		return getFiles().size()+"";
 	}
 	
+	public void sendFile(String filePath) {
+		BufferedInputStream bis = null;
+		try {
+			dos.writeUTF("$");
+			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\")));
+			bis = new BufferedInputStream(new FileInputStream(filePath));
+			byte[] buf = new byte[1024];
+			//int count = 0;
+			while (bis.read(buf, 0, buf.length) != -1) {
+			//	count ++;
+				dos.write(buf, 0, buf.length);
+				dos.flush();
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (bis != null)
+				try {
+					bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	public void acceptFile() {
+		Logging.getLogger().setFileName("ClientInfo");
+		try {
+			String filename = dis.readUTF();
+			Logging.info("接收文件就绪，文件名 " + filename);
+			BufferedOutputStream bos = null;
+			String filePath =ProjectMgr.getFilePath(filename);
+			File file = new File(filePath);
+			byte[] buf = new byte[1024];
+			while (dis.read(buf, 0, buf.length) != -1) {
+				bos = new BufferedOutputStream(
+						new FileOutputStream(file));
+				bos.write(buf, 0, buf.length);
+			}
+			if (bos != null) bos.close();
+			getFiles().add(new FileInfo(filePath, filename, file.length()));
+			
+			ContentManager.getMgr().updateItems();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	class RecvThread implements Runnable {
 		
 		@Override
@@ -201,10 +262,13 @@ public class ClientInfo implements ItemInfo{
 			try {
 				while (true) {
 					String string = dis.readUTF();
+					if (string.equals("$")) {
+						acceptFile();
+						continue;
+					}
 					
-					String sn = NetworkMgr.getMgr().getName() + ": " + string + "\n";
 					//对消息进行分类处理
-					//一共两种，一个是普通的文本对话消息，另一个是file的内容
+					//一共两种，一个是普通的文本对话.消息，另一个是file的内容
 					if (isDialogOpened)
 						new Thread(new Runnable() {
 							@Override
@@ -214,16 +278,16 @@ public class ClientInfo implements ItemInfo{
 									@Override
 									public void run() {
 										// TODO Auto-generated method stub
-										chatDialog.getDialog().append(sn);
+										chatDialog.getDialog().append(string);
 									}
 								});
 							}
 						}).start();
 					else {
 						msgs++;
-						temp += temp + sn;
+						temp += temp + string;
 					}
-					ContentManager.getManager().updateItems();
+					ContentManager.getMgr().updateItems();
 				}
 					
 			} catch (IOException e) {
@@ -235,7 +299,7 @@ public class ClientInfo implements ItemInfo{
 					if (dos != null) dos.close();
 					if (socket != null) socket.close();
 					ClientInfo.getClients().remove(this);
-					ContentManager.getManager().updateItems();
+					ContentManager.getMgr().updateItems();
 				} catch (IOException e_1) {
 					// TODO Auto-generated catch block
 					e_1.printStackTrace();

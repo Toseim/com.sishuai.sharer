@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 import com.sishuai.sharer.Activator;
 
@@ -20,10 +19,10 @@ public class Logging {
 			Activator.getDefault().getStateLocation().append("sharer.log").toFile();
 	private BufferedOutputStream bos;
     private String fileName;
-    private SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-d HH:mm:ss]");
+    
     public String wrap() {
         long nowTime = System.currentTimeMillis();
-        return sdf.format(nowTime)+" ["+fileName+"]";
+        return Utils.simpleDateFormat.format(nowTime)+" ["+fileName+"]";
     }
     public void setFileName(String filename) {
         this.fileName = filename;

@@ -78,7 +78,7 @@ public class ExitMsg implements Msg {
 					ClientInfo clientInfo = ClientInfo.getClients().get(i);
 					if (clientInfo.getIp().equals(uIP)) {
 						ClientInfo.getClients().remove(clientInfo);
-						ContentManager.getManager().updateItems();
+						ContentManager.getMgr().updateItems();
 					}
 				}
 			}

@@ -52,7 +52,6 @@ public class OthLink extends Action {
 	public void run() {
 		Logging.getLogger().setFileName("OthLink");
 		Logging.info("打开用户自定义网络输入框");
-		NetworkMgr.setState(true);
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.ON_TOP);
 		//居中显示
@@ -73,6 +72,10 @@ public class OthLink extends Action {
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (btnNewButton.isEnabled()) {
+					if (NetworkMgr.getState()) {
+						MessageDialog.openWarning(shell, "连接受堵", "网络正在被占用，请稍后再试");
+						return;
+					}
 					objectIP = text.getText();
 					Logging.info("获得用户输入的IP:"+objectIP);
 					shell.setVisible(false);
@@ -115,6 +118,10 @@ public class OthLink extends Action {
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				// TODO Auto-generated method stub
 				if (btnNewButton.isEnabled()) {
+					if (NetworkMgr.getState()) {
+						MessageDialog.openWarning(shell, "连接受堵", "网络正在被占用，请稍后再试");
+						return;
+					}
 					objectIP = text.getText();
 					Logging.info("获得用户输入的IP:"+objectIP);
 					shell.setVisible(false);
@@ -128,14 +135,15 @@ public class OthLink extends Action {
 		while (!shell.isDisposed())
 			if (!display.readAndDispatch())
 				display.sleep();
-		Logging.info("窗口关闭，释放内存");
+		Logging.info("自定义网络窗口已关闭");
 		shell.dispose();
 	}
 	
 	public void next() {
 		if (objectIP == null)
 			return;
-		//获得或初始化serversocket   //tcp
+		NetworkMgr.setState(true);
+		//获得或初始化serversocket
 		serverSocket = NetworkMgr.getMgr().getServersocket();
 		//连接对面
 		NetworkMgr.getMgr().attempLink(objectIP);
@@ -185,7 +193,7 @@ public class OthLink extends Action {
 				ClientInfo.getIPList().add(objectIP);
 				Logging.info("Ip加入已知ip列表中");
 				//refresh
-				ContentManager.getManager().updateItems();
+				ContentManager.getMgr().updateItems();
 				//消息通知
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
@@ -207,8 +215,9 @@ public class OthLink extends Action {
 						view.showMessage("");
 					}
 				});
+			} finally {
+				NetworkMgr.setState(false);
 			}
-			NetworkMgr.setState(false);
 		}
 	}
 }

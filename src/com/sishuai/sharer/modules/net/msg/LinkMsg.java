@@ -153,7 +153,7 @@ public class LinkMsg implements Msg {
 							Logging.fatal("传输本地用户名失败，连接已经关闭");
 							NetworkMgr.getMgr().disconnect(clientInfo);
 						}
-						ContentManager.getManager().updateItems();
+						ContentManager.getMgr().updateItems();
 					}
 				});
 			}

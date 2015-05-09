@@ -18,7 +18,7 @@ public class ContentManager {
 	private TreeViewer viewer;
 	
 	
-	public static ContentManager getManager() {
+	public static ContentManager getMgr() {
 		if (contentmanager == null) {
 			contentmanager = new ContentManager();
 		}

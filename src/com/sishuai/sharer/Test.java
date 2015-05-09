@@ -1,63 +1,34 @@
 package com.sishuai.sharer;
-
-import java.io.InputStream;
-import java.net.URI;
-
-import org.eclipse.core.filesystem.IFileInfo;
-import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.filesystem.provider.FileStore;
+import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-
-/**
- * 
- * 用来临时测试的地方
- *
- */
-public class Test extends FileStore{
-
-	@Override
-	public String[] childNames(int arg0, IProgressMonitor arg1)
-			throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IFileInfo fetchInfo(int arg0, IProgressMonitor arg1)
-			throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IFileStore getChild(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IFileStore getParent() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public InputStream openInputStream(int arg0, IProgressMonitor arg1)
-			throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public URI toURI() {
-		// TODO Auto-generated method stub
-		return null;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.PreferenceConstants;
+public class Test {
+	public static void main(String args){
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		// 创建新项目
+		final IProject project = root.getProject("Share");
+		// 设置工程的位置
+		// 为项目指定存放路径,默认放在当前工作区
+		IWorkspace workspace = root.getWorkspace();
+		final IProjectDescription description = workspace
+				.newProjectDescription(project.getName());
+		description.setLocation(null);
+		System.out.println(workspace.toString());
 	}
 }

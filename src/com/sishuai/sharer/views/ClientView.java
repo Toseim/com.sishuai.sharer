@@ -147,8 +147,8 @@ public class ClientView extends ViewPart {
 		Logging.info("内容装填中...");
 		viewer.setContentProvider(new ClientTreeContentProvider());
 		viewer.setLabelProvider(new ClientTableLabelProvider());
-		viewer.setInput(ContentManager.getManager());
-		ContentManager.getManager().setTreeViewer(viewer);
+		viewer.setInput(ContentManager.getMgr());
+		ContentManager.getMgr().setTreeViewer(viewer);
 		NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
 		//默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
@@ -237,6 +237,9 @@ public class ClientView extends ViewPart {
 					System.out.println(((ClientInfo)event.item.getData()).getIp());
 					System.out.println(event.widget);
 					String[] files = (String[]) event.data;
+					for (int i = 0; i < files.length; i++) {
+						((ClientInfo)event.item.getData()).sendFile(files[i]);
+					}
 					for (int i = 0; i < files.length; i++) {
 						System.out.println(files[i]);
 					}

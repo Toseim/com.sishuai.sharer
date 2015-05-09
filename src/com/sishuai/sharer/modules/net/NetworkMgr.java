@@ -6,12 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
-import java.util.Random;
 import java.util.regex.Pattern;
 
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
 import com.sishuai.sharer.util.Logging;
+import com.sishuai.sharer.util.Utils;
 
 /**
  * 网络管理的类，应尽量把网络的相关东西搬到这里，方便管理
@@ -24,7 +24,6 @@ public class NetworkMgr {
 	public static Pattern pattern3 = Pattern.compile("^172\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	
 	private static NetworkMgr networkMgr;
-	private Random random = new Random();
 	private ServerSocket serverSocket;
 	private int TCPport = 0;
 	private final int UDPport = 37384;   //默认的端口
@@ -42,6 +41,7 @@ public class NetworkMgr {
 	}
 	
 	public String getIP() {
+		Logging.getLogger().setFileName("NetworkMgr");
 		if (IP == null) {
 			try {
 				//获得本机所有IP
@@ -57,7 +57,7 @@ public class NetworkMgr {
 					}
 				}
 				ClientInfo.getIPList().add(IP);
-				Logging.info("");
+				Logging.info("获得本机局域网的IP为 "+IP);
 				return IP;
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -86,7 +86,7 @@ public class NetworkMgr {
 	}
 
 	public ServerSocket getServersocket() {
-		Logging.getLogger().setFileName("NetWorkMgr");
+		Logging.getLogger().setFileName("NetworkMgr");
 		if (serverSocket == null || serverSocket.isClosed()) {
 			while (true) {
 				try {
@@ -103,7 +103,7 @@ public class NetworkMgr {
 	}
 	public int getTCPport() {
 		if (TCPport == 0) 
-			TCPport = random.nextInt(55535) +10000;
+			TCPport = Utils.random.nextInt(55535) +10000;
 		return TCPport;
 	}
 	
@@ -112,12 +112,12 @@ public class NetworkMgr {
 			while (true) {
 				try {
 					datagramSocket = new DatagramSocket(UDPport);
+					Logging.getLogger().setFileName("NetworkMgr");
+					Logging.info("开启一个DatagramSocket服务，端口在"+UDPport);
 					new Thread(new RecvThread(datagramSocket, false)).start();
 				} catch (Exception e) {
-					Logging.fatal("");
+					Logging.fatal("UDP服务发生错误。。");
 				}
-				Logging.getLogger().setFileName("NetWorkMgr");
-				Logging.info("开启一个DatagramSocket服务，端口在"+UDPport);
 				break;
 			}
 		}
@@ -131,10 +131,10 @@ public class NetworkMgr {
 	}
 	
 	public void createTempSend(DatagramPacket dp) {
-		Logging.getLogger().setFileName("NetWorkMgr");
+		Logging.getLogger().setFileName("NetworkMgr");
 		while (true) {
 			try {
-				DatagramSocket ds = new DatagramSocket(random.nextInt(55535)+10000);
+				DatagramSocket ds = new DatagramSocket(Utils.random.nextInt(55535)+10000);
 				Logging.info("打开一个UDP端口，发送数据包");
 				ds.send(dp);
 				Logging.info("端口关闭中..");
@@ -164,6 +164,7 @@ public class NetworkMgr {
 	public void disconnect(ClientInfo clientInfo) {
 		if (clientInfo == null) return;
 		try {
+			Logging.getLogger().setFileName("NetworkMgr");
 			Logging.warning("正在从用户组中删除"+clientInfo.getName());
 			clientInfo.setConnected(false);
 			if (clientInfo.getDataInputStream() != null)

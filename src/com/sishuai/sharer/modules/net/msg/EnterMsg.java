@@ -70,7 +70,7 @@ public class EnterMsg implements Msg {
 				ClientInfo.getIPList().add(uIP);
 				ClientInfo.getClients().add(new ClientInfo(uIP, uNickName));
 				Logging.info("添加用户入用户组");
-				ContentManager.getManager().updateItems();
+				ContentManager.getMgr().updateItems();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -90,7 +90,7 @@ public class TCPConnect extends Action {
 				clientInfo.setSocket(socket);
 				clientInfo.setConnected(true);
 				
-				ContentManager.getManager().updateItems();
+				ContentManager.getMgr().updateItems();
 				//未测试过
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
