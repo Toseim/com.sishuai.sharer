@@ -20,7 +20,7 @@ public class Logging {
 			Activator.getDefault().getStateLocation().append("sharer.log").toFile();
 	private BufferedOutputStream bos;
     private String fileName;
-    private SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-d HH:mm:ss]");
+    public static SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-d HH:mm:ss]");
     public String wrap() {
         long nowTime = System.currentTimeMillis();
         return sdf.format(nowTime)+" ["+fileName+"]";

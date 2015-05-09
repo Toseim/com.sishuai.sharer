@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,7 +16,6 @@ import org.eclipse.swt.widgets.Display;
 
 import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
-import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 
 /**
@@ -37,7 +37,6 @@ public class ClientInfo implements ItemInfo{
 	
 	//一些与界面相关的信息
 	private boolean isDialogOpened = false;
-	private boolean isChatting = true;
 	private ChatDialog chatDialog;
 	private Socket socket;
 	private DataInputStream dis;
@@ -201,6 +200,7 @@ public class ClientInfo implements ItemInfo{
 		BufferedInputStream bis = null;
 		try {
 			dos.writeUTF("$");
+			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\")));
 			bis = new BufferedInputStream(new FileInputStream(filePath));
 			byte[] buf = new byte[1024];
 			int count = 0;
@@ -226,26 +226,45 @@ public class ClientInfo implements ItemInfo{
 		}
 	}
 	
+	public void acceptFile() {
+		try {
+			String filename = dis.readUTF();
+			BufferedOutputStream bos = null;
+			String filePath = "" + filename;
+			File file = new File(filePath);
+			byte[] buf = new byte[1024];
+			while (dis.read(buf, 0, buf.length) != -1) {
+				
+				bos = new BufferedOutputStream(
+						new FileOutputStream(file));
+				bos.write(buf, 0, buf.length);
+			}
+			if (bos != null) bos.close();
+			getFiles().add(new FileInfo(filePath, filename, file.length()));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	class RecvThread implements Runnable {
 		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			try {
-				byte[] buf = new byte[1024];
 				while (true) {
 					String string = dis.readUTF();
 					if (string.equals("$")) {
-						while (dis.read(buf, 0, buf.length) != -1) {
-							BufferedOutputStream bos = new BufferedOutputStream(
-									new FileOutputStream("filepath"));
-							bos.write(buf, 0, buf.length);
-						}
+						acceptFile();
 						continue;
 					}
 					
 					//对消息进行分类处理
-					//一共两种，一个是普通的文本对话消息，另一个是file的内容
+					//一共两种，一个是普通的文本对话.消息，另一个是file的内容
 					if (isDialogOpened)
 						new Thread(new Runnable() {
 							@Override
