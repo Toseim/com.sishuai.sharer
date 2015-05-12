@@ -5,14 +5,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.SocketException;
 
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 
 /**
@@ -21,7 +20,7 @@ import com.sishuai.sharer.util.Logging;
  *
  */
 public class ExitMsg implements Msg {
-	private static int msgType = Msg.MSG_EXIT;
+	private static int msgType = MSG_EXIT;
 	private String IP;
 	
 	public ExitMsg(String IP) {
@@ -31,7 +30,7 @@ public class ExitMsg implements Msg {
 	}
 	
 	@Override
-	public void send(DatagramSocket ds, Object group, int port) {
+	public void send(Object group, int port) {
 		// TODO Auto-generated method stub
 		byte[] buf = new byte[1024];
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -44,15 +43,10 @@ public class ExitMsg implements Msg {
 			Logging.info("写入IP");
 			dos.writeUTF(IP);
 			dos.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		buf = baos.toByteArray();
-		DatagramPacket dp = new DatagramPacket(buf, buf.length, (InetAddress)group, port);
-		try {
+			buf = baos.toByteArray();
+			DatagramPacket dp = new DatagramPacket(buf, buf.length, (InetAddress)group, port);
 			Logging.info("发送用户离开信息");
-			((MulticastSocket)ds).send(dp);
+			NetworkMgr.getMgr().getMulticastSocket().send(dp);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,9 +55,16 @@ public class ExitMsg implements Msg {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Logging.fatal("写入数据包失败");
+		} finally {
+			if (dos != null)
+				try {
+					dos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
-
 	@Override
 	public void parse(DataInputStream dis) {
 		// TODO Auto-generated method stub

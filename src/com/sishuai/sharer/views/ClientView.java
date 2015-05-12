@@ -81,7 +81,6 @@ public class ClientView extends ViewPart {
 	private ChatDialog chatDialog;
 	private OthLink othLink;
 	private MulticastServer multicastServer;
-//	private Transport transport = new Transport();
 
 	class NameSorter extends ViewerSorter {
 	}
@@ -128,6 +127,8 @@ public class ClientView extends ViewPart {
 		statusline = getViewSite().getActionBars()
 				.getStatusLineManager();
 		
+		NetworkMgr.getMgr().setView(this);
+		
 		viewer.addOpenListener(new IOpenListener() {
 			@Override
 			public void open(OpenEvent event) {
@@ -143,6 +144,13 @@ public class ClientView extends ViewPart {
 				getNameFlag = false;
 			}
 		});
+		
+		{
+			ClientInfo cif = new ClientInfo("127.322.122.3", "hahaha");
+			cif.setConnected(true);
+			ClientInfo.getClients().add(cif);
+		}
+		
 		Logging.getLogger().setFileName("ClientView");
 		Logging.info("内容装填中...");
 		viewer.setContentProvider(new ClientTreeContentProvider());
@@ -193,15 +201,13 @@ public class ClientView extends ViewPart {
 	private void createAction() {
 		// TODO Auto-generated method stub
 		Logging.info("装载上下文，下拉栏操作。。");
-		TCPConnect.getTcpConnect().setView(this);
 		tcpConnect = TCPConnect.getTcpConnect();
+		tcpConnect.setView(this);
 
-		OthLink.getOthLink().setView(this);
 		othLink = OthLink.getOthLink();
 
 		chatDialog = new ChatDialog(this);
-		multicastServer = NetworkMgr.getMgr().getMulticastServer();
-		
+		multicastServer = MulticastServer.getMulticastServer();
 		dropSupport();
 		setDefaultState();
 	}

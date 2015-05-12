@@ -1,5 +1,6 @@
 package com.sishuai.sharer.action;
 
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -7,16 +8,19 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.CoolBar;
-import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.modules.ClientInfo;
@@ -32,9 +36,10 @@ import com.sishuai.sharer.views.ClientView;
 public class ChatDialog extends Action{
 	private ClientView view;
 	private Text dialogText;
-	private Text text;
-	private Group group1;
-	private Group group2;
+	private Text text_2;
+	private Font font;
+	private Group group_1;
+	private Group group_3;
 	private ClientInfo clientInfo;
 	private static final int height = 500;
 	private static final int width = 600;
@@ -60,89 +65,101 @@ public class ChatDialog extends Action{
 		}
 		Logging.info(clientInfo.getName()+"的窗口打开中");
 		clientInfo.setDialogOpened(true);
+		
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display,SWT.MIN);
-		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2, width, height);
-		shell.open();
+		final GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 5;
+		shell.setLayout(gridLayout);
 		shell.setText(clientInfo.getName());
+		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2, width, height);
+		shell.setSize(width, height);
+		shell.setVisible(true);
+		shell.open();
 		
-		Color createdblue = new Color(display,0,0,255);
+		font = new Font(display, "微软雅黑", 11, SWT.NONE);
+		// 第一行
+		group_1 = new Group(shell, SWT.NONE);
+		group_1.setText("Chatting Area");
 
-		group1 = new Group(shell,SWT.NONE);
-		group1.setText("Chatting Area");
-		group1.setBounds(10,0,572,330);
-		
-		dialogText = new Text(group1,SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		dialogText.setText("");
-		dialogText.setEditable(false);
-		dialogText.setBounds(10,22, 555, 297);
+		final GridData gridData_1 = new GridData(SWT.FILL, SWT.FILL, true,false, 5, 1);
+		gridData_1.heightHint = 300;
+		int group_height = gridData_1.heightHint;
+
+		group_1.setLayoutData(gridData_1);
+
+		dialogText = new Text(group_1, SWT.MULTI | SWT.WRAP| SWT.V_SCROLL);
+		dialogText.setFont(font);
 		dialogText.setText(clientInfo.getTempString());
+		dialogText.setEditable(false);
+		// 如何让他填满group_1
+		dialogText.setBounds(10, 22, 555, group_height - 10);
 		
-		final Label line1 = new Label(shell,SWT.SEPARATOR|SWT.HORIZONTAL);
-		line1.setBounds(0,333,600,10);
-		
-		final Label line2 = new Label(shell,SWT.SEPARATOR|SWT.HORIZONTAL);
-		line2.setBounds(0,370,600,10);
-
-		group2 = new Group(shell, SWT.NONE);
-		group2.setText("Input area");
-		group2.setBounds(10,375,572,70);
-				
+		// 第二行
 		Image image1 = ImageMgr.getInstance().getImage(Activator.getImageDescriptor(ImageMgr.IMAGE_FACE));
 		Image image2 = ImageMgr.getInstance().getImage(Activator.getImageDescriptor(ImageMgr.IMAGE_SHOOT));
-		Image image3 = ImageMgr.getInstance().getImage(Activator.getImageDescriptor(ImageMgr.IMAGE_BLANK));
 
-		final CoolBar coolBar = new CoolBar(shell, SWT.NONE);
-		coolBar.setBounds(8,339,563,30);
-		
-		final CoolItem coolItem1 = new CoolItem(coolBar, SWT.PUSH);
-		final Button button1 = new Button(coolBar, SWT.NONE);
-		button1.setImage(image1);
-		button1.setSize(28,28);
-		coolItem1.setControl(button1);
-		coolItem1.setSize(coolItem1.computeSize(28,28));
-		
-		final CoolItem coolItem2 = new CoolItem(coolBar, SWT.PUSH);
-		final Button button2 = new Button(coolBar, SWT.NONE);
-		button2.setImage(image2);
-		button2.setSize(28,28);
-		coolItem2.setControl(button2);
-		coolItem2.setSize(coolItem2.computeSize(27,27));
-		
-		final CoolItem coolItem3 = new CoolItem(coolBar, SWT.PUSH);
-		final Button button3 = new Button(coolBar, SWT.NONE);
-		button3.setImage(image3);
-		button3.setSize(27,27);
-		coolItem3.setControl(button3);
-		coolItem3.setSize(coolItem3.computeSize(27,27));
-		
-		text = new Text(group2, SWT.NONE);
-		text.setText("");
-		text.setBounds(10,22,490,37);
-		text.addSelectionListener(new SelectionAdapter() {
+		final Composite composite_2 = new Composite(shell, SWT.NONE);
+
+		final Label line1 = new Label(composite_2, SWT.SEPARATOR| SWT.HORIZONTAL);
+		line1.setBounds(0, 0, 600, 1);
+
+		final ToolBar toolBar = new ToolBar(composite_2, SWT.FLAT | SWT.WRAP);
+		toolBar.setBounds(0, 0, 600, 35);
+
+		final ToolItem toolItem_1 = new ToolItem(toolBar, SWT.PUSH);
+		toolItem_1.setImage(image1);
+
+		final ToolItem toolItem_2 = new ToolItem(toolBar, SWT.PUSH);
+		toolItem_2.setImage(image2);
+
+		final Label line2 = new Label(composite_2, SWT.SEPARATOR| SWT.HORIZONTAL);
+		line2.setBounds(0, 35, 600, 1);
+
+		composite_2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+				false, 5, 1));
+		//final GridData gridData_2 = new GridData(SWT.FILL, SWT.CENTER, true,false, 5, 1);
+
+		//第三组
+		group_3 = new Group(shell, SWT.NONE);
+		group_3.setText("Inputting area");
+
+		text_2 = new Text(group_3, SWT.NONE);
+		text_2.setText("");
+		text_2.setFont(font);
+		text_2.setBounds(10, 23, 458, 42);
+		text_2.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent event) {
-				dialogText.append(clientInfo.getName()+": \n"+text.getText()+"\n");
-				Logging.info("传送text消息到"+clientInfo.getName());
-				send(text.getText());
-				text.setText("");
+				if (text_2.getText().length() == 0) return; 
+				dialogText.append("  "+NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
+				Logging.info("传送text_2消息到"+clientInfo.getName());
+				send(text_2.getText());
+				text_2.setText("");
 			}
 		});
 	
-		final Button sendButton = new Button(group2, SWT.PUSH);
-		sendButton.setText("发送");
-		sendButton.setBounds(510,20,50,40);
+		final GridData gridData_3 = new GridData(SWT.FILL,SWT.FILL,true,true,5,1);
+		group_3.setLayoutData(gridData_3);
 		
+		final Button sendButton = new Button(group_3, SWT.NONE);
+			
+		sendButton.setLayoutData(gridData_3);
+		sendButton.setText("发送");
+		//sendButton.setFont(font);
+		sendButton.setBounds(482,23,80,42);
 		
 		sendButton.addSelectionListener(new SelectionAdapter() {
-			
 			public void widgetSelected(SelectionEvent e){
-				dialogText.setForeground(createdblue);
-				dialogText.append(clientInfo.getName()+": \n"+text.getText()+"\n");
-				Logging.info("传送text消息到"+clientInfo.getName());
-				send(text.getText());
-				text.setText("");
+				if (text_2.getText().length() == 0) return;
+				
+				dialogText.append("  "+NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
+				Logging.info("传送text_2消息到"+clientInfo.getName());
+				send(text_2.getText());
+				text_2.setText("");
 			}
 		});
+		
+		shell.layout();
 		
 		while(!shell.isDisposed()){
 			if (!display.readAndDispatch()) {
@@ -150,7 +167,7 @@ public class ChatDialog extends Action{
 			}
 		}
 		Logging.info("内存释放中...");
-		createdblue.dispose();
+		
 		shell.dispose();
 		Logging.info("与"+clientInfo.getName()+"的对话窗口已关闭");
 		clientInfo.setDialogOpened(false);
@@ -159,14 +176,13 @@ public class ChatDialog extends Action{
 	public void send(String string) {
 		try {
 			DataOutputStream dos = clientInfo.getDataOutputStream();
-			dos.writeUTF(clientInfo.getName()+": \n"+text.getText()+"\n");
+			dos.writeUTF(NetworkMgr.getMgr().getName()+": \n"+string+"\n");
 			dos.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//用户已经失去连接
 			Logging.warning("消息传输失败，对方已关闭端口...");
 			NetworkMgr.getMgr().disconnect(clientInfo);
-		
 		}
 	}
 	

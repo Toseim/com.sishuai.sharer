@@ -73,6 +73,9 @@ public class RecvThread implements Runnable {
 			case Msg.MSG_LINK:
 				new LinkMsg().parse(dis);
 				break;
+			case Msg.MSG_REFUSE:
+				new LinkMsg().parse(dis);
+				break;
 			default:
 				break;
 			}

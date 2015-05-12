@@ -4,10 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -20,34 +18,33 @@ import com.sishuai.sharer.util.Logging;
 
 /**
  * 
- * @author 四帅
- * 用来存放用户相关信息的类
+ * @author 四帅 用来存放用户相关信息的类
  */
-public class ClientInfo implements ItemInfo{
-	//1
+public class ClientInfo implements ItemInfo {
+	// 1
 	private String name;
-	//2用户对话框新信息数
+	// 2用户对话框新信息数
 	private int msgs = 0;
-	//3文件新动态数
+	// 3文件新动态数
 	private int newFileCount = 0;
-	//4
+	// 4
 	private String ip;
-	//5
+	// 5
 	private boolean isConnected = false;
-	
-	//一些与界面相关的信息
+
+	// 一些与界面相关的信息
 	private boolean isDialogOpened = false;
 	private ChatDialog chatDialog;
 	private Socket socket;
 	private DataInputStream dis;
 	private DataOutputStream dos;
-	
+
 	private String temp = "";
-	
+
 	private ArrayList<FileInfo> files;
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
-	
+
 	public ClientInfo(String ip, String name) {
 		this.ip = ip;
 		this.name = name;
@@ -60,19 +57,21 @@ public class ClientInfo implements ItemInfo{
 	public void setNewFileCount(int newFileCount) {
 		this.newFileCount = newFileCount;
 	}
-	
-	//用户消息
-	public void incMsg(){
+
+	// 用户消息
+	public void incMsg() {
 		msgs++;
 	}
-	public void clearMsg(){
+
+	public void clearMsg() {
 		msgs = 0;
 	}
+
 	public int getMsg() {
 		return msgs;
 	}
-	
-	//获得用户列表
+
+	// 获得用户列表
 	public static ArrayList<ClientInfo> getClients() {
 		if (clients == null) {
 			Logging.getLogger().setFileName("ClientInfo");
@@ -81,8 +80,8 @@ public class ClientInfo implements ItemInfo{
 		}
 		return clients;
 	}
-	
-	//获得ip列表
+
+	// 获得ip列表
 	public static ArrayList<String> getIPList() {
 		if (iptable == null) {
 			Logging.getLogger().setFileName("ClientInfo");
@@ -91,27 +90,30 @@ public class ClientInfo implements ItemInfo{
 		}
 		return iptable;
 	}
-	
-	//连接判断
+
+	// 连接判断
 	public boolean isConnected() {
 		return isConnected;
 	}
-	
-	//设置连接
+
+	// 设置连接
 	public void setConnected(boolean isConnected) {
 		this.isConnected = isConnected;
 	}
-	
+
 	public Socket getSocket() {
 		return socket;
 	}
+
 	public void setSocket(Socket socket) {
 		this.socket = socket;
 		try {
 			Logging.getLogger().setFileName("ClientInfo");
 			Logging.info("架设用户的连接管道");
-			this.dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-			this.dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+			this.dis = new DataInputStream(new BufferedInputStream(
+					socket.getInputStream()));
+			this.dos = new DataOutputStream(new BufferedOutputStream(
+					socket.getOutputStream()));
 			new Thread(new RecvThread()).start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -119,14 +121,16 @@ public class ClientInfo implements ItemInfo{
 			Logging.fatal("构建管道失败..");
 		}
 	}
+
 	public DataInputStream getDataInputStream() {
 		return dis;
 	}
+
 	public DataOutputStream getDataOutputStream() {
 		return dos;
 	}
 
-	//获取交互文件
+	// 获取交互文件
 	public ArrayList<FileInfo> getFiles() {
 		if (files == null) {
 			Logging.getLogger().setFileName("ClientInfo");
@@ -139,13 +143,15 @@ public class ClientInfo implements ItemInfo{
 	public String getIp() {
 		return ip;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public ChatDialog getChatDialog() {
 		return chatDialog;
 	}
@@ -161,7 +167,7 @@ public class ClientInfo implements ItemInfo{
 	public void setDialogOpened(boolean isDialogOpened) {
 		this.isDialogOpened = isDialogOpened;
 	}
-	
+
 	public String getTempString() {
 		String string = temp;
 		temp = "";
@@ -175,39 +181,44 @@ public class ClientInfo implements ItemInfo{
 		// TODO Auto-generated method stub
 		return name;
 	}
+
 	@Override
 	public String getTwo() {
 		// TODO Auto-generated method stub
-		return "Msg[" + msgs+"]";
+		return "Msg[" + msgs + "]";
 	}
+
 	@Override
 	public String getThree() {
-		return "NewFile["+newFileCount+"]";
+		return "NewFile[" + newFileCount + "]";
 	}
+
 	@Override
 	public String getFour() {
 		// TODO Auto-generated method stub
-		return ip+"";
+		return ip + "";
 	}
+
 	@Override
 	public String getFive() {
 		// TODO Auto-generated method stub
-		if (!isConnected) return "No";
-		return getFiles().size()+"";
+		if (!isConnected)
+			return "No";
+		return getFiles().size() + "";
 	}
-	
+
 	public void sendFile(String filePath) {
 		BufferedInputStream bis = null;
 		try {
 			dos.writeUTF("$");
-			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\")));
+			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\")+1));
 			bis = new BufferedInputStream(new FileInputStream(filePath));
 			byte[] buf = new byte[1024];
-			//int count = 0;
+			int count = 0;
 			while (bis.read(buf, 0, buf.length) != -1) {
-			//	count ++;
 				dos.write(buf, 0, buf.length);
 				dos.flush();
+				Logging.info("文件已传输 "+(++count)+"%");
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -225,26 +236,30 @@ public class ClientInfo implements ItemInfo{
 				}
 		}
 	}
-	
+
 	public void acceptFile() {
 		Logging.getLogger().setFileName("ClientInfo");
 		try {
 			String filename = dis.readUTF();
 			Logging.info("接收文件就绪，文件名 " + filename);
-			BufferedOutputStream bos = null;
-			String filePath =ProjectMgr.getFilePath(filename);
-			File file = new File(filePath);
+//			BufferedOutputStream bos = null;
+			// File file = new File(filePath);
+			String code = "";
 			byte[] buf = new byte[1024];
+			int count = 0;
 			while (dis.read(buf, 0, buf.length) != -1) {
-				bos = new BufferedOutputStream(
-						new FileOutputStream(file));
-				bos.write(buf, 0, buf.length);
+				for(int i = 0 ; i < buf.length ; i++){
+					code += (char)buf[i];
+					
+				}
 			}
-			if (bos != null) bos.close();
-			getFiles().add(new FileInfo(filePath, filename, file.length()));
-			
+			ProjectMgr.createJavaProject(filename, code);
+//			if (bos != null)
+//				bos.close();
+			//getFiles().add(new FileInfo(filePath, filename, file.length()));
+
 			ContentManager.getMgr().updateItems();
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -253,9 +268,9 @@ public class ClientInfo implements ItemInfo{
 			e.printStackTrace();
 		}
 	}
-	
+
 	class RecvThread implements Runnable {
-		
+
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -266,9 +281,9 @@ public class ClientInfo implements ItemInfo{
 						acceptFile();
 						continue;
 					}
-					
-					//对消息进行分类处理
-					//一共两种，一个是普通的文本对话.消息，另一个是file的内容
+
+					// 对消息进行分类处理
+					// 一共两种，一个是普通的文本对话.消息，另一个是file的内容
 					if (isDialogOpened)
 						new Thread(new Runnable() {
 							@Override
@@ -289,15 +304,18 @@ public class ClientInfo implements ItemInfo{
 					}
 					ContentManager.getMgr().updateItems();
 				}
-					
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				System.out.println("与"+getName()+"的连接已经断开");
+				Logging.warning("与" + getName() + "的连接已经断开");
 				try {
-					if (dis != null) dis.close();
-					if (dos != null) dos.close();
-					if (socket != null) socket.close();
+					if (dis != null)
+						dis.close();
+					if (dos != null)
+						dos.close();
+					if (socket != null)
+						socket.close();
 					ClientInfo.getClients().remove(this);
 					ContentManager.getMgr().updateItems();
 				} catch (IOException e_1) {

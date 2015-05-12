@@ -3,7 +3,6 @@ package com.sishuai.sharer.modules.net;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.UnknownHostException;
 
 import org.eclipse.jface.action.Action;
 
@@ -16,9 +15,10 @@ import com.sishuai.sharer.modules.net.msg.ExitMsg;
  */
 public class MulticastServer extends Action{
 	
+	private static MulticastServer multicastServer;
+	private int port;
 	private InetAddress group;
-	public static final int port = 8647;
-	private String IP = null;
+	private String IP;
 	private EnterMsg enterMsg;
 	private MulticastSocket multicastSocket;
 	private static boolean state = false;
@@ -28,14 +28,25 @@ public class MulticastServer extends Action{
 		this.IP = NetworkMgr.getMgr().getIP();
 	}
 	
+	public static MulticastServer getMulticastServer() {
+		if (multicastServer == null)
+			multicastServer = new MulticastServer();
+		return multicastServer;
+	}
+	
+	public void setConfig(int port, InetAddress group) {
+		this.port = port;
+		this.group = group;
+	}
+	
 	public void sendMyPacket() {
-		enterMsg.send(multicastSocket, group, port);
+		enterMsg.send(group, port);
 	}
 	
 	public void disConnect() {
 		try {
 			if (multicastSocket != null)
-				new ExitMsg(IP).send(multicastSocket, group, port);
+				new ExitMsg(IP).send(group, port);
 			multicastSocket.leaveGroup(group);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -54,27 +65,13 @@ public class MulticastServer extends Action{
 			return;
 		}
 		setText("close multicast");
-
-		//初始化
-		try {
-			group = InetAddress.getByName("224.2.2.2");
-			multicastSocket = new MulticastSocket(port);
-			multicastSocket.joinGroup(group);
 			
-			//发送自己的数据包
-			enterMsg = new EnterMsg(IP, NetworkMgr.getMgr().getName());
-			enterMsg.send(multicastSocket, group, port);
-System.out.println("Send a entermsg");
-			//接收线程启动
-			new Thread(new RecvThread(multicastSocket, true)).start();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			disConnect();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			disConnect();
-		}
+		multicastSocket = NetworkMgr.getMgr().getMulticastSocket();
+		
+		//发送自己的数据包
+		enterMsg = new EnterMsg(IP, NetworkMgr.getMgr().getName());
+		enterMsg.send(group, port);
+		//接收线程启动
+		new Thread(new RecvThread(multicastSocket, true)).start();
 	}
 }

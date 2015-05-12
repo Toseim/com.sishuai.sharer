@@ -5,13 +5,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.interfaces.Msg;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 
 /**
@@ -20,7 +19,7 @@ import com.sishuai.sharer.util.Logging;
  *
  */
 public class EnterMsg implements Msg {
-	private static int msgType = Msg.MSG_ENTER;
+	private static int msgType = MSG_ENTER;
 	private String IP;
 	private String nickName;
 	
@@ -32,7 +31,7 @@ public class EnterMsg implements Msg {
 	}
 	
 	@Override
-	public void send(DatagramSocket ds, Object group, int port) {
+	public void send(Object group, int port) {
 		// TODO Auto-generated method stub
 		Logging.getLogger().setFileName("EnterMsg");
 		byte[] buf = new byte[1024];
@@ -49,13 +48,20 @@ public class EnterMsg implements Msg {
 			buf = baos.toByteArray();
 			DatagramPacket dp = new DatagramPacket(buf, buf.length, (InetAddress)group, port);
 			Logging.info("发送登录包");
-			((MulticastSocket)ds).send(dp);
+			NetworkMgr.getMgr().getMulticastSocket().send(dp);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Logging.fatal("写入错误，构建包失败");
+		} finally {
+			if (dos != null)
+				try {
+					dos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
-		
 	}
 
 	@Override
