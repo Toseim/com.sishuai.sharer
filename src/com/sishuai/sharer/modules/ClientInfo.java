@@ -213,16 +213,22 @@ public class ClientInfo implements ItemInfo {
 		BufferedInputStream bis = null;
 		try {
 			dos.writeUTF("$");
-			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\") + 1));
+			String os = System.getProperty("os.name");
+			
+			if (os.equals("Linux"))
+				dos.writeUTF(filePath.substring(filePath.lastIndexOf("/") + 1));
+			else if (os.indexOf("Windows") != -1)
+				dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\") + 1));
+			
+			dos.flush();
+			long fileLen = new File(filePath).length();
+			dos.writeLong(fileLen);
 			bis = new BufferedInputStream(new FileInputStream(filePath));
-			byte[] buf = new byte[1024];
-			while (true) {
-				int flag = bis.read(buf, 0, buf.length);
-				if (flag == -1) break;
-				dos.write(buf, 0, buf.length);
-				dos.flush();
-				Logging.info("文件已传输");
-			}
+			byte[] buf = new byte[(int)fileLen];
+			bis.read(buf, 0, buf.length);
+			dos.write(buf, 0, buf.length);
+			dos.flush();
+			Logging.info("文件已传输");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -242,30 +248,23 @@ public class ClientInfo implements ItemInfo {
 
 	public void acceptFile() {
 		Logging.getLogger().setFileName("ClientInfo");
+		BufferedOutputStream bos = null;
 		try {
 			String filename = dis.readUTF();
+			long fileLen = dis.readLong();
 			Logging.info("接收文件就绪，文件名 " + filename);
-			 BufferedOutputStream bos = null;
 
-			String code = "";
-			byte[] buf = new byte[1024];			
 			ProjectMgr.createJavaProject(
-					filename.substring(0, filename.indexOf('.')), code);
-			code = ProjectMgr.path + "/"+filename;
-			File file = new File(code);
-			bos = new BufferedOutputStream(new FileOutputStream(file));
-			while (true) {
-				int flag = dis.read(buf, 0, buf.length);
-				System.out.println("test");
-				System.out.println(flag);
-				if (flag == -1) break;
-				bos.write(buf);
-				bos.flush();
-			}
-			System.out.println("test1");
-			if(bos != null){
-				bos.close();
-			}
+					filename.substring(0, filename.indexOf('.')), "");
+			String filePath = ProjectMgr.path + "/"+filename;
+			bos = new BufferedOutputStream(new FileOutputStream(filePath));
+			byte[] buf = new byte[(int)fileLen];
+			dis.read(buf, 0, buf.length);
+			bos.write(buf, 0, buf.length);
+			bos.flush();
+			Logging.info("success to accept file");
+			getFiles().add(new FileInfo(filePath, filename, fileLen));
+			newFileCount++;
 			ContentManager.getMgr().updateItems();
 
 		} catch (FileNotFoundException e) {
@@ -274,6 +273,14 @@ public class ClientInfo implements ItemInfo {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			if (bos != null)
+				try {
+					bos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 	}
 

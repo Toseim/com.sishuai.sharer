@@ -18,7 +18,7 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 	//用来打开视图的action
 	private IWorkbenchWindow window;
 	public static boolean isOpen = false;
-	
+
 	@Override
 	public void run(IAction arg0) {
 		if (isOpen) return;
