@@ -11,6 +11,7 @@ import com.sishuai.sharer.modules.interfaces.Msg;
 import com.sishuai.sharer.modules.net.msg.EnterMsg;
 import com.sishuai.sharer.modules.net.msg.ExitMsg;
 import com.sishuai.sharer.modules.net.msg.LinkMsg;
+import com.sishuai.sharer.modules.net.msg.RefuseMsg;
 import com.sishuai.sharer.util.Logging;
 
 public class RecvThread implements Runnable {
@@ -74,7 +75,8 @@ public class RecvThread implements Runnable {
 				new LinkMsg().parse(dis);
 				break;
 			case Msg.MSG_REFUSE:
-				new LinkMsg().parse(dis);
+				System.out.println("refuse msg");
+				new RefuseMsg().parse(dis);
 				break;
 			default:
 				break;

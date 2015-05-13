@@ -7,7 +7,7 @@ import java.util.Random;
 /**
  * 这个类放一些编写时的工具
  * @author 四帅
- *
+ * clear
  */
 public class Utils {
 	public static Random random = new Random();

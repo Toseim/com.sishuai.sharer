@@ -33,7 +33,7 @@ public class TCPConnect extends Action {
 	}
 
 	public void run() {
-		
+
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo == null) {
 			return;

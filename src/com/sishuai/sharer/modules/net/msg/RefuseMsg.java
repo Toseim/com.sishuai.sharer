@@ -19,6 +19,8 @@ public class RefuseMsg implements Msg{
 	private static final int msgType = MSG_REFUSE;
 	private String IP;
 	
+	public RefuseMsg() {}
+	
 	public RefuseMsg(String IP) {
 		// TODO Auto-generated constructor stub
 		this.IP = IP;
@@ -64,9 +66,12 @@ public class RefuseMsg implements Msg{
 					public void run() {
 						// TODO Auto-generated method stub
 						try {
+							Logging.info("收到对方拒绝的信息");
 							NetworkMgr.getMgr().getTempSocket().close();
+							Logging.info("关闭开放的临时端口");
 							MessageDialog.openInformation(new Shell(Display.getDefault()), 
 									"connection aborted", "the other side refuse your connection request!");
+							NetworkMgr.getMgr().setState(false);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

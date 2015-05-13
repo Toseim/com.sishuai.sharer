@@ -17,9 +17,12 @@ import com.sishuai.sharer.util.Logging;
 public class OpenView implements IWorkbenchWindowActionDelegate {
 	//用来打开视图的action
 	private IWorkbenchWindow window;
+	public static boolean isOpen = false;
 	
 	@Override
 	public void run(IAction arg0) {
+		if (isOpen) return;
+		isOpen = true;
 		// TODO Auto-generated method stub
 		if (window == null) return;
 		IWorkbenchPage page = window.getActivePage();
@@ -73,6 +76,7 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		System.out.println("openview is dispose");
 	}
 
 	@Override

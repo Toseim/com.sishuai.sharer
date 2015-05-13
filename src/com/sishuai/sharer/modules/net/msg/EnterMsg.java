@@ -80,7 +80,6 @@ public class EnterMsg implements Msg {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 			Logging.fatal("解包失败...丢弃包..");
 		}
 	}

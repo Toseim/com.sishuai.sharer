@@ -4,8 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -211,14 +213,15 @@ public class ClientInfo implements ItemInfo {
 		BufferedInputStream bis = null;
 		try {
 			dos.writeUTF("$");
-			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\")+1));
+			dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\") + 1));
 			bis = new BufferedInputStream(new FileInputStream(filePath));
 			byte[] buf = new byte[1024];
-			int count = 0;
-			while (bis.read(buf, 0, buf.length) != -1) {
+			while (true) {
+				int flag = bis.read(buf, 0, buf.length);
+				if (flag == -1) break;
 				dos.write(buf, 0, buf.length);
 				dos.flush();
-				Logging.info("文件已传输 "+(++count)+"%");
+				Logging.info("文件已传输");
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -242,22 +245,27 @@ public class ClientInfo implements ItemInfo {
 		try {
 			String filename = dis.readUTF();
 			Logging.info("接收文件就绪，文件名 " + filename);
-//			BufferedOutputStream bos = null;
-			// File file = new File(filePath);
-			String code = "";
-			byte[] buf = new byte[1024];
-			int count = 0;
-			while (dis.read(buf, 0, buf.length) != -1) {
-				for(int i = 0 ; i < buf.length ; i++){
-					code += (char)buf[i];
-					
-				}
-			}
-			ProjectMgr.createJavaProject(filename, code);
-//			if (bos != null)
-//				bos.close();
-			//getFiles().add(new FileInfo(filePath, filename, file.length()));
+			 BufferedOutputStream bos = null;
 
+			String code = "";
+			byte[] buf = new byte[1024];			
+			ProjectMgr.createJavaProject(
+					filename.substring(0, filename.indexOf('.')), code);
+			code = ProjectMgr.path + "/"+filename;
+			File file = new File(code);
+			bos = new BufferedOutputStream(new FileOutputStream(file));
+			while (true) {
+				int flag = dis.read(buf, 0, buf.length);
+				System.out.println("test");
+				System.out.println(flag);
+				if (flag == -1) break;
+				bos.write(buf);
+				bos.flush();
+			}
+			System.out.println("test1");
+			if(bos != null){
+				bos.close();
+			}
 			ContentManager.getMgr().updateItems();
 
 		} catch (FileNotFoundException e) {
@@ -304,10 +312,8 @@ public class ClientInfo implements ItemInfo {
 					}
 					ContentManager.getMgr().updateItems();
 				}
-
-			} catch (IOException e) {
+			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
 				Logging.warning("与" + getName() + "的连接已经断开");
 				try {
 					if (dis != null)
@@ -316,7 +322,8 @@ public class ClientInfo implements ItemInfo {
 						dos.close();
 					if (socket != null)
 						socket.close();
-					ClientInfo.getClients().remove(this);
+					ClientInfo.getIPList().remove(ClientInfo.this.getIp());
+					ClientInfo.getClients().remove(ClientInfo.this);
 					ContentManager.getMgr().updateItems();
 				} catch (IOException e_1) {
 					// TODO Auto-generated catch block

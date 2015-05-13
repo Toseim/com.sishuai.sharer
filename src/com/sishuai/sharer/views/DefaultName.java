@@ -19,7 +19,11 @@ import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.util.Logging;
-
+/**
+ * 获得用户的设置的名字
+ * @author 四帅
+ * clear!
+ */
 public class DefaultName {
 	private Text text;
 	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
@@ -109,11 +113,10 @@ public class DefaultName {
 		text.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				if (text.getText() == null) return;
-				if (text.getText().length() > 0)
-					name = text.getText();
+				if (text.getText().length() == 0) return;
+				name = text.getText();
 				if (btnCheckButton.getSelection()) saveName();
-					shell.dispose();
+				shell.dispose();
 			}
 		});
 		
@@ -122,9 +125,8 @@ public class DefaultName {
 		btnNewButton.setText("确认");
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				if (text.getText() == null) return;
-				if (text.getText().length() > 0)
-					name = text.getText();
+				if (text.getText().length() == 0) return;
+				name = text.getText();
 				if (btnCheckButton.getSelection()) saveName();
 				shell.dispose();
 			}

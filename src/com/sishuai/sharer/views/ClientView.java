@@ -21,6 +21,7 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -29,6 +30,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
 import com.sishuai.sharer.action.ChatDialog;
+import com.sishuai.sharer.action.OpenView;
 import com.sishuai.sharer.action.OthLink;
 import com.sishuai.sharer.action.TCPConnect;
 import com.sishuai.sharer.modules.ClientInfo;
@@ -36,6 +38,7 @@ import com.sishuai.sharer.modules.ClientTableLabelProvider;
 import com.sishuai.sharer.modules.ClientTreeContentProvider;
 import com.sishuai.sharer.modules.ContentManager;
 import com.sishuai.sharer.modules.Header;
+import com.sishuai.sharer.modules.ImageMgr;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
@@ -164,9 +167,6 @@ public class ClientView extends ViewPart {
 		createAction();
 		hookContextMenu();
 		contributeToActionBars();
-
-		// 共享视图查看器中的内容
-		getViewSite().setSelectionProvider(viewer);
 	}
 
 	public void addSelectionMonitor() {
@@ -175,9 +175,7 @@ public class ClientView extends ViewPart {
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-				
 				Object obj = selection.getFirstElement();
-				
 				//打开对话框
 				chatDialog.setEnabled(false);
 				if (obj instanceof ClientInfo && ((ClientInfo) obj).isConnected()
@@ -240,8 +238,6 @@ public class ClientView extends ViewPart {
 			}
 			public void drop(DropTargetEvent event) {
 				if (fileTransfer.isSupportedType(event.currentDataType)) {
-					System.out.println(((ClientInfo)event.item.getData()).getIp());
-					System.out.println(event.widget);
 					String[] files = (String[]) event.data;
 					for (int i = 0; i < files.length; i++) {
 						((ClientInfo)event.item.getData()).sendFile(files[i]);
@@ -305,5 +301,15 @@ public class ClientView extends ViewPart {
 	 */
 	public void setFocus() {
 		viewer.getControl().setFocus();
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		super.dispose();
+		OpenView.isOpen = false;
+		System.out.println("hhhhhhhhhhhh");
+		ImageMgr.getInstance().dispose();
+		Logging.getLogger().dispose();
 	}
 }

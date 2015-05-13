@@ -11,7 +11,7 @@ import com.sishuai.sharer.Activator;
 /**
  * log everything
  * @author 四帅
- *
+ * clear
  */
 public class Logging {
 	private static Logging logger;

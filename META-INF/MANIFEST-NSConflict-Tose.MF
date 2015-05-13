@@ -7,12 +7,9 @@ Bundle-Activator: com.sishuai.sharer.Activator
 Bundle-Vendor: SISHUAI
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.jdt.ui;
- bundle-version="3.10.2",
- org.eclipse.core.resources;
- bundle-version="3.9.1",
- org.eclipse.jdt.core;
- bundle-version="3.10.2",
+ org.eclipse.jdt.ui;bundle-version="3.10.2",
+ org.eclipse.core.resources;bundle-version="3.9.1",
+ org.eclipse.jdt.core;bundle-version="3.10.2",
  org.eclipse.core.runtime.compatibility;
  bundle-version="3.2.200"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

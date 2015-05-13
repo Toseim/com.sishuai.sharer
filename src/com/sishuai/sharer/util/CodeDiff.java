@@ -115,6 +115,7 @@ public class CodeDiff {
 //		BufferedWriter bw = new BufferedWriter(
 //				new OutputStreamWriter(new FileOutputStream(mod)));
 		State whi = map[0][0];
+		boolean bool = true;
 		while (whi.dir != 0) {
 			switch (whi.dir) {
 			case 1:
@@ -128,7 +129,15 @@ public class CodeDiff {
 				whi = map[whi.x+1][whi.y];
 				break;
 			case 2:
+				
+				//改过，未验证
+				if (whi.x == len1-1 || bool || whi.y > str2.lastIndexOf(str1.get(len1-1))) {
+					bool = false;
+					System.out.println("-" + dict.get(str1.get(len1-1)));
+					map[len1-1][len2].dir = 2;
+				}
 				System.out.println("+" + dict.get(str2.get(whi.y)));
+				
 				whi = map[whi.x][whi.y+1];
 				break;
 			case 3:

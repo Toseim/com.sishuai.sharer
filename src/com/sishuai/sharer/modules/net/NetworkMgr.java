@@ -146,7 +146,7 @@ public class NetworkMgr {
 				break;
 			}
 		}
-		return null;
+		return tempSocket;
 	}
 	
 	public int getTempPort() {
@@ -244,8 +244,9 @@ public class NetworkMgr {
 			public void run() {
 				// TODO Auto-generated method stub
 				try {
-					Thread.sleep(30000);
+					Thread.sleep(45000);
 					if (socket == null && !tempSocket.isClosed()) {
+						Logging.fatal("用户连接超时");
 						tempSocket.close();
 						isTimeOut = true;
 					}
@@ -270,7 +271,6 @@ public class NetworkMgr {
 						return c;
 			}
 		}
-
 		//添加新的账户并连接
 		clientInfo = new ClientInfo(IP, name);
 		ClientInfo.getClients().add(clientInfo);
@@ -312,13 +312,13 @@ public class NetworkMgr {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						if (isTimeOut) {
-							Logging.fatal("用户连接超时");
-							MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
-							view.showMessage("");
-						}
+						view.showMessage("");
+						setState(false);
+						if (!isTimeOut) return;
+						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
 					}
 				});
+				return;
 			} finally {
 				try {
 					if (dos != null) dos.close();
@@ -329,7 +329,6 @@ public class NetworkMgr {
 					e.printStackTrace();
 				}
 			}
-				
 				
 			try {
 				ClientInfo clientInfo = findClient(objectIP, remoteName);

@@ -89,11 +89,12 @@ public class ChatDialog extends Action{
 		group_1.setLayoutData(gridData_1);
 
 		dialogText = new Text(group_1, SWT.MULTI | SWT.WRAP| SWT.V_SCROLL);
+		dialogText.setBounds(10, 22, 555, group_height - 10);
 		dialogText.setFont(font);
 		dialogText.setText(clientInfo.getTempString());
 		dialogText.setEditable(false);
 		// 如何让他填满group_1
-		dialogText.setBounds(10, 22, 555, group_height - 10);
+		
 		
 		// 第二行
 		Image image1 = ImageMgr.getInstance().getImage(Activator.getImageDescriptor(ImageMgr.IMAGE_FACE));
@@ -131,7 +132,7 @@ public class ChatDialog extends Action{
 		text_2.addSelectionListener(new SelectionAdapter() {
 			public void widgetDefaultSelected(SelectionEvent event) {
 				if (text_2.getText().length() == 0) return; 
-				dialogText.append("  "+NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
+				dialogText.append(NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
 				Logging.info("传送text_2消息到"+clientInfo.getName());
 				send(text_2.getText());
 				text_2.setText("");
@@ -152,7 +153,7 @@ public class ChatDialog extends Action{
 			public void widgetSelected(SelectionEvent e){
 				if (text_2.getText().length() == 0) return;
 				
-				dialogText.append("  "+NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
+				dialogText.append(NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
 				Logging.info("传送text_2消息到"+clientInfo.getName());
 				send(text_2.getText());
 				text_2.setText("");
@@ -185,5 +186,4 @@ public class ChatDialog extends Action{
 			NetworkMgr.getMgr().disconnect(clientInfo);
 		}
 	}
-	
 }

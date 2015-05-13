@@ -149,8 +149,6 @@ public class LinkMsg implements Msg {
 								e.printStackTrace();
 							}
 						}
-						
-						
 						try {
 							clientInfo = NetworkMgr.findClient(remoteIP, name);
 							Logging.info("连接并架设与对方用户的连接管道");

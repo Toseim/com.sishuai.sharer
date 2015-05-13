@@ -3,12 +3,8 @@ package com.sishuai.sharer;
 import java.awt.Toolkit;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
-import com.sishuai.sharer.modules.ImageMgr;
-import com.sishuai.sharer.util.Logging;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -19,7 +15,7 @@ public class Activator extends AbstractUIPlugin {
 	public static final int width = Toolkit.getDefaultToolkit().getScreenSize().width;
 	
 	// The plug-in ID
-	public static final String PLUGIN_ID = "com.sishuai.sharer"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "com.sishuai.sharer"; 
 
 	// The shared instance
 	private static Activator plugin;
@@ -46,9 +42,6 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
-		ImageMgr.getInstance().dispose();
-		Display.getDefault().dispose();
-		Logging.getLogger().dispose();
 	}
 
 	/**
