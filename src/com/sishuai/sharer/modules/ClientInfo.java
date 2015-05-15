@@ -229,13 +229,9 @@ public class ClientInfo implements ItemInfo {
 			dos.write(buf, 0, buf.length);
 			dos.flush();
 			Logging.info("文件已传输");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
+		} catch (Exception e) {
+			Logging.fatal("文件错误");
+		}  finally {
 			if (bis != null)
 				try {
 					bis.close();
@@ -248,20 +244,16 @@ public class ClientInfo implements ItemInfo {
 
 	public void acceptFile() {
 		Logging.getLogger().setFileName("ClientInfo");
-		BufferedOutputStream bos = null;
 		try {
 			String filename = dis.readUTF();
 			long fileLen = dis.readLong();
+			System.out.println(fileLen);
 			Logging.info("接收文件就绪，文件名 " + filename);
-
-			ProjectMgr.createJavaProject(
-					filename.substring(0, filename.indexOf('.')), "");
 			String filePath = ProjectMgr.path + "/"+filename;
-			bos = new BufferedOutputStream(new FileOutputStream(filePath));
 			byte[] buf = new byte[(int)fileLen];
 			dis.read(buf, 0, buf.length);
-			bos.write(buf, 0, buf.length);
-			bos.flush();
+			ProjectMgr.createJavaProject(
+					filename.substring(0, filename.indexOf('.')), new String(buf));
 			Logging.info("success to accept file");
 			getFiles().add(new FileInfo(filePath, filename, fileLen));
 			newFileCount++;
@@ -273,14 +265,6 @@ public class ClientInfo implements ItemInfo {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			if (bos != null)
-				try {
-					bos.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 		}
 	}
 

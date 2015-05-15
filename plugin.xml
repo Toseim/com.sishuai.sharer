@@ -45,7 +45,7 @@
                   icon="icons/sample.gif"
                   id="com.sishuai.sharer.openView"
                   label="open the client view"
-                  state="true"
+                  state="false"
                   toolbarPath="normal/additions"
                   tooltip="start your powerful tool">
             </action>

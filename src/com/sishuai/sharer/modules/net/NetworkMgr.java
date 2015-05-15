@@ -60,9 +60,9 @@ public class NetworkMgr {
 	}
 	
 	public String getIP() {
-		Logging.getLogger().setFileName("NetworkMgr");
 		if (IP == null) {
 			try {
+				Logging.getLogger().setFileName("NetworkMgr");
 				//获得本机所有IP
 				InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
 						getLocalHost().getHostName());

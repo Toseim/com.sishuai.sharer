@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.PreferenceConstants;
 
 public class ProjectMgr {
+	public static boolean flagnew , flagupdated , flagdone , flagcommited;
 	public static String path = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 	public static void createJavaProject(String fileName, String fileCode) {
 		// 获取工作区
@@ -43,15 +44,13 @@ public class ProjectMgr {
 		System.arraycopy(javaNature, 0, newJavaNature, 0, javaNature.length);
 		newJavaNature[javaNature.length] = JavaCore.NATURE_ID; // 这个标记证明本工程是Java工程
 		description.setNatureIds(newJavaNature);
-
 		try {
 			NullProgressMonitor monitor = new NullProgressMonitor();
 			project.create(description, monitor);
 			project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(
 					monitor, 1000));
 		} catch (CoreException e) {
-			e.printStackTrace();
-			System.out.println("Project 已经存在.");
+			System.out.println("检测：Project 已存在.");
 		} finally {
 			// 转化成java工程
 			IJavaProject javaProject = JavaCore.create(project);
@@ -69,7 +68,7 @@ public class ProjectMgr {
 				javaProject.setRawClasspath((IClasspathEntry[]) list
 						.toArray(new IClasspathEntry[list.size()]), null);
 			} catch (JavaModelException e) {
-				System.out.println("JRE导入出错。");
+				System.out.println("检测：JRE存在。");
 			} finally {
 				// 创建输出路径
 				IFolder binFolder = javaProject.getProject().getFolder("bin");
@@ -79,8 +78,8 @@ public class ProjectMgr {
 					javaProject
 							.setOutputLocation(binFolder.getFullPath(), null);
 
-				} catch (CoreException e) {
-					e.printStackTrace();
+				} catch (Exception e) {
+					System.out.println("检测：bin存在。");
 				} finally {
 					// 设置Java生成器
 					try {
@@ -94,8 +93,7 @@ public class ProjectMgr {
 						javaProject.getProject().setDescription(description2,
 								null);
 					} catch (CoreException e) {
-						e.printStackTrace();
-						System.out.println("Java生成器出错。");
+						System.out.println("检测：Java生成器存在。");
 					} finally {
 						// 创建源代码文件夹
 						// 源文件夹和文件夹相似,只是使用PackageFragmentRoot进行了封装
@@ -121,6 +119,7 @@ public class ProjectMgr {
 									.newSourceEntry(new Path("/" + "Share"));
 							if (list.contains(temp)) {
 								list.remove(temp);
+								
 							}
 
 							javaProject.setRawClasspath(
@@ -128,8 +127,7 @@ public class ProjectMgr {
 											.toArray(new IClasspathEntry[list
 													.size()]), null);
 						} catch (CoreException e) {
-							e.printStackTrace();
-							System.out.println("原代码文件夹生成出错。");
+							System.out.println("检测：原代码文件夹存在。");
 						} finally {
 							// ///////////////////////////////创建包//////////////////////////
 							// IPackageFragmentRoot packageFragmentRoot =
@@ -149,8 +147,7 @@ public class ProjectMgr {
 										fileCode, true,
 										new NullProgressMonitor());
 							} catch (Exception e) {
-								e.printStackTrace();
-								System.out.println("文件创建出错。");
+								System.out.println("检测：文件创建出错。");
 							}
 						}
 					}

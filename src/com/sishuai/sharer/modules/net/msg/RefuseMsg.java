@@ -71,7 +71,6 @@ public class RefuseMsg implements Msg{
 							Logging.info("关闭开放的临时端口");
 							MessageDialog.openInformation(new Shell(Display.getDefault()), 
 									"connection aborted", "the other side refuse your connection request!");
-							NetworkMgr.getMgr().setState(false);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

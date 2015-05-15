@@ -94,7 +94,7 @@ public class FileInfo implements ItemInfo{
 	@Override
 	public String getFive() {
 		// TODO Auto-generated method stub
-		return len+"kb";
+		return len+"K";
 	}
 	
 }

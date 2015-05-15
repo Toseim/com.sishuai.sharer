@@ -30,8 +30,15 @@ public class DefaultName {
 	private String name = null;
 	private final int height = 138;
 	private final int width = 418;
+	private static DefaultName instance;
 	
-	public String getName() {
+	public static DefaultName getInstance() {
+		if (instance == null)
+			instance = new DefaultName();
+		return instance;
+	}
+	
+	public String fileInput() {
 		Logging.getLogger().setFileName("DefaultName");
 		BufferedReader br = null;
 		try {
@@ -55,8 +62,8 @@ public class DefaultName {
 					e.printStackTrace();
 				}
 		}
-		if (name != null && name.length()>0) return name;
-		return showView();
+		if (name != null && name.length() == 0) name = null;
+		return name;
 	}
 	
 	public void saveName() {
@@ -91,9 +98,9 @@ public class DefaultName {
 		}
 	}
 	
-	public String showView() {
+	public String viewInput() {
 		Display display = Display.getDefault();
-		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE);
+		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN);
 		shell.setText("欢迎使用我们的插件");
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2+100, width, height);
 		
@@ -137,7 +144,7 @@ public class DefaultName {
 			if (!display.readAndDispatch())
 				display.sleep();
 		shell.dispose();
-		if (name != null) return name.trim();
-		else return null;
+		if (name == null) return null;
+		return name.trim();
 	}
 }

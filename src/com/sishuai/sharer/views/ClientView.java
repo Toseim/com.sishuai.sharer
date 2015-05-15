@@ -1,5 +1,8 @@
 package com.sishuai.sharer.views;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -21,7 +24,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -43,6 +45,7 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
+import com.sun.xml.internal.ws.client.SenderException;
 
 /**
  * This sample class demonstrates how to plug-in a new
@@ -76,8 +79,6 @@ public class ClientView extends ViewPart {
 	 */
 	public static final String ID = "com.sishuai.sharer.views.ClientView";
 
-	private boolean getNameFlag = false;
-	
 	private TreeViewer viewer;
 	private TCPConnect tcpConnect;
 	private IStatusLineManager statusline;
@@ -132,41 +133,45 @@ public class ClientView extends ViewPart {
 		
 		NetworkMgr.getMgr().setView(this);
 		
-		viewer.addOpenListener(new IOpenListener() {
-			@Override
-			public void open(OpenEvent event) {
-				// TODO Auto-generated method stub
-				if (getNameFlag) return;
-				getNameFlag = true;
-				NetworkMgr.getMgr().setName(new DefaultName().getName());
-				if (NetworkMgr.getMgr().getName()==null)
-					return;
-				addSelectionMonitor();
-				multicastServer.setEnabled(true);
-				viewer.removeOpenListener(this);
-				getNameFlag = false;
-			}
-		});
-		
-		{
-			ClientInfo cif = new ClientInfo("127.322.122.3", "hahaha");
-			cif.setConnected(true);
-			ClientInfo.getClients().add(cif);
-		}
-		
 		Logging.getLogger().setFileName("ClientView");
 		Logging.info("内容装填中...");
 		viewer.setContentProvider(new ClientTreeContentProvider());
 		viewer.setLabelProvider(new ClientTableLabelProvider());
 		viewer.setInput(ContentManager.getMgr());
 		ContentManager.getMgr().setTreeViewer(viewer);
-		NetworkMgr.getMgr().getDatagramSocket(); //初始化udp隐藏的，始终打开的端口
+		
 		//默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
 		
 		createAction();
 		hookContextMenu();
 		contributeToActionBars();
+		getName();
+	}
+	
+	public void getName() {
+		String name;
+		if ((name = DefaultName.getInstance().fileInput()) == null) {
+			viewer.addOpenListener(new IOpenListener() {
+				@Override
+				public void open(OpenEvent event) {
+					// TODO Auto-generated method stub
+					String nameInput;
+					if ((nameInput = DefaultName.getInstance().viewInput()) == null)
+						return;
+					NetworkMgr.getMgr().setName(nameInput);
+					addSelectionMonitor();
+					multicastServer.setEnabled(true);
+					NetworkMgr.getMgr().getDatagramSocket();
+					viewer.removeOpenListener(this);
+				}
+			});
+		} else {
+			NetworkMgr.getMgr().setName(name);
+			addSelectionMonitor();
+			multicastServer.setEnabled(true);
+			NetworkMgr.getMgr().getDatagramSocket();
+		}
 	}
 
 	public void addSelectionMonitor() {
@@ -226,6 +231,7 @@ public class ClientView extends ViewPart {
 		Transfer[] transfers = new Transfer[] {fileTransfer};
 		dropTarget.setTransfer(transfers);
 		dropTarget.addDropListener(new DropTargetAdapter() {
+			public ArrayList<File> fileList = new ArrayList();
 			public void dragEnter(DropTargetEvent event) {
 				if (event.detail == DND.DROP_DEFAULT) {
 					if ((event.operations & DND.DROP_COPY) != 0) {
@@ -239,14 +245,39 @@ public class ClientView extends ViewPart {
 			public void drop(DropTargetEvent event) {
 				if (fileTransfer.isSupportedType(event.currentDataType)) {
 					String[] files = (String[]) event.data;
-					for (int i = 0; i < files.length; i++) {
-						((ClientInfo)event.item.getData()).sendFile(files[i]);
+	
+//					for (int i = 0; i < files.length; i++) {
+//						if (event.item.getData() instanceof ClientInfo) {
+//							((ClientInfo)event.item.getData()).sendFile(files[i]);
+//						}
+//					}				
+//				这里是我修改的。下午测试。					
+					changeFile(files[0]);
+					for(int i = 0 ; i < fileList.size(); i++) {
+						if (event.item.getData() instanceof ClientInfo) {
+							((ClientInfo)event.item.getData()).sendFile(fileList.get(i).getAbsolutePath());
+						}
 					}
-					for (int i = 0; i < files.length; i++) {
-						System.out.println(files[i]);
+//					for (int i = 0; i < files.length; i++) {
+//						
+//						System.out.println(files[i]);
+//					}
+				}
+			}
+			
+//辅助实现方法。
+			private void changeFile(String files) {
+				File temp = new File(files);
+				if(temp.isFile()&&temp.getAbsolutePath().endsWith(".java")) {
+					fileList.add(temp);
+				}else if(temp.isDirectory()){
+					File[] floder = temp.listFiles();
+					for(int i = 0 ; i <floder.length;i++) {
+						changeFile(floder[i].getAbsolutePath());
 					}
 				}
 			}
+	
 		});
 	}
 
@@ -273,7 +304,6 @@ public class ClientView extends ViewPart {
 		// manager.add(new Separator());
 		manager.add(multicastServer);
 		manager.add(othLink);
-//		manager.add(transport);
 	}
 
 	public ItemInfo getSelectedItem() {
@@ -308,7 +338,6 @@ public class ClientView extends ViewPart {
 		// TODO Auto-generated method stub
 		super.dispose();
 		OpenView.isOpen = false;
-		System.out.println("hhhhhhhhhhhh");
 		ImageMgr.getInstance().dispose();
 		Logging.getLogger().dispose();
 	}

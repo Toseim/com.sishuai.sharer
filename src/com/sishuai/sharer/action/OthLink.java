@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
+import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 
@@ -64,6 +65,8 @@ public class OthLink extends Action {
 						return;
 					}
 					objectIP = text.getText();
+					if (ClientInfo.getIPList().contains(objectIP))
+						return;
 					Logging.info("获得用户输入的IP:"+objectIP);
 					shell.setVisible(false);
 					shell.dispose();
@@ -110,6 +113,8 @@ public class OthLink extends Action {
 						return;
 					}
 					objectIP = text.getText();
+					if (ClientInfo.getIPList().contains(objectIP))
+						return;
 					Logging.info("获得用户输入的IP:"+objectIP);
 					shell.setVisible(false);
 					shell.dispose();
