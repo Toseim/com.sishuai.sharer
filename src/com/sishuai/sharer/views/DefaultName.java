@@ -25,6 +25,8 @@ import com.sishuai.sharer.util.Logging;
  * clear!
  */
 public class DefaultName {
+	
+	public static boolean state = false;
 	private Text text;
 	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
 	private String name = null;
@@ -67,7 +69,6 @@ public class DefaultName {
 	}
 	
 	public void saveName() {
-		Logging.info("获取用户输入的用户名 "+ name);
 		Logging.info("保存用户名到文件中..");
 		BufferedWriter bw = null;
 		if (!file.exists())
@@ -99,8 +100,9 @@ public class DefaultName {
 	}
 	
 	public String viewInput() {
+		state = true;
 		Display display = Display.getDefault();
-		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN);
+		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.ON_TOP);
 		shell.setText("欢迎使用我们的插件");
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2+100, width, height);
 		
@@ -122,6 +124,7 @@ public class DefaultName {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				if (text.getText().length() == 0) return;
 				name = text.getText();
+				Logging.info("获取用户输入的用户名 "+ name);
 				if (btnCheckButton.getSelection()) saveName();
 				shell.dispose();
 			}
@@ -134,6 +137,7 @@ public class DefaultName {
 			public void widgetSelected(SelectionEvent event) {
 				if (text.getText().length() == 0) return;
 				name = text.getText();
+				Logging.info("获取用户输入的用户名 "+ name);
 				if (btnCheckButton.getSelection()) saveName();
 				shell.dispose();
 			}
@@ -144,6 +148,7 @@ public class DefaultName {
 			if (!display.readAndDispatch())
 				display.sleep();
 		shell.dispose();
+		state = false;
 		if (name == null) return null;
 		return name.trim();
 	}

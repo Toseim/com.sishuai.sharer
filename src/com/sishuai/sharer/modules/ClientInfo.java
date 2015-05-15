@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -230,6 +229,7 @@ public class ClientInfo implements ItemInfo {
 			dos.flush();
 			Logging.info("文件已传输");
 		} catch (Exception e) {
+			e.printStackTrace();
 			Logging.fatal("文件错误");
 		}  finally {
 			if (bis != null)
@@ -305,22 +305,30 @@ public class ClientInfo implements ItemInfo {
 				}
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				Logging.warning("与" + getName() + "的连接已经断开");
-				try {
-					if (dis != null)
-						dis.close();
-					if (dos != null)
-						dos.close();
-					if (socket != null)
-						socket.close();
-					ClientInfo.getIPList().remove(ClientInfo.this.getIp());
-					ClientInfo.getClients().remove(ClientInfo.this);
-					ContentManager.getMgr().updateItems();
-				} catch (IOException e_1) {
-					// TODO Auto-generated catch block
-					e_1.printStackTrace();
-				}
+				disconnect();
+				ContentManager.getMgr().updateItems();
 			}
 		}
 	}
+	public void disconnect() {
+		Logging.warning("与" + getName() + "的连接已经断开");
+		try {
+			if (dis != null)
+				dis.close();
+			if (dos != null)
+				dos.close();
+			if (socket != null || !socket.isClosed())
+				socket.close();
+			ClientInfo.getIPList().remove(getIp());
+			ClientInfo.getClients().remove(this);
+		} catch (IOException e_1) {
+			// TODO Auto-generated catch block
+			e_1.printStackTrace();
+		}
+	}
+	public static void dispose() {
+		clients = null;
+		iptable = null;
+	}
+	
 }

@@ -15,14 +15,14 @@ import com.sishuai.sharer.Activator;
  */
 public class Logging {
 	private static Logging logger;
-	private static final File logFile = Activator.getDefault()
+	private static File logFile = Activator.getDefault()
 			.getStateLocation().append("sharer.log").toFile();
 	private BufferedOutputStream bos;
 	private String fileName;
 
 	public String wrap() {
 		long nowTime = System.currentTimeMillis();
-		return Utils.simpleDateFormat.format(nowTime) + " [" + fileName + "]";
+		return Utils.getSimpleDataFormat().format(nowTime) + " [" + fileName + "]";
 	}
 
 	public void setFileName(String filename) {
@@ -45,12 +45,14 @@ public class Logging {
 
 	public void Output(String string, boolean isflush) {
 		System.out.println(string);
+		if (logger == null) getLogger();
 		byte[] content = (string + "\n").getBytes();
 		try {
 			bos.write(content, 0, content.length);
 			if (isflush)
 				bos.flush();
 		} catch (IOException e) {
+			warning("stream closed");
 			e.printStackTrace();
 		}
 	}
@@ -70,15 +72,13 @@ public class Logging {
 		logger.Output(subFatal, true);
 	}
 
-	public void dispose() {
-		if (bos != null) {
+	public static void dispose() {
+		if (logger == null) return;
+		if (logger.bos != null) {
 			try {
-				bos.close();
+				logger.bos.close();
 			} catch (Exception e) {
-				System.out.println("Catch the bug . ");
-				e.printStackTrace();
 			}
-		}
-
+		}		
 	}
 }

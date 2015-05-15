@@ -52,6 +52,10 @@ public class Activator extends AbstractUIPlugin {
 	public static Activator getDefault() {
 		return plugin;
 	}
+	
+	public static void pluginDispose() {
+		plugin = null;
+	}
 
 	/**
 	 * Returns an image descriptor for the image file at the given

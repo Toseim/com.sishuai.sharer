@@ -28,7 +28,7 @@ public class FileInfo implements ItemInfo{
 	public FileInfo(String filePath, String filename, long len) {
 		this.filePath = filePath;
 		this.filename = filename;
-		this.len = Utils.decimalFormat.format(len / 1024);
+		this.len = Utils.decimalFormat.format(len / 1024.0);
 		this.fTime = Utils.simpleDateFormat.format(new Date());
 	}
 	

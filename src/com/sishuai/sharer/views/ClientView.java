@@ -31,6 +31,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
+import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.action.OpenView;
 import com.sishuai.sharer.action.OthLink;
@@ -45,7 +46,7 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
-import com.sun.xml.internal.ws.client.SenderException;
+import com.sishuai.sharer.util.Utils;
 
 /**
  * This sample class demonstrates how to plug-in a new
@@ -127,7 +128,6 @@ public class ClientView extends ViewPart {
 		// treeColumn5.setText("交互文件数和文件大小");
 		treeColumn5.setWidth(30);
 
-		// eclipse 下面的状态栏，哈哈，我们征用你了
 		statusline = getViewSite().getActionBars()
 				.getStatusLineManager();
 		
@@ -156,6 +156,7 @@ public class ClientView extends ViewPart {
 				@Override
 				public void open(OpenEvent event) {
 					// TODO Auto-generated method stub
+					if (DefaultName.state) return;
 					String nameInput;
 					if ((nameInput = DefaultName.getInstance().viewInput()) == null)
 						return;
@@ -231,12 +232,12 @@ public class ClientView extends ViewPart {
 		Transfer[] transfers = new Transfer[] {fileTransfer};
 		dropTarget.setTransfer(transfers);
 		dropTarget.addDropListener(new DropTargetAdapter() {
-			public ArrayList<File> fileList = new ArrayList();
+			private ArrayList<File> fileList = new ArrayList<File>();
 			public void dragEnter(DropTargetEvent event) {
 				if (event.detail == DND.DROP_DEFAULT) {
 					if ((event.operations & DND.DROP_COPY) != 0) {
 						//if (((ClientInfo)event.item.getData()).isConnected()) 
-							event.detail = DND.DROP_COPY;
+						event.detail = DND.DROP_COPY;
 					} else {
 						event.detail = DND.DROP_NONE;
 					}
@@ -245,27 +246,19 @@ public class ClientView extends ViewPart {
 			public void drop(DropTargetEvent event) {
 				if (fileTransfer.isSupportedType(event.currentDataType)) {
 					String[] files = (String[]) event.data;
-	
-//					for (int i = 0; i < files.length; i++) {
-//						if (event.item.getData() instanceof ClientInfo) {
-//							((ClientInfo)event.item.getData()).sendFile(files[i]);
-//						}
-//					}				
-//				这里是我修改的。下午测试。					
-					changeFile(files[0]);
-					for(int i = 0 ; i < fileList.size(); i++) {
-						if (event.item.getData() instanceof ClientInfo) {
-							((ClientInfo)event.item.getData()).sendFile(fileList.get(i).getAbsolutePath());
+
+					for (int j = 0; j < files.length; j++) {
+						changeFile(files[j]);
+						for(int i = 0 ; i < fileList.size(); i++) {
+							if (event.item != null && event.item.getData() instanceof ClientInfo) {
+								((ClientInfo)event.item.getData()).sendFile(fileList.get(i).getAbsolutePath());
+							}
 						}
+						fileList.clear();
 					}
-//					for (int i = 0; i < files.length; i++) {
-//						
-//						System.out.println(files[i]);
-//					}
 				}
 			}
 			
-//辅助实现方法。
 			private void changeFile(String files) {
 				File temp = new File(files);
 				if(temp.isFile()&&temp.getAbsolutePath().endsWith(".java")) {
@@ -339,6 +332,9 @@ public class ClientView extends ViewPart {
 		super.dispose();
 		OpenView.isOpen = false;
 		ImageMgr.getInstance().dispose();
-		Logging.getLogger().dispose();
+		NetworkMgr.dispose();
+		Logging.dispose();
+		Utils.dispose();
+		Activator.pluginDispose();
 	}
 }

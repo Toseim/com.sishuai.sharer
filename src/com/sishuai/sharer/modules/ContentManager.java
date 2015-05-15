@@ -53,4 +53,8 @@ public class ContentManager {
 			}
 		}).start();
 	}
+	
+	public static void dispose() {
+		contentmanager = null;
+	}
 }

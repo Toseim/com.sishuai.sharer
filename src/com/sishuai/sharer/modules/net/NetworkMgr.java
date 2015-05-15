@@ -82,7 +82,6 @@ public class NetworkMgr {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//MessageDialog.openWarning(new Shell(Display.getDefault()), "State", "你现在不处于局域网中");
 			return null;
 		}
 		return IP;
@@ -126,8 +125,10 @@ public class NetworkMgr {
 	}
 	
 	public int getTCPport() {
-		if (TCPport == 0) 
-			TCPport = Utils.random.nextInt(55535) +10000;
+		if (TCPport == 0) {
+		TCPport = Utils.getRandom().nextInt(55535) +10000;	
+		}
+
 		return TCPport;
 	}
 	
@@ -151,7 +152,7 @@ public class NetworkMgr {
 	
 	public int getTempPort() {
 		if (tempSocket == null || tempSocket.isClosed()) {
-			tempPort = Utils.random.nextInt(55535)+10000;
+			tempPort = Utils.getRandom().nextInt(55535)+10000;
 		}
 		return tempPort;
 	}
@@ -166,6 +167,7 @@ public class NetworkMgr {
 					new Thread(new RecvThread(datagramSocket, false)).start();
 				} catch (Exception e) {
 					Logging.fatal("UDP服务发生错误。。");
+					continue;
 				}
 				break;
 			}
@@ -181,7 +183,7 @@ public class NetworkMgr {
 				MulticastServer.getMulticastServer().setConfig(
 						multiPort, InetAddress.getByName("224.2.2.2") );
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				com.sishuai.sharer.util.Logging.fatal("Error ! Please check your configure such the net . ");
 				e.printStackTrace();
 			}
 		}
@@ -192,7 +194,7 @@ public class NetworkMgr {
 		Logging.getLogger().setFileName("NetworkMgr");
 		while (true) {
 			try {
-				DatagramSocket ds = new DatagramSocket(Utils.random.nextInt(55535)+10000);
+				DatagramSocket ds = new DatagramSocket(Utils.getRandom().nextInt(55535)+10000);
 				Logging.info("打开一个UDP端口，发送数据包");
 				ds.send(dp);
 				Logging.info("端口关闭中..");
@@ -201,7 +203,6 @@ public class NetworkMgr {
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				Logging.fatal("发送数据失败，正在重新发送");
-				continue;
 			}
 		}
 	}
@@ -210,23 +211,23 @@ public class NetworkMgr {
 		return UDPport;
 	}
 	
-	public void disconnect(ClientInfo clientInfo) {
-		if (clientInfo == null) return;
-		try {
-			Logging.getLogger().setFileName("NetworkMgr");
-			Logging.warning("正在从用户组中删除"+clientInfo.getName());
-			clientInfo.setConnected(false);
-			if (clientInfo.getDataInputStream() != null)
-				clientInfo.getDataInputStream().close();
-			if (clientInfo.getDataOutputStream() != null)
-				clientInfo.getDataOutputStream().close();
-			if (clientInfo.getSocket() != null)
-				clientInfo.getSocket().close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void disconnect(ClientInfo clientInfo) {
+//		if (clientInfo == null) return;
+//		try {
+//			Logging.getLogger().setFileName("NetworkMgr");
+//			Logging.warning("正在从用户组中删除"+clientInfo.getName());
+//			clientInfo.setConnected(false);
+//			if (clientInfo.getDataInputStream() != null) 
+//				clientInfo.getDataInputStream().close();
+//			if (clientInfo.getDataOutputStream() != null)
+//				clientInfo.getDataOutputStream().close();
+//			if (clientInfo.getSocket() != null)
+//				clientInfo.getSocket().close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public void attempLink(String objectIP) {
 		setState(true);
@@ -326,6 +327,7 @@ public class NetworkMgr {
 					if (tempSocket != null) tempSocket.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					com.sishuai.sharer.util.Logging.fatal("关闭失败 . ");
 					e.printStackTrace();
 				}
 			}
@@ -347,10 +349,37 @@ public class NetworkMgr {
 					}
 				});
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				com.sishuai.sharer.util.Logging.fatal("IOException . ");
 				e.printStackTrace();
 			}
 			setState(false);
+		}
+	}
+	
+	public static void dispose() {
+		if (networkMgr.multicastSocket != null) {
+			networkMgr.multicastSocket.close();
+		}
+		for (int i = 0; i < ClientInfo.getClients().size(); i++) {
+			ClientInfo clientInfo = ClientInfo.getClients().get(i);
+			clientInfo.disconnect();
+		}
+		ClientInfo.dispose();
+		
+		if (networkMgr.datagramSocket != null) {
+			networkMgr.datagramSocket.close();
+		}
+		try {
+			if (networkMgr.tempSocket != null) {
+				networkMgr.tempSocket.close();
+			}
+			if (networkMgr.socket != null) {
+				networkMgr.socket.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Logging.fatal("IOException . ");
+			e.printStackTrace();
 		}
 	}
 }

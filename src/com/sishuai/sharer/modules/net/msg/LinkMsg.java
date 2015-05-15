@@ -160,11 +160,11 @@ public class LinkMsg implements Msg {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 							Logging.fatal("主机不存在，数据信息已经无效");
-							NetworkMgr.getMgr().disconnect(clientInfo);
+							clientInfo.disconnect();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							Logging.fatal("传输本地用户名失败，连接已经关闭");
-							NetworkMgr.getMgr().disconnect(clientInfo);
+							clientInfo.disconnect();
 						}
 						ContentManager.getMgr().updateItems();
 					}

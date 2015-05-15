@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -183,7 +184,8 @@ public class ChatDialog extends Action{
 			// TODO Auto-generated catch block
 			//用户已经失去连接
 			Logging.warning("消息传输失败，对方已关闭端口...");
-			NetworkMgr.getMgr().disconnect(clientInfo);
+			clientInfo.disconnect();
+			MessageDialog.openError(view.getSite().getShell(), "消息传输失败", "对方已关闭端口...");
 		}
 	}
 }
