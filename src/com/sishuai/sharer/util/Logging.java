@@ -33,8 +33,9 @@ public class Logging {
 		if (logger == null) {
 			logger = new Logging();
 			try {
-				logger.bos = new BufferedOutputStream(new FileOutputStream(
-						logFile));
+				if (logger.bos == null) {
+					logger.bos = new BufferedOutputStream(new FileOutputStream(logFile));
+				}
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -52,8 +53,6 @@ public class Logging {
 			if (isflush)
 				bos.flush();
 		} catch (IOException e) {
-			warning("stream closed");
-			e.printStackTrace();
 		}
 	}
 

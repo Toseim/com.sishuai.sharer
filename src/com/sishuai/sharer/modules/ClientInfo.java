@@ -300,8 +300,8 @@ public class ClientInfo implements ItemInfo {
 					else {
 						msgs++;
 						temp += temp + string;
+						ContentManager.getMgr().updateItems();
 					}
-					ContentManager.getMgr().updateItems();
 				}
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
@@ -326,9 +326,4 @@ public class ClientInfo implements ItemInfo {
 			e_1.printStackTrace();
 		}
 	}
-	public static void dispose() {
-		clients = null;
-		iptable = null;
-	}
-	
 }

@@ -334,7 +334,6 @@ public class ClientView extends ViewPart {
 		ImageMgr.getInstance().dispose();
 		NetworkMgr.dispose();
 		Logging.dispose();
-		Utils.dispose();
 		Activator.pluginDispose();
 	}
 }

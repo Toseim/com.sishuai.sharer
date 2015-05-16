@@ -31,10 +31,4 @@ public class Utils {
 			random = new Random();
 		return random;
 	}
-	
-	public static void dispose() {
-		random = null;
-		simpleDateFormat = null;
-		decimalFormat = null;
-	}
 }

@@ -364,7 +364,6 @@ public class NetworkMgr {
 			ClientInfo clientInfo = ClientInfo.getClients().get(i);
 			clientInfo.disconnect();
 		}
-		ClientInfo.dispose();
 		
 		if (networkMgr.datagramSocket != null) {
 			networkMgr.datagramSocket.close();

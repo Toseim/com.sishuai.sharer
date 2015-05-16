@@ -51,10 +51,7 @@ public class RecvThread implements Runnable {
 				}
 				parse(dp);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Server is closed");
-		}
+		} catch (IOException e) {}
 	}
 
 	public void parse(DatagramPacket dp) {
