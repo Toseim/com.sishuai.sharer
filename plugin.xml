@@ -46,6 +46,7 @@
                   id="com.sishuai.sharer.openView"
                   label="open the client view"
                   state="false"
+                  style="push"
                   toolbarPath="normal/additions"
                   tooltip="start your powerful tool">
             </action>

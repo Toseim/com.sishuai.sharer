@@ -25,7 +25,7 @@ public class RecvThread implements Runnable {
 		Logging.getLogger().setFileName("RecvThread");
 		this.isMulti = isMulti;
 		this.datagramSocket = ds;
-		Logging.info("创建一个UDP接受线程运行");
+		Logging.info("Creating a UDP thread");
 	}
 
 	public RecvThread(MulticastSocket ms, boolean isMulti) {
@@ -33,7 +33,7 @@ public class RecvThread implements Runnable {
 		Logging.getLogger().setFileName("RecvThread");
 		this.isMulti = isMulti;
 		this.multicastSocket = ms;
-		Logging.info("创建一个多播接受线程运行");
+		Logging.info("Creating a multicast receiving thread");
 	}
 
 	@Override
@@ -44,10 +44,10 @@ public class RecvThread implements Runnable {
 				DatagramPacket dp = new DatagramPacket(buf, buf.length);
 				if (isMulti && multicastSocket != null) {
 					multicastSocket.receive(dp);
-					Logging.info("接收到一个多播包文件");
+					Logging.info("Received a multicastpacket file");
 				} else if (datagramSocket != null) {
 					datagramSocket.receive(dp);
-					Logging.info("接收到一个UDP包文件");
+					Logging.info("Received a UDPpacket file");
 				}
 				parse(dp);
 			}
@@ -56,7 +56,7 @@ public class RecvThread implements Runnable {
 
 	public void parse(DatagramPacket dp) {
 		Logging.getLogger().setFileName("RecvThread");
-		Logging.info("正在解包中...");
+		Logging.info("In unpacking...");
 		ByteArrayInputStream bais = new ByteArrayInputStream(buf, 0, dp.getLength());
 		DataInputStream dis = new DataInputStream(bais);
 		try {
@@ -83,7 +83,7 @@ public class RecvThread implements Runnable {
 			e.printStackTrace();
 		} finally {
 			try {
-				Logging.info("关闭解包管道");
+				Logging.info("Unpack the closed pipeline");
 				if (dis != null)
 					dis.close();
 				if (bais != null)

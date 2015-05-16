@@ -134,7 +134,7 @@ public class ClientView extends ViewPart {
 		NetworkMgr.getMgr().setView(this);
 		
 		Logging.getLogger().setFileName("ClientView");
-		Logging.info("内容装填中...");
+		Logging.info("Loading the contents ");
 		viewer.setContentProvider(new ClientTreeContentProvider());
 		viewer.setLabelProvider(new ClientTableLabelProvider());
 		viewer.setInput(ContentManager.getMgr());
@@ -177,7 +177,7 @@ public class ClientView extends ViewPart {
 
 	public void addSelectionMonitor() {
 		Logging.getLogger().setFileName("ClientView");
-		Logging.info("加载选择操作。。");
+		Logging.info("Loading selection operation..");
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
@@ -204,7 +204,7 @@ public class ClientView extends ViewPart {
 
 	private void createAction() {
 		// TODO Auto-generated method stub
-		Logging.info("装载上下文，下拉栏操作。。");
+		Logging.info("Loading operation context, drop-down bar..");
 		tcpConnect = TCPConnect.getTcpConnect();
 		tcpConnect.setView(this);
 
@@ -225,7 +225,7 @@ public class ClientView extends ViewPart {
 	
 	public void dropSupport() {
 		//drop 的支持
-		Logging.info("添加拖拽支持。。");
+		Logging.info("Adding drag and drop support..");
 		int ops = DND.DROP_COPY | DND.DROP_DEFAULT;
 		DropTarget dropTarget = new DropTarget(viewer.getTree(), ops);
 		final FileTransfer fileTransfer = FileTransfer.getInstance();
@@ -246,7 +246,7 @@ public class ClientView extends ViewPart {
 			public void drop(DropTargetEvent event) {
 				if (fileTransfer.isSupportedType(event.currentDataType)) {
 					String[] files = (String[]) event.data;
-
+			
 					for (int j = 0; j < files.length; j++) {
 						changeFile(files[j]);
 						for(int i = 0 ; i < fileList.size(); i++) {

@@ -45,16 +45,16 @@ public class DefaultName {
 		BufferedReader br = null;
 		try {
 			if (file.exists()) {
-				Logging.info("正在从文件中读取设定的名字");
+				Logging.info("Reading the preset name ");
 				br = new BufferedReader(new FileReader(file));
 				name = br.readLine();
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			Logging.warning("相关配置文件丢失，读取失败");
+			Logging.warning("Failed to read for the configuration file is missing");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Logging.fatal("从配置文件读取失败");
+			Logging.fatal("Failed to read from a configuration file");
 		} finally {
 			if (br != null)
 				try {
@@ -69,11 +69,11 @@ public class DefaultName {
 	}
 	
 	public void saveName() {
-		Logging.info("保存用户名到文件中..");
+		Logging.info("Saveing the user name to a file.");
 		BufferedWriter bw = null;
 		if (!file.exists())
 			try {
-				Logging.info("新建用户文件 " + file.toString());
+				Logging.info("New the user's file  " + file.toString());
 				file.createNewFile();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -87,7 +87,7 @@ public class DefaultName {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Logging.fatal("写入失败，用户名无法保存");
+			Logging.fatal("Failed to write , user name cannot be saved");
 		} finally {
 			if (bw != null)
 				try {
@@ -103,28 +103,28 @@ public class DefaultName {
 		state = true;
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.ON_TOP);
-		shell.setText("欢迎使用我们的插件");
+		shell.setText("Welcome to use our plugin ! ");
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2+100, width, height);
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.CENTER);
 		lblNewLabel.setBounds(10, 0, 383, 38);
-		lblNewLabel.setText("使用本插件，你需要设置你的昵称，用来在网络上相互识别。\r\n之后你也可以通过配置修改你的设置");
+		lblNewLabel.setText("To use this plug-in,you need to set your own name,to make yourself distinguished from others.\r\nYou can change it afterwards through settings.");
 		
 		Button btnCheckButton = new Button(shell, SWT.CHECK);
-		btnCheckButton.setToolTipText("以后你再次使用本插件，就默认使用这个昵称");
+		btnCheckButton.setToolTipText("When you use this plug-in again,this name is default.");
 		btnCheckButton.setSelection(true);
 		btnCheckButton.setBounds(10, 77, 98, 17);
-		btnCheckButton.setText("设置成默认");
+		btnCheckButton.setText("set it to default.");
 		
 		text = new Text(shell, SWT.BORDER);
-		text.setToolTipText("你可以随意设置，让别人知道你就好了");
+		text.setToolTipText("You can set it freely,just let others recognize you.");
 		text.setBounds(60, 39, 281, 23);
 		text.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				if (text.getText().length() == 0) return;
 				name = text.getText();
-				Logging.info("获取用户输入的用户名 "+ name);
+				Logging.info("Getting the name of user "+ name);
 				if (btnCheckButton.getSelection()) saveName();
 				shell.dispose();
 			}
@@ -132,12 +132,12 @@ public class DefaultName {
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.setBounds(296, 68, 80, 27);
-		btnNewButton.setText("确认");
+		btnNewButton.setText("OK");
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				if (text.getText().length() == 0) return;
 				name = text.getText();
-				Logging.info("获取用户输入的用户名 "+ name);
+				Logging.info("Getting the name of user "+ name);
 				if (btnCheckButton.getSelection()) saveName();
 				shell.dispose();
 			}

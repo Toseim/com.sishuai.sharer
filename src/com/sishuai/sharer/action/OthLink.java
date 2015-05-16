@@ -33,13 +33,13 @@ public class OthLink extends Action {
 	}
 	public static OthLink getOthLink() {
 		if (othLink == null)
-			othLink = new OthLink("添加新网络");
+			othLink = new OthLink("Add the new net");
 		return othLink;
 	}
 	
 	public void run() {
 		Logging.getLogger().setFileName("OthLink");
-		Logging.info("打开用户自定义网络输入框");
+		Logging.info("Open the user network input box");
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.ON_TOP);
 		//居中显示
@@ -51,23 +51,23 @@ public class OthLink extends Action {
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.SHADOW_IN | SWT.CENTER);
 		lblNewLabel.setBounds(10, 21, 70, 24);
-		lblNewLabel.setText("IP地址");
+		lblNewLabel.setText("IP address");
 		
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.setBounds(117, 55, 80, 27);
-		btnNewButton.setText("确定");
+		btnNewButton.setText("Ok");
 		btnNewButton.setEnabled(false);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (btnNewButton.isEnabled()) {
 					if (NetworkMgr.getState()) {
-						MessageDialog.openWarning(shell, "连接受堵", "网络正在被占用，请稍后再试");
+						MessageDialog.openWarning(shell, "Connection blocking", "The network is being used, please try again later");
 						return;
 					}
 					objectIP = text.getText();
 					if (ClientInfo.getIPList().contains(objectIP))
 						return;
-					Logging.info("获得用户输入的IP:"+objectIP);
+					Logging.info("Get the user input IP :"+objectIP);
 					shell.setVisible(false);
 					shell.dispose();
 					next();
@@ -77,12 +77,12 @@ public class OthLink extends Action {
 		
 		Button btnNewButton_1 = new Button(shell, SWT.NONE);
 		btnNewButton_1.setBounds(215, 55, 80, 27);
-		btnNewButton_1.setText("取消");
+		btnNewButton_1.setText("Cancel");
 		btnNewButton_1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				Logging.info("自定义输入IP地址已取消");
+				Logging.info("Custom input IP address has been canceled");
 				shell.setVisible(false);
 				shell.dispose();
 				NetworkMgr.setState(false);
@@ -109,13 +109,13 @@ public class OthLink extends Action {
 				// TODO Auto-generated method stub
 				if (btnNewButton.isEnabled()) {
 					if (NetworkMgr.getState()) {
-						MessageDialog.openWarning(shell, "连接受堵", "网络正在被占用，请稍后再试");
+						MessageDialog.openWarning(shell, "Connection blocking", "The network is being used, please try again later");
 						return;
 					}
 					objectIP = text.getText();
 					if (ClientInfo.getIPList().contains(objectIP))
 						return;
-					Logging.info("获得用户输入的IP:"+objectIP);
+					Logging.info("Get the user input IP:"+objectIP);
 					shell.setVisible(false);
 					shell.dispose();
 					next();
@@ -127,7 +127,7 @@ public class OthLink extends Action {
 		while (!shell.isDisposed())
 			if (!display.readAndDispatch())
 				display.sleep();
-		Logging.info("自定义网络窗口已关闭");
+		Logging.info("The user window has closed network");
 		shell.dispose();
 	}
 	

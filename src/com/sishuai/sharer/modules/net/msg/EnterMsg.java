@@ -39,20 +39,20 @@ public class EnterMsg implements Msg {
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
 			dos.writeInt(EnterMsg.msgType);
-			Logging.info("构建登录信息包..");
+			Logging.info("Construct the login information.");
 			dos.writeUTF(IP);
 			dos.writeUTF(nickName);
-			Logging.info("写入IP:"+IP+"\tNickName:"+nickName);
+			Logging.info("Write the IP :"+IP+"\tNickName:"+nickName);
 			dos.flush();
 
 			buf = baos.toByteArray();
 			DatagramPacket dp = new DatagramPacket(buf, buf.length, (InetAddress)group, port);
-			Logging.info("发送登录包");
+			Logging.info("Sending login packet");
 			NetworkMgr.getMgr().getMulticastSocket().send(dp);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Logging.fatal("写入错误，构建包失败");
+			Logging.fatal("Write error, setting up the  package failed ");
 		} finally {
 			if (dos != null)
 				try {
@@ -71,16 +71,16 @@ public class EnterMsg implements Msg {
 		try {
 			String uIP = dis.readUTF();
 			String uNickName = dis.readUTF();
-			Logging.info("接收到一个用户登录信息\nIP Address: "+uIP+"\nNickName: "+uNickName);
+			Logging.info("Receives a user login information\nIP Address: "+uIP+"\nNickName: "+uNickName);
 			if (!ClientInfo.getIPList().contains(uIP)) {
 				ClientInfo.getIPList().add(uIP);
 				ClientInfo.getClients().add(new ClientInfo(uIP, uNickName));
-				Logging.info("添加用户入用户组");
+				Logging.info("Add users into groups of users");
 				ContentManager.getMgr().updateItems();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Logging.fatal("解包失败...丢弃包..");
+			Logging.fatal("Unwrapping failed... Discarded packet..");
 		}
 	}
 }

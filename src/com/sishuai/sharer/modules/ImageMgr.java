@@ -35,7 +35,7 @@ public class ImageMgr {
 	
 	public void dispose() {
 		Logging.getLogger().setFileName("ImageMgr");
-		Logging.info("释放图片缓存中..");
+		Logging.info("Releasing the cache of the pictures");
 		Iterator<Image> iterator = imageMap.values().iterator();
 		while (iterator.hasNext())
 			iterator.next().dispose();

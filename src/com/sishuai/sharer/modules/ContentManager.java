@@ -36,7 +36,7 @@ public class ContentManager {
 	
 	public void updateItems() {
 		Logging.getLogger().setFileName("ContentManager");
-		Logging.info("正在刷新视图元素");
+		Logging.info("Refreshing view element");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

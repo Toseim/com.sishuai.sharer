@@ -46,14 +46,14 @@ public class LinkMsg implements Msg {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
-			Logging.info("构建一个建立连接信息");
-			Logging.info("写入头信息");
+			Logging.info("Building a connection information");
+			Logging.info("Writing head information");
 			dos.writeInt(msgType);
-			Logging.info("写入本地IP");
+			Logging.info("Writing the local IP");
 			dos.writeUTF(localIP);
-			Logging.info("写入当前Tcp开放端口");
+			Logging.info("Writint into the open port of TCP current");
 			dos.writeInt(localPort);
-			Logging.info("写入当前用户名");
+			Logging.info("Writing the current user name");
 			dos.writeUTF((String)name);
 			dos.flush();
 			byte[] buf = baos.toByteArray();

@@ -29,11 +29,7 @@ import com.sishuai.sharer.modules.ImageMgr;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 import com.sishuai.sharer.views.ClientView;
-/**
- * 用户之间的聊天窗口
- * @author 四帅
- *
- */
+
 public class ChatDialog extends Action{
 	private ClientView view;
 	private Text dialogText;
@@ -46,7 +42,7 @@ public class ChatDialog extends Action{
 	private static final int width = 600;
 	
 	public ChatDialog(ClientView clientView) {
-		super("打开对话框");
+		super("Open the dialog");
 		this.view = clientView;
 	}
 	public Text getDialog() {
@@ -57,14 +53,14 @@ public class ChatDialog extends Action{
 		Logging.getLogger().setFileName("ChatDialog");
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo.isDialogOpened()) {
-			Logging.warning("与"+clientInfo.getName()+"的对话窗口已经打开");
+			Logging.warning("涓�"+clientInfo.getName()+"鐨勫璇濈獥鍙ｅ凡缁忔墦寮�");
 			return;
 		}
 		if (clientInfo.getChatDialog() == null) {
-			Logging.info("为"+clientInfo.getName()+"设置对话窗口");
+			Logging.info("涓�"+clientInfo.getName()+"璁剧疆瀵硅瘽绐楀彛");
 			clientInfo.setChatDialog(this);
 		}
-		Logging.info(clientInfo.getName()+"的窗口打开中");
+		Logging.info(clientInfo.getName()+"鐨勭獥鍙ｆ墦寮�涓�");
 		clientInfo.setDialogOpened(true);
 		
 		Display display = Display.getDefault();
@@ -78,8 +74,7 @@ public class ChatDialog extends Action{
 		shell.setVisible(true);
 		shell.open();
 		
-		font = new Font(display, "微软雅黑", 11, SWT.NONE);
-		// 第一行
+		font = new Font(display, "GBK", 11, SWT.NONE);
 		group_1 = new Group(shell, SWT.NONE);
 		group_1.setText("Chatting Area");
 
@@ -94,10 +89,7 @@ public class ChatDialog extends Action{
 		dialogText.setFont(font);
 		dialogText.setText(clientInfo.getTempString());
 		dialogText.setEditable(false);
-		// 如何让他填满group_1
 		
-		
-		// 第二行
 		Image image1 = ImageMgr.getInstance().getImage(Activator.getImageDescriptor(ImageMgr.IMAGE_FACE));
 		Image image2 = ImageMgr.getInstance().getImage(Activator.getImageDescriptor(ImageMgr.IMAGE_SHOOT));
 
@@ -122,7 +114,6 @@ public class ChatDialog extends Action{
 				false, 5, 1));
 		//final GridData gridData_2 = new GridData(SWT.FILL, SWT.CENTER, true,false, 5, 1);
 
-		//第三组
 		group_3 = new Group(shell, SWT.NONE);
 		group_3.setText("Inputting area");
 
@@ -134,7 +125,7 @@ public class ChatDialog extends Action{
 			public void widgetDefaultSelected(SelectionEvent event) {
 				if (text_2.getText().length() == 0) return; 
 				dialogText.append(NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
-				Logging.info("传送text_2消息到"+clientInfo.getName());
+				Logging.info("浼犻�乼ext_2娑堟伅鍒�"+clientInfo.getName());
 				send(text_2.getText());
 				text_2.setText("");
 			}
@@ -146,7 +137,7 @@ public class ChatDialog extends Action{
 		final Button sendButton = new Button(group_3, SWT.NONE);
 			
 		sendButton.setLayoutData(gridData_3);
-		sendButton.setText("发送");
+		sendButton.setText("Send");
 		//sendButton.setFont(font);
 		sendButton.setBounds(482,23,80,42);
 		
@@ -155,7 +146,7 @@ public class ChatDialog extends Action{
 				if (text_2.getText().length() == 0) return;
 				
 				dialogText.append(NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
-				Logging.info("传送text_2消息到"+clientInfo.getName());
+				Logging.info("浼犻�乼ext_2娑堟伅鍒�"+clientInfo.getName());
 				send(text_2.getText());
 				text_2.setText("");
 			}
@@ -168,10 +159,10 @@ public class ChatDialog extends Action{
 				display.sleep();
 			}
 		}
-		Logging.info("内存释放中...");
+		Logging.info("鍐呭瓨閲婃斁涓�...");
 		
 		shell.dispose();
-		Logging.info("与"+clientInfo.getName()+"的对话窗口已关闭");
+		Logging.info("涓�"+clientInfo.getName()+"鐨勫璇濈獥鍙ｅ凡鍏抽棴");
 		clientInfo.setDialogOpened(false);
 	}
 	
@@ -182,10 +173,9 @@ public class ChatDialog extends Action{
 			dos.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			//用户已经失去连接
-			Logging.warning("消息传输失败，对方已关闭端口...");
+			Logging.warning("娑堟伅浼犺緭澶辫触锛屽鏂瑰凡鍏抽棴绔彛...");
 			clientInfo.disconnect();
-			MessageDialog.openError(view.getSite().getShell(), "消息传输失败", "对方已关闭端口...");
+			MessageDialog.openError(view.getSite().getShell(), "娑堟伅浼犺緭澶辫触", "瀵规柟宸插叧闂鍙�...");
 		}
 	}
 }

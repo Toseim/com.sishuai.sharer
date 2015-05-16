@@ -37,24 +37,24 @@ public class ExitMsg implements Msg {
 		DataOutputStream dos = new DataOutputStream(baos);
 		try {
 			Logging.getLogger().setFileName("ExitMsg");
-			Logging.info("构建用户离开信息包");
-			Logging.info("写入头信息");
+			Logging.info("Setting up of user leave packets");
+			Logging.info("Writing the head information");
 			dos.writeInt(ExitMsg.msgType);
-			Logging.info("写入IP");
+			Logging.info("Writing the IP");
 			dos.writeUTF(IP);
 			dos.flush();
 			buf = baos.toByteArray();
 			DatagramPacket dp = new DatagramPacket(buf, buf.length, (InetAddress)group, port);
-			Logging.info("发送用户离开信息");
+			Logging.info("Sending user information(leave)");
 			NetworkMgr.getMgr().getMulticastSocket().send(dp);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Logging.fatal("网络连接错误");
+			Logging.fatal("Network connection error");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Logging.fatal("写入数据包失败");
+			Logging.fatal("Writint data packet failed");
 		} finally {
 			if (dos != null)
 				try {
@@ -71,7 +71,7 @@ public class ExitMsg implements Msg {
 		Logging.getLogger().setFileName("ExitMsg");
 		try {
 			String uIP = dis.readUTF();
-			Logging.info("移除"+uIP+"地址的用户信息");
+			Logging.info("Removing "+uIP+"'s information of address .");
 			if (ClientInfo.getIPList().contains(uIP)) {
 				ClientInfo.getIPList().remove(uIP);
 				int len = ClientInfo.getClients().size();
@@ -86,7 +86,7 @@ public class ExitMsg implements Msg {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Logging.fatal("移除过程中发生错误");
+			Logging.fatal("Error occurred in the process of removing");
 		}
 	}
 

@@ -50,7 +50,7 @@ public class ProjectMgr {
 			project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(
 					monitor, 1000));
 		} catch (CoreException e) {
-			com.sishuai.sharer.util.Logging.info("检测：Project 已存在.");
+			com.sishuai.sharer.util.Logging.info("Detection: Project already exists.");
 		} finally {
 			// 转化成java工程
 			IJavaProject javaProject = JavaCore.create(project);
@@ -68,7 +68,7 @@ public class ProjectMgr {
 				javaProject.setRawClasspath((IClasspathEntry[]) list
 						.toArray(new IClasspathEntry[list.size()]), null);
 			} catch (JavaModelException e) {
-				com.sishuai.sharer.util.Logging.info("检测：JRE 已存在.");
+				com.sishuai.sharer.util.Logging.info("Detection: JRE already exists.");
 			} finally {
 				// 创建输出路径
 				IFolder binFolder = javaProject.getProject().getFolder("bin");
@@ -79,7 +79,7 @@ public class ProjectMgr {
 							.setOutputLocation(binFolder.getFullPath(), null);
 
 				} catch (Exception e) {
-					com.sishuai.sharer.util.Logging.info("检测：Bin 已存在.");
+					com.sishuai.sharer.util.Logging.info("Detection: Bin already exists.");
 				} finally {
 					// 设置Java生成器
 					try {
@@ -93,7 +93,7 @@ public class ProjectMgr {
 						javaProject.getProject().setDescription(description2,
 								null);
 					} catch (CoreException e) {
-						com.sishuai.sharer.util.Logging.info("检测：Java生成器已存在.");
+						com.sishuai.sharer.util.Logging.info("Detection: Java generator already exists.");
 					} finally {
 						// 创建源代码文件夹
 						// 源文件夹和文件夹相似,只是使用PackageFragmentRoot进行了封装
@@ -127,7 +127,7 @@ public class ProjectMgr {
 											.toArray(new IClasspathEntry[list
 													.size()]), null);
 						} catch (CoreException e) {
-							com.sishuai.sharer.util.Logging.info("检测：源代码已存在.");
+							com.sishuai.sharer.util.Logging.info("Detection: Source code already exists.");
 						} finally {
 							// ///////////////////////////////创建包//////////////////////////
 							// IPackageFragmentRoot packageFragmentRoot =
@@ -147,7 +147,7 @@ public class ProjectMgr {
 										fileCode, true,
 										new NullProgressMonitor());
 							} catch (Exception e) {
-								com.sishuai.sharer.util.Logging.info("检测：文件已存在.");
+								com.sishuai.sharer.util.Logging.info("Detection: floder already exists.");
 							}
 						}
 					}

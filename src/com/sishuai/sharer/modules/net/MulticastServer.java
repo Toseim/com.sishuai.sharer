@@ -24,7 +24,7 @@ public class MulticastServer extends Action{
 	private static boolean state = false;
 	
 	public MulticastServer() {
-		super("打开组播");
+		super("Open the multicast");
 		this.IP = NetworkMgr.getMgr().getIP();
 	}
 	

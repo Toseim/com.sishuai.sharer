@@ -30,7 +30,7 @@ public class OpenView implements IWorkbenchWindowActionDelegate {
 		
 		try {
 			Logging.getLogger().setFileName("OpenView");
-			Logging.info("打开主视图");
+			Logging.info("Open the main view . ");
 			page.showView("com.sishuai.sharer.views.ClientView");
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block

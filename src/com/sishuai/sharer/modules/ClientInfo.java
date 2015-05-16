@@ -76,7 +76,7 @@ public class ClientInfo implements ItemInfo {
 	public static ArrayList<ClientInfo> getClients() {
 		if (clients == null) {
 			Logging.getLogger().setFileName("ClientInfo");
-			Logging.info("初始化用户组");
+			Logging.info("Initialize the user group");
 			clients = new ArrayList<ClientInfo>();
 		}
 		return clients;
@@ -86,7 +86,7 @@ public class ClientInfo implements ItemInfo {
 	public static ArrayList<String> getIPList() {
 		if (iptable == null) {
 			Logging.getLogger().setFileName("ClientInfo");
-			Logging.info("初始化已知IP列表");
+			Logging.info("The initialization list of known IP");
 			iptable = new ArrayList<String>();
 		}
 		return iptable;
@@ -110,7 +110,7 @@ public class ClientInfo implements ItemInfo {
 		this.socket = socket;
 		try {
 			Logging.getLogger().setFileName("ClientInfo");
-			Logging.info("架设用户的连接管道");
+			Logging.info("Setting up the user connected pipeline");
 			this.dis = new DataInputStream(new BufferedInputStream(
 					socket.getInputStream()));
 			this.dos = new DataOutputStream(new BufferedOutputStream(
@@ -119,7 +119,7 @@ public class ClientInfo implements ItemInfo {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Logging.fatal("构建管道失败..");
+			Logging.fatal("Setting up the pipeline failed.");
 		}
 	}
 
@@ -135,7 +135,7 @@ public class ClientInfo implements ItemInfo {
 	public ArrayList<FileInfo> getFiles() {
 		if (files == null) {
 			Logging.getLogger().setFileName("ClientInfo");
-			Logging.info("初始化用户文件列表");
+			Logging.info("Initialize the user list file");
 			files = new ArrayList<FileInfo>();
 		}
 		return files;
@@ -227,10 +227,10 @@ public class ClientInfo implements ItemInfo {
 			bis.read(buf, 0, buf.length);
 			dos.write(buf, 0, buf.length);
 			dos.flush();
-			Logging.info("文件已传输");
+			Logging.info("The file has been transferred");
 		} catch (Exception e) {
 			e.printStackTrace();
-			Logging.fatal("文件错误");
+			Logging.fatal("File error");
 		}  finally {
 			if (bis != null)
 				try {
@@ -311,7 +311,7 @@ public class ClientInfo implements ItemInfo {
 		}
 	}
 	public void disconnect() {
-		Logging.warning("与" + getName() + "的连接已经断开");
+		Logging.warning("The connection with" + getName() + "has been disconnected");
 		try {
 			if (dis != null)
 				dis.close();

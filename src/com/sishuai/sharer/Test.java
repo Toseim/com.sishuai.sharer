@@ -1,10 +1,6 @@
 package com.sishuai.sharer;
 
-
-
-
 import com.sishuai.sharer.util.Utils;
-
 
 public class Test {
 	

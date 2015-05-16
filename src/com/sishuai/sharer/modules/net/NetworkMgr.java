@@ -76,7 +76,7 @@ public class NetworkMgr {
 					}
 				}
 				ClientInfo.getIPList().add(IP);
-				Logging.info("获得本机局域网的IP为 "+IP);
+				Logging.info("Access the localhost IP in LAN "+IP);
 				return IP;
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -114,10 +114,10 @@ public class NetworkMgr {
 				try {
 					mainSocket = new ServerSocket(getTCPport());
 				} catch (IOException e) {
-					Logging.fatal(getTCPport()+"端口不可用，尝试其他端口");
+					Logging.fatal(getTCPport()+"The port is not available, try other ports");
 					continue;
 				}
-				Logging.info("开启一个serversocket服务，端口在"+getTCPport());
+				Logging.info("Open a ServerSocket service, the port is in the "+getTCPport());
 				break;
 			}
 		}
@@ -138,10 +138,10 @@ public class NetworkMgr {
 			while (true) {
 				try {
 					tempSocket = new ServerSocket(getTempPort());
-					Logging.info("新建一个临时的serversocket");
+					Logging.info("New a temporary serversocket");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					Logging.fatal("开启失败，尝试换个端口开启");
+					Logging.fatal("Open failed, try again ");
 					continue;
 				}
 				break;
@@ -163,10 +163,10 @@ public class NetworkMgr {
 				try {
 					datagramSocket = new DatagramSocket(UDPport);
 					Logging.getLogger().setFileName("NetworkMgr");
-					Logging.info("开启一个DatagramSocket服务，端口在"+UDPport);
+					Logging.info("Open a DatagramSocket service, the port is in the "+UDPport);
 					new Thread(new RecvThread(datagramSocket, false)).start();
 				} catch (Exception e) {
-					Logging.fatal("UDP服务发生错误。。");
+					Logging.fatal("An error occurred on the UDP service..");
 					continue;
 				}
 				break;
@@ -183,7 +183,7 @@ public class NetworkMgr {
 				MulticastServer.getMulticastServer().setConfig(
 						multiPort, InetAddress.getByName("224.2.2.2") );
 			} catch (IOException e) {
-				com.sishuai.sharer.util.Logging.fatal("Error ! Please check your configure such the net . ");
+				com.sishuai.sharer.util.Logging.fatal("An error occurred . Please check your configure such the net . ");
 				e.printStackTrace();
 			}
 		}
@@ -195,14 +195,14 @@ public class NetworkMgr {
 		while (true) {
 			try {
 				DatagramSocket ds = new DatagramSocket(Utils.getRandom().nextInt(55535)+10000);
-				Logging.info("打开一个UDP端口，发送数据包");
+				Logging.info("Open a UDP port, send datagrampacket");
 				ds.send(dp);
-				Logging.info("端口关闭中..");
+				Logging.info("Closing the port.");
 				ds.close();
 				break;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Logging.fatal("发送数据失败，正在重新发送");
+				Logging.fatal("Failed sending data, try again ");
 			}
 		}
 	}
@@ -237,7 +237,7 @@ public class NetworkMgr {
 		
 		LinkMsg linkMsg = new LinkMsg(objectIP, getIP(), tempPort);
 		linkMsg.send(getName(), UDPport);
-		view.showMessage("等待对面的用户{ "+ objectIP +" }想到一块去");
+		view.showMessage("Waiting the respond of { "+ objectIP +" }");
 		
 		new Thread(new ConnectionThread(objectIP)).start();
 		new Thread(new Runnable() {
@@ -247,7 +247,7 @@ public class NetworkMgr {
 				try {
 					Thread.sleep(45000);
 					if (socket == null && !tempSocket.isClosed()) {
-						Logging.fatal("用户连接超时");
+						Logging.fatal("TimeOut");
 						tempSocket.close();
 						isTimeOut = true;
 					}
@@ -275,9 +275,9 @@ public class NetworkMgr {
 		//添加新的账户并连接
 		clientInfo = new ClientInfo(IP, name);
 		ClientInfo.getClients().add(clientInfo);
-		Logging.info("用户信息加入用户组中");
+		Logging.info("Add the user's information to the group of users");
 		ClientInfo.getIPList().add(IP);
-		Logging.info("Ip加入已知ip列表中");
+		Logging.info("Add the IP to the known IP list");
 		return clientInfo;
 	}
 	class ConnectionThread implements Runnable {
@@ -294,16 +294,16 @@ public class NetworkMgr {
 			String remoteName = null;
 			
 			try {
-				Logging.info("临时tcp服务端接受连接中");
+				Logging.info("The temporary TCP server try to accept connections");
 				socket = tempSocket.accept();
-				Logging.info("成功接受对方的中转连接，架设管道中");
+				Logging.info("Success is to accept each other connection, setting up in the pipeline");
 				
 				dos = new DataOutputStream(socket.getOutputStream());
 				dis = new DataInputStream(socket.getInputStream());
 				
 				if (!ClientInfo.getIPList().contains(objectIP)) {
 					remoteName = dis.readUTF();
-					Logging.info("接收到对方传来的用户名 "+ remoteName);
+					Logging.info("Accept the remoteName "+ remoteName);
 				}
 				dos.writeInt(TCPport);
 				dos.flush();
@@ -316,7 +316,7 @@ public class NetworkMgr {
 						view.showMessage("");
 						setState(false);
 						if (!isTimeOut) return;
-						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "连接超时，对方未响应");
+						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "Timeout, the other did not respond");
 					}
 				});
 				return;
@@ -327,7 +327,7 @@ public class NetworkMgr {
 					if (tempSocket != null) tempSocket.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					com.sishuai.sharer.util.Logging.fatal("关闭失败 . ");
+					com.sishuai.sharer.util.Logging.fatal("Failed to close ");
 					e.printStackTrace();
 				}
 			}
@@ -335,7 +335,7 @@ public class NetworkMgr {
 			try {
 				ClientInfo clientInfo = findClient(objectIP, remoteName);
 				clientInfo.setSocket(mainSocket.accept());
-				Logging.info("主端口已经连接，并架设完管道");
+				Logging.info("The main port has connected and set up the pipeline");
 				
 				clientInfo.setConnected(true);
 				//refresh
