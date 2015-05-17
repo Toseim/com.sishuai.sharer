@@ -53,7 +53,7 @@ public class ChatDialog extends Action{
 		Logging.getLogger().setFileName("ChatDialog");
 		clientInfo = (ClientInfo) view.getSelectedItem();
 		if (clientInfo.isDialogOpened()) {
-			Logging.warning("涓�"+clientInfo.getName()+"鐨勫璇濈獥鍙ｅ凡缁忔墦寮�");
+			Logging.warning("C"+clientInfo.getName()+"鐨勫璇濈獥鍙ｅ凡缁忔墦寮�");
 			return;
 		}
 		if (clientInfo.getChatDialog() == null) {
@@ -175,7 +175,7 @@ public class ChatDialog extends Action{
 			// TODO Auto-generated catch block
 			Logging.warning("娑堟伅浼犺緭澶辫触锛屽鏂瑰凡鍏抽棴绔彛...");
 			clientInfo.disconnect();
-			MessageDialog.openError(view.getSite().getShell(), "娑堟伅浼犺緭澶辫触", "瀵规柟宸插叧闂鍙�...");
+			MessageDialog.openError(view.getSite().getShell(), "The connection is blocked", "Please try again later.");
 		}
 	}
 }

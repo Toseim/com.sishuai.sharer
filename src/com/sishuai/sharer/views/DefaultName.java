@@ -108,7 +108,7 @@ public class DefaultName {
 		
 		Label lblNewLabel = new Label(shell, SWT.WRAP | SWT.CENTER);
 		lblNewLabel.setBounds(10, 0, 383, 38);
-		lblNewLabel.setText("To use this plug-in,you need to set your own name,to make yourself distinguished from others.\r\nYou can change it afterwards through settings.");
+		lblNewLabel.setText("Set your name to make yourself distinguished.\r\nYou can change it afterwards through settings.");
 		
 		Button btnCheckButton = new Button(shell, SWT.CHECK);
 		btnCheckButton.setToolTipText("When you use this plug-in again,this name is default.");

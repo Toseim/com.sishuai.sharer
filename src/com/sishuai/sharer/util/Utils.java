@@ -10,9 +10,10 @@ import java.util.Random;
  * clear
  */
 public class Utils {
-	public static Random random = new Random();
+	public static Random random;
 	public static SimpleDateFormat simpleDateFormat;
-	public static DecimalFormat decimalFormat = new DecimalFormat("0.0");
+	public static DecimalFormat decimalFormat;
+	public static String os;
 	
 	public static SimpleDateFormat getSimpleDataFormat() {
 		if (simpleDateFormat == null) 
@@ -30,5 +31,11 @@ public class Utils {
 		if (random == null)
 			random = new Random();
 		return random;
+	}
+	
+	public static String getos() {
+		if (os == null)
+			os = System.getProperty("os.name");
+		return os;
 	}
 }

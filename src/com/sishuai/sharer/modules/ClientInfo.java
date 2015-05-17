@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.util.Logging;
+import com.sishuai.sharer.util.Utils;
 
 /**
  * 
@@ -208,20 +209,20 @@ public class ClientInfo implements ItemInfo {
 		return getFiles().size() + "";
 	}
 
-	public void sendFile(String filePath) {
+	public boolean sendFile(String filePath) {
 		BufferedInputStream bis = null;
 		try {
 			dos.writeUTF("$");
-			String os = System.getProperty("os.name");
 			
-			if (os.equals("Linux"))
+			if (Utils.getos().equals("Linux"))
 				dos.writeUTF(filePath.substring(filePath.lastIndexOf("/") + 1));
-			else if (os.indexOf("Windows") != -1)
+			else if (Utils.getos().indexOf("Windows") != -1)
 				dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\") + 1));
 			
 			dos.flush();
 			long fileLen = new File(filePath).length();
 			dos.writeLong(fileLen);
+			dos.flush();
 			bis = new BufferedInputStream(new FileInputStream(filePath));
 			byte[] buf = new byte[(int)fileLen];
 			bis.read(buf, 0, buf.length);
@@ -231,6 +232,7 @@ public class ClientInfo implements ItemInfo {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Logging.fatal("File error");
+			return false;
 		}  finally {
 			if (bis != null)
 				try {
@@ -240,6 +242,7 @@ public class ClientInfo implements ItemInfo {
 					e.printStackTrace();
 				}
 		}
+		return true;
 	}
 
 	public void acceptFile() {
@@ -311,14 +314,15 @@ public class ClientInfo implements ItemInfo {
 		}
 	}
 	public void disconnect() {
-		Logging.warning("The connection with" + getName() + "has been disconnected");
+		Logging.warning("The connection with " + getName() + " has been disconnected");
 		try {
-			if (dis != null)
-				dis.close();
-			if (dos != null)
-				dos.close();
-			if (socket != null || !socket.isClosed())
+			if (socket != null && !socket.isClosed()) {
+				if (dis != null)
+					dis.close();
+				if (dos != null)
+					dos.close();
 				socket.close();
+			}
 			ClientInfo.getIPList().remove(getIp());
 			ClientInfo.getClients().remove(this);
 		} catch (IOException e_1) {

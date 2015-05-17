@@ -46,7 +46,6 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.modules.net.MulticastServer;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
-import com.sishuai.sharer.util.Utils;
 
 /**
  * This sample class demonstrates how to plug-in a new
@@ -142,6 +141,8 @@ public class ClientView extends ViewPart {
 		
 		//默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
+		
+		Logging.getLogger().setFileName("ClientView");
 		
 		createAction();
 		hookContextMenu();
@@ -246,15 +247,16 @@ public class ClientView extends ViewPart {
 			public void drop(DropTargetEvent event) {
 				if (fileTransfer.isSupportedType(event.currentDataType)) {
 					String[] files = (String[]) event.data;
-			
+					boolean flag = true;
 					for (int j = 0; j < files.length; j++) {
+						fileList.clear();
 						changeFile(files[j]);
 						for(int i = 0 ; i < fileList.size(); i++) {
 							if (event.item != null && event.item.getData() instanceof ClientInfo) {
-								((ClientInfo)event.item.getData()).sendFile(fileList.get(i).getAbsolutePath());
+								if (!flag) return;
+								flag = ((ClientInfo)event.item.getData()).sendFile(fileList.get(i).getAbsolutePath());
 							}
 						}
-						fileList.clear();
 					}
 				}
 			}

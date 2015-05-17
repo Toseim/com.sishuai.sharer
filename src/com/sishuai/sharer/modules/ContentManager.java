@@ -37,6 +37,7 @@ public class ContentManager {
 	public void updateItems() {
 		Logging.getLogger().setFileName("ContentManager");
 		Logging.info("Refreshing view element");
+		if (viewer.getTree().isDisposed()) return;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -52,9 +53,5 @@ public class ContentManager {
 				});
 			}
 		}).start();
-	}
-	
-	public static void dispose() {
-		contentmanager = null;
 	}
 }

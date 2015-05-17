@@ -1,6 +1,7 @@
 package com.sishuai.sharer.modules;
 
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 
 /**
  * 树结构的根节点
@@ -10,7 +11,6 @@ import com.sishuai.sharer.modules.interfaces.ItemInfo;
 public class Header implements ItemInfo{
 	//可以用来提供信息
 	private static Header header;
-	private String one;
 	private String two;
 	private String three;
 	private String four;
@@ -19,10 +19,6 @@ public class Header implements ItemInfo{
 	public static Header getHeader() {
 		if (header == null) header = new Header();
 		return header;
-	}
-	
-	public void setOne(String one) {
-		this.one = one;
 	}
 
 	public void setTwo(String two) {
@@ -44,7 +40,10 @@ public class Header implements ItemInfo{
 	@Override
 	public String getOne() {
 		// TODO Auto-generated method stub
-		return one;
+		String string = "";
+		if (NetworkMgr.getMgr().getIP() != null)
+			string = NetworkMgr.getMgr().getIP();
+		return string;
 	}
 
 	@Override
