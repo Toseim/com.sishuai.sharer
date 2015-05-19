@@ -33,7 +33,7 @@ public class OthLink extends Action {
 	}
 	public static OthLink getOthLink() {
 		if (othLink == null)
-			othLink = new OthLink("Add the new net");
+			othLink = new OthLink("add new links");
 		return othLink;
 	}
 	

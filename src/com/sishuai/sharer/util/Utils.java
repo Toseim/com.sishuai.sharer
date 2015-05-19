@@ -10,10 +10,11 @@ import java.util.Random;
  * clear
  */
 public class Utils {
-	public static Random random;
-	public static SimpleDateFormat simpleDateFormat;
-	public static DecimalFormat decimalFormat;
-	public static String os;
+	private static Random random;
+	private static SimpleDateFormat simpleDateFormat;
+	private static DecimalFormat onePointFormat;
+	private static String separator;
+	public static DecimalFormat fourFormat;
 	
 	public static SimpleDateFormat getSimpleDataFormat() {
 		if (simpleDateFormat == null) 
@@ -21,10 +22,16 @@ public class Utils {
 		return simpleDateFormat;
 	}
 	
-	public static DecimalFormat getDecimalFormat() {
-		if (decimalFormat == null)
-			decimalFormat = new DecimalFormat("0.0");
-		return decimalFormat;
+	public static String getSeparator() {
+		if (separator == null)
+			separator = System.getProperty("file.separator");
+		return separator;
+	}
+	
+	public static DecimalFormat getOnePointFormat() {
+		if (onePointFormat == null)
+			onePointFormat = new DecimalFormat("0.0");
+		return onePointFormat;
 	}
 	
 	public static Random getRandom() {
@@ -33,9 +40,9 @@ public class Utils {
 		return random;
 	}
 	
-	public static String getos() {
-		if (os == null)
-			os = System.getProperty("os.name");
-		return os;
+	public static DecimalFormat getFourFormat() {
+		if (fourFormat == null)
+			fourFormat = new DecimalFormat("0000");
+		return fourFormat;
 	}
 }

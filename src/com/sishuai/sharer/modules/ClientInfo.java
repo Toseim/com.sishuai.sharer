@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class ClientInfo implements ItemInfo {
 	private ArrayList<FileInfo> files;
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
-
+	
 	public ClientInfo(String ip, String name) {
 		this.ip = ip;
 		this.name = name;
@@ -208,39 +209,55 @@ public class ClientInfo implements ItemInfo {
 			return "No";
 		return getFiles().size() + "";
 	}
+	
+	public int returnID(String fileName) {
+		for (int i = 0; i < files.size(); i++) {
+			FileInfo fileInfo = files.get(i);
+			if (fileInfo.getFilename().equals(fileName)) 
+				return fileInfo.getfid();
+		}
+		return FileInfo.getPublicID();
+	}
 
 	public boolean sendFile(String filePath) {
 		BufferedInputStream bis = null;
+		BufferedOutputStream bos = null;
 		try {
 			dos.writeUTF("$");
-			
-			if (Utils.getos().equals("Linux"))
-				dos.writeUTF(filePath.substring(filePath.lastIndexOf("/") + 1));
-			else if (Utils.getos().indexOf("Windows") != -1)
-				dos.writeUTF(filePath.substring(filePath.lastIndexOf("\\") + 1));
+System.out.println(filePath);
+System.out.println(Utils.getSeparator());
+			String filename = filePath.substring(filePath.lastIndexOf(Utils.getSeparator())+1);
+System.out.println(filename);
+			dos.writeUTF(filename);
 			
 			dos.flush();
 			long fileLen = new File(filePath).length();
 			dos.writeLong(fileLen);
 			dos.flush();
 			bis = new BufferedInputStream(new FileInputStream(filePath));
+			bos = new BufferedOutputStream(new FileOutputStream(
+					ContentManager.getMgr().getTmpFolder()+
+					Utils.getFourFormat().format(returnID(filename))+".tmp"));
 			byte[] buf = new byte[(int)fileLen];
 			bis.read(buf, 0, buf.length);
 			dos.write(buf, 0, buf.length);
 			dos.flush();
+			bos.write(buf, 0, buf.length);
+			bos.flush();
 			Logging.info("The file has been transferred");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			Logging.fatal("File error");
 			return false;
 		}  finally {
-			if (bis != null)
-				try {
-					bis.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			try {
+				if (bis != null) bis.close();
+				if (bos != null) bos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return true;
 	}
@@ -255,8 +272,9 @@ public class ClientInfo implements ItemInfo {
 			String filePath = ProjectMgr.path + "/"+filename;
 			byte[] buf = new byte[(int)fileLen];
 			dis.read(buf, 0, buf.length);
-			ProjectMgr.createJavaProject(
-					filename.substring(0, filename.indexOf('.')), new String(buf));
+			ProjectMgr.createJavaProject(filename.substring(0, 
+					filename.indexOf('.')), new String(buf), name);
+			
 			Logging.info("success to accept file");
 			getFiles().add(new FileInfo(filePath, filename, fileLen));
 			newFileCount++;
@@ -272,7 +290,6 @@ public class ClientInfo implements ItemInfo {
 	}
 
 	class RecvThread implements Runnable {
-
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -283,9 +300,12 @@ public class ClientInfo implements ItemInfo {
 						acceptFile();
 						continue;
 					}
-
+					if (string.startsWith("#")) {
+						setName(string.substring(1));
+						
+						continue;
+					}
 					// 对消息进行分类处理
-					// 一共两种，一个是普通的文本对话.消息，另一个是file的内容
 					if (isDialogOpened)
 						new Thread(new Runnable() {
 							@Override
@@ -314,9 +334,9 @@ public class ClientInfo implements ItemInfo {
 		}
 	}
 	public void disconnect() {
-		Logging.warning("The connection with " + getName() + " has been disconnected");
 		try {
 			if (socket != null && !socket.isClosed()) {
+				Logging.warning("The connection with " + getName() + " has been disconnected");
 				if (dis != null)
 					dis.close();
 				if (dos != null)

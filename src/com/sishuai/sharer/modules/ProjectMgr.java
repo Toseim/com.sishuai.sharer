@@ -27,7 +27,8 @@ import org.eclipse.jdt.ui.PreferenceConstants;
 public class ProjectMgr {
 	public static boolean flagnew , flagupdated , flagdone , flagcommited;
 	public static String path = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-	public static void createJavaProject(String fileName, String fileCode) {
+	
+	public static void createJavaProject(String fileName, String fileCode, String folderName) {
 		// 获取工作区
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		// 创建新项目
@@ -119,7 +120,6 @@ public class ProjectMgr {
 									.newSourceEntry(new Path("/" + "Share"));
 							if (list.contains(temp)) {
 								list.remove(temp);
-								
 							}
 
 							javaProject.setRawClasspath(
@@ -140,7 +140,7 @@ public class ProjectMgr {
 												+ "Share" + "/src"));
 								// 根据IPackageFragmentRoot创建IPackageFragment,IPackageFragment就是包了
 								IPackageFragment packageFragment = packageFragmentRoot
-										.createPackageFragment("Share", true,
+										.createPackageFragment(folderName, true,
 												null);
 								// //////////////////////////////////创建Java文件////////////////////////
 								packageFragment.createCompilationUnit(fileName+".java",
@@ -160,25 +160,3 @@ public class ProjectMgr {
 		return ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 	}
 }
-// private static String getCode() {
-// String str = null;
-// File F = new File(str);
-// return F.getPath().substring(F.getPath().lastIndexOf("/")+1,
-// F.getPath().length());
-// }
-// private static String getName() {
-// try {
-// String str = null;
-// Scanner s = new Scanner(new File(str));
-// str = "";
-// while(s.hasNextLine()){
-// str += s.nextLine();
-// }
-// return str;
-// } catch (FileNotFoundException e) {
-// System.out.println("Error . ");
-// return null;
-// }
-//
-// }
-// }

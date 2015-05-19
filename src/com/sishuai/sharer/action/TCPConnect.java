@@ -24,7 +24,7 @@ public class TCPConnect extends Action {
 	
 	public static TCPConnect getTcpConnect() {
 		if (tcpConnect == null)
-			tcpConnect = new TCPConnect("Add the net");
+			tcpConnect = new TCPConnect("connect with it");
 		return tcpConnect;
 	}
 	

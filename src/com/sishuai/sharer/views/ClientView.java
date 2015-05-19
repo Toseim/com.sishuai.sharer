@@ -24,15 +24,16 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 
 import com.sishuai.sharer.Activator;
 import com.sishuai.sharer.action.ChatDialog;
+import com.sishuai.sharer.action.DefaultName;
 import com.sishuai.sharer.action.OpenView;
 import com.sishuai.sharer.action.OthLink;
 import com.sishuai.sharer.action.TCPConnect;
@@ -84,6 +85,7 @@ public class ClientView extends ViewPart {
 	private IStatusLineManager statusline;
 	private ChatDialog chatDialog;
 	private OthLink othLink;
+	private DefaultName changeName;
 	private MulticastServer multicastServer;
 
 	class NameSorter extends ViewerSorter {
@@ -125,7 +127,7 @@ public class ClientView extends ViewPart {
 
 		TreeColumn treeColumn5 = new TreeColumn(tree, SWT.RIGHT);
 		// treeColumn5.setText("交互文件数和文件大小");
-		treeColumn5.setWidth(30);
+		treeColumn5.setWidth(50);
 
 		statusline = getViewSite().getActionBars()
 				.getStatusLineManager();
@@ -139,7 +141,7 @@ public class ClientView extends ViewPart {
 		viewer.setInput(ContentManager.getMgr());
 		ContentManager.getMgr().setTreeViewer(viewer);
 		
-		//默认不展开根节点（为了获取用户的第一次双击)
+		// 默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
 		
 		Logging.getLogger().setFileName("ClientView");
@@ -164,6 +166,7 @@ public class ClientView extends ViewPart {
 					NetworkMgr.getMgr().setName(nameInput);
 					addSelectionMonitor();
 					multicastServer.setEnabled(true);
+					changeName.setEnabled(true);
 					NetworkMgr.getMgr().getDatagramSocket();
 					viewer.removeOpenListener(this);
 				}
@@ -171,6 +174,7 @@ public class ClientView extends ViewPart {
 		} else {
 			NetworkMgr.getMgr().setName(name);
 			addSelectionMonitor();
+			changeName.setEnabled(true);
 			multicastServer.setEnabled(true);
 			NetworkMgr.getMgr().getDatagramSocket();
 		}
@@ -189,7 +193,7 @@ public class ClientView extends ViewPart {
 						&& !((ClientInfo) obj).isDialogOpened())
 					chatDialog.setEnabled(true);
 				
-				othLink.setEnabled(false);
+				othLink.setEnabled(false); 
 				tcpConnect.setEnabled(false);
 				if (NetworkMgr.getState()) return;
 				//加入该网络
@@ -210,6 +214,7 @@ public class ClientView extends ViewPart {
 		tcpConnect.setView(this);
 
 		othLink = OthLink.getOthLink();
+		changeName = new DefaultName();
 
 		chatDialog = new ChatDialog(this);
 		multicastServer = MulticastServer.getMulticastServer();
@@ -222,6 +227,7 @@ public class ClientView extends ViewPart {
 		othLink.setEnabled(false);
 		multicastServer.setEnabled(false);
 		tcpConnect.setEnabled(false);
+		changeName.setEnabled(false);
 	}
 	
 	public void dropSupport() {
@@ -296,9 +302,10 @@ public class ClientView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		// manager.add(new Separator());
 		manager.add(multicastServer);
 		manager.add(othLink);
+		manager.add(new Separator());
+		manager.add(changeName);
 	}
 
 	public ItemInfo getSelectedItem() {
@@ -309,7 +316,7 @@ public class ClientView extends ViewPart {
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(chatDialog);
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		manager.add(new Separator());
 		manager.add(tcpConnect);
 		manager.add(othLink);
 	}
@@ -318,7 +325,19 @@ public class ClientView extends ViewPart {
 	}
 
 	public void showMessage(String notification) {
-		statusline.setMessage(notification);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Display.getDefault().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						statusline.setMessage(notification);
+					}
+				});
+			}
+		}).start();
 	}
 
 	/**

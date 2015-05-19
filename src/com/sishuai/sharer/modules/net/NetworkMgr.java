@@ -309,11 +309,11 @@ public class NetworkMgr {
 				dos.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				view.showMessage("");
 				Display.getDefault().asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						view.showMessage("");
 						setState(false);
 						if (!isTimeOut) return;
 						MessageDialog.openError(view.getSite().getShell(), "TIME OUT!", "Timeout, the other did not respond");
@@ -341,13 +341,7 @@ public class NetworkMgr {
 				//refresh
 				ContentManager.getMgr().updateItems();
 				//消息通知
-				Display.getDefault().asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						view.showMessage("We connect!");
-					}
-				});
+				view.showMessage("we connect!");
 			} catch (IOException e) {
 				com.sishuai.sharer.util.Logging.fatal("IOException . ");
 				e.printStackTrace();

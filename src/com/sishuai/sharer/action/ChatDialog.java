@@ -56,10 +56,9 @@ public class ChatDialog extends Action{
 			Logging.warning("C"+clientInfo.getName()+"鐨勫璇濈獥鍙ｅ凡缁忔墦寮�");
 			return;
 		}
-		if (clientInfo.getChatDialog() == null) {
-			Logging.info("涓�"+clientInfo.getName()+"璁剧疆瀵硅瘽绐楀彛");
-			clientInfo.setChatDialog(this);
-		}
+		Logging.info("涓�"+clientInfo.getName()+"璁剧疆瀵硅瘽绐楀彛");
+		clientInfo.setChatDialog(this);
+
 		Logging.info(clientInfo.getName()+"鐨勭獥鍙ｆ墦寮�涓�");
 		clientInfo.setDialogOpened(true);
 		
@@ -130,7 +129,7 @@ public class ChatDialog extends Action{
 				text_2.setText("");
 			}
 		});
-	
+		
 		final GridData gridData_3 = new GridData(SWT.FILL,SWT.FILL,true,true,5,1);
 		group_3.setLayoutData(gridData_3);
 		
@@ -144,7 +143,6 @@ public class ChatDialog extends Action{
 		sendButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e){
 				if (text_2.getText().length() == 0) return;
-				
 				dialogText.append(NetworkMgr.getMgr().getName()+": \n"+text_2.getText()+"\n");
 				Logging.info("浼犻�乼ext_2娑堟伅鍒�"+clientInfo.getName());
 				send(text_2.getText());
@@ -177,5 +175,9 @@ public class ChatDialog extends Action{
 			clientInfo.disconnect();
 			MessageDialog.openError(view.getSite().getShell(), "The connection is blocked", "Please try again later.");
 		}
+	}
+	
+	private class ChatArea {
+		
 	}
 }

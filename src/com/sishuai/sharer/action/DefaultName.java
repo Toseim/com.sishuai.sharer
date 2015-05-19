@@ -1,4 +1,4 @@
-package com.sishuai.sharer.views;
+package com.sishuai.sharer.action;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,8 +7,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
@@ -18,15 +22,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
+import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 /**
  * 获得用户的设置的名字
  * @author 四帅
  * clear!
  */
-public class DefaultName {
+public class DefaultName extends Action{
 	
 	public static boolean state = false;
+	private static final Pattern namePattern = Pattern.compile("^[\u4e00-\u9fa5 _a-zA-Z]+");
 	private Text text;
 	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
 	private String name = null;
@@ -38,6 +44,10 @@ public class DefaultName {
 		if (instance == null)
 			instance = new DefaultName();
 		return instance;
+	}
+	
+	public DefaultName() {
+		super("change name");
 	}
 	
 	public String fileInput() {
@@ -114,7 +124,7 @@ public class DefaultName {
 		btnCheckButton.setToolTipText("When you use this plug-in again,this name is default.");
 		btnCheckButton.setSelection(true);
 		btnCheckButton.setBounds(10, 77, 98, 17);
-		btnCheckButton.setText("set it to default.");
+		btnCheckButton.setText("set it to default");
 		
 		text = new Text(shell, SWT.BORDER);
 		text.setToolTipText("You can set it freely,just let others recognize you.");
@@ -122,7 +132,6 @@ public class DefaultName {
 		text.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
-				if (text.getText().length() == 0) return;
 				name = text.getText();
 				Logging.info("Getting the name of user "+ name);
 				if (btnCheckButton.getSelection()) saveName();
@@ -133,13 +142,24 @@ public class DefaultName {
 		Button btnNewButton = new Button(shell, SWT.NONE);
 		btnNewButton.setBounds(296, 68, 80, 27);
 		btnNewButton.setText("OK");
+		btnNewButton.setEnabled(false);
 		btnNewButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				if (text.getText().length() == 0) return;
 				name = text.getText();
 				Logging.info("Getting the name of user "+ name);
 				if (btnCheckButton.getSelection()) saveName();
 				shell.dispose();
+			}
+		});
+		
+		text.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				// TODO Auto-generated method stub
+				btnNewButton.setEnabled(false);
+				if (namePattern.matcher(text.getText()).matches()) {
+					btnNewButton.setEnabled(true);
+				}
 			}
 		});
 		shell.open();
@@ -149,7 +169,10 @@ public class DefaultName {
 				display.sleep();
 		shell.dispose();
 		state = false;
-		if (name == null) return null;
-		return name.trim();
+		return name;
+	}
+	
+	public void run() {
+		NetworkMgr.getMgr().setName(viewInput());
 	}
 }

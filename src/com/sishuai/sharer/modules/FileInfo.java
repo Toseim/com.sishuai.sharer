@@ -24,12 +24,19 @@ public class FileInfo implements ItemInfo{
 	private String len;
 	
 	private String filePath;
+	private int fid;
+	
+	private static int fileID = 0;
 	
 	public FileInfo(String filePath, String filename, long len) {
 		this.filePath = filePath;
 		this.filename = filename;
-		this.len = Utils.decimalFormat.format(len / 1024.0);
-		this.fTime = Utils.simpleDateFormat.format(new Date());
+		this.len = Utils.getOnePointFormat().format(len / 1024.0);
+		this.fTime = Utils.getSimpleDataFormat().format(new Date());
+	}
+	
+	public static int getPublicID() {
+		return ++fileID;
 	}
 	
 	public String getState() {
@@ -65,6 +72,10 @@ public class FileInfo implements ItemInfo{
 
 	public String getFilePath() {
 		return filePath;
+	}
+	
+	public int getfid() {
+		return fid;
 	}
 
 	@Override
