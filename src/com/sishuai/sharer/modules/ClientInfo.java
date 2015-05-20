@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
@@ -45,6 +46,7 @@ public class ClientInfo implements ItemInfo {
 	private String temp = "";
 
 	private ArrayList<FileInfo> files;
+	private HashMap<String, Integer> fileList;
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
 	
@@ -139,6 +141,7 @@ public class ClientInfo implements ItemInfo {
 			Logging.getLogger().setFileName("ClientInfo");
 			Logging.info("Initialize the user list file");
 			files = new ArrayList<FileInfo>();
+			fileList = new HashMap<>();
 		}
 		return files;
 	}
@@ -211,12 +214,11 @@ public class ClientInfo implements ItemInfo {
 	}
 	
 	public int returnID(String fileName) {
-		for (int i = 0; i < files.size(); i++) {
-			FileInfo fileInfo = files.get(i);
-			if (fileInfo.getFilename().equals(fileName)) 
-				return fileInfo.getfid();
+		if (fileList.get(fileName) == null) {
+			int id = FileInfo.getPublicID();
+			fileList.put(fileName, id);
 		}
-		return FileInfo.getPublicID();
+		return fileList.get(fileName);
 	}
 
 	public boolean sendFile(String filePath) {
@@ -274,6 +276,8 @@ public class ClientInfo implements ItemInfo {
 			
 			Logging.info("success to accept file");
 			getFiles().add(new FileInfo(filePath, filename, fileLen));
+			if (fileList.containsKey(filename));
+			
 			newFileCount++;
 			ContentManager.getMgr().updateItems();
 
@@ -298,8 +302,9 @@ public class ClientInfo implements ItemInfo {
 						continue;
 					}
 					if (string.startsWith("#")) {
+						ContentManager.getMgr().getView().showMessage(
+								name+" set a new name: "+string.substring(1));
 						setName(string.substring(1));
-						
 						continue;
 					}
 					// 对消息进行分类处理

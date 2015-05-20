@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.sishuai.sharer.util.Logging;
 import com.sishuai.sharer.util.Utils;
+import com.sishuai.sharer.views.ClientView;
 
 /**
  * 显示界面中数据的修改要用到，目前可提供用户的添加和删除
@@ -19,12 +20,21 @@ public class ContentManager {
 	public static ContentManager contentmanager;
 	private TreeViewer viewer;
 	private String tmpFolder;
+	private ClientView view;
 	
 	public static ContentManager getMgr() {
 		if (contentmanager == null) {
 			contentmanager = new ContentManager();
 		}
 		return contentmanager;
+	}
+	
+	public void setView(ClientView view) {
+		this.view = view;
+	}
+	
+	public ClientView getView() {
+		return view;
 	}
 	
 	public Object[] getItems() {

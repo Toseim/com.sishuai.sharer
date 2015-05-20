@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -36,6 +35,7 @@ import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.action.DefaultName;
 import com.sishuai.sharer.action.OpenView;
 import com.sishuai.sharer.action.OthLink;
+import com.sishuai.sharer.action.RegetIP;
 import com.sishuai.sharer.action.TCPConnect;
 import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ClientTableLabelProvider;
@@ -87,9 +87,7 @@ public class ClientView extends ViewPart {
 	private OthLink othLink;
 	private DefaultName changeName;
 	private MulticastServer multicastServer;
-
-	class NameSorter extends ViewerSorter {
-	}
+	private RegetIP regetIP; 
 
 	/**
 	 * The constructor.
@@ -140,6 +138,7 @@ public class ClientView extends ViewPart {
 		viewer.setLabelProvider(new ClientTableLabelProvider());
 		viewer.setInput(ContentManager.getMgr());
 		ContentManager.getMgr().setTreeViewer(viewer);
+		ContentManager.getMgr().setView(this);
 		
 		// 默认不展开根节点（为了获取用户的第一次双击)
 		viewer.setExpandedState(Header.getHeader(), false);
@@ -167,6 +166,7 @@ public class ClientView extends ViewPart {
 					addSelectionMonitor();
 					multicastServer.setEnabled(true);
 					changeName.setEnabled(true);
+					othLink.setEnabled(true);
 					NetworkMgr.getMgr().getDatagramSocket();
 					viewer.removeOpenListener(this);
 				}
@@ -176,6 +176,7 @@ public class ClientView extends ViewPart {
 			addSelectionMonitor();
 			changeName.setEnabled(true);
 			multicastServer.setEnabled(true);
+			othLink.setEnabled(true);
 			NetworkMgr.getMgr().getDatagramSocket();
 		}
 	}
@@ -197,12 +198,14 @@ public class ClientView extends ViewPart {
 				tcpConnect.setEnabled(false);
 				if (NetworkMgr.getState()) return;
 				//加入该网络
-				if (obj instanceof ClientInfo
-						&& !((ClientInfo) obj).isConnected())
+				if (obj instanceof ClientInfo && !((ClientInfo) obj).isConnected())
 					tcpConnect.setEnabled(true);
 				
 				//建立新网络
 				othLink.setEnabled(true);
+				
+				if (obj instanceof Header)
+					statusline.setMessage(NetworkMgr.getMgr().getIPs().toString());
 			}
 		});
 	}
@@ -215,6 +218,7 @@ public class ClientView extends ViewPart {
 
 		othLink = OthLink.getOthLink();
 		changeName = new DefaultName();
+		regetIP = new RegetIP(this);
 
 		chatDialog = new ChatDialog(this);
 		multicastServer = MulticastServer.getMulticastServer();
@@ -302,8 +306,8 @@ public class ClientView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
+		manager.add(regetIP);
 		manager.add(multicastServer);
-		manager.add(othLink);
 		manager.add(new Separator());
 		manager.add(changeName);
 	}

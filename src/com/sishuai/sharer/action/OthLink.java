@@ -93,7 +93,7 @@ public class OthLink extends Action {
 			@Override
 			public void modifyText(ModifyEvent arg0) {
 				// TODO Auto-generated method stub
-				if (NetworkMgr.pattern1.matcher(text.getText()).matches() ||
+				if (onlyNumber(text.getText()) || NetworkMgr.pattern1.matcher(text.getText()).matches() ||
 						NetworkMgr.pattern2.matcher(text.getText()).matches() ||
 						NetworkMgr.pattern3.matcher(text.getText()).matches()) {
 					btnNewButton.setEnabled(true);
@@ -112,7 +112,8 @@ public class OthLink extends Action {
 						MessageDialog.openWarning(shell, "Connection blocking", "The network is being used, please try again later");
 						return;
 					}
-					objectIP = text.getText();
+					String ip = NetworkMgr.getMgr().getIP();
+					objectIP = ip.substring(0, ip.lastIndexOf(".")+1)+text.getText();
 					if (ClientInfo.getIPList().contains(objectIP))
 						return;
 					Logging.info("Get the user input IP:"+objectIP);
@@ -129,6 +130,17 @@ public class OthLink extends Action {
 				display.sleep();
 		Logging.info("The user window has closed network");
 		shell.dispose();
+	}
+	
+	public boolean onlyNumber(String text) {
+		try {
+			if (Integer.parseInt(text) >= 1 && Integer.parseInt(text) < 255) 
+				return true;
+		} catch (NumberFormatException e) {
+			// TODO: handle exception
+			return false;
+		}
+		return false;
 	}
 	
 	public void next() {

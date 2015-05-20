@@ -10,6 +10,7 @@ import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -31,6 +32,7 @@ public class NetworkMgr {
 	public static Pattern pattern1 = Pattern.compile("^192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	public static Pattern pattern2 = Pattern.compile("^10\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	public static Pattern pattern3 = Pattern.compile("^172\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+	public static Pattern pattern4 = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
 	
 	private static NetworkMgr networkMgr;
 	private ServerSocket tempSocket;
@@ -48,6 +50,7 @@ public class NetworkMgr {
 	
 	private String name;
 	private String IP;
+	private ArrayList<String> IPs;
 	
 	private static boolean isTimeOut = false;
 	private static boolean state = false;
@@ -64,15 +67,18 @@ public class NetworkMgr {
 			try {
 				Logging.getLogger().setFileName("NetworkMgr");
 				//获得本机所有IP
+				if (IPs == null) IPs = new ArrayList<>();
+				else IPs.clear();
 				InetAddress[] addresses = InetAddress.getAllByName(InetAddress.
 						getLocalHost().getHostName());
 				for (int i=0; i< addresses.length; i++) {
 					String s = addresses[i].getHostAddress();
+					if (!NetworkMgr.pattern4.matcher(s).matches()) break;
+					IPs.add(s);
 					//正则匹配
 					if (NetworkMgr.pattern1.matcher(s).find() || NetworkMgr.pattern2.matcher(s).find() 
 							|| NetworkMgr.pattern3.matcher(s).find()) {
 						IP = s;
-						break;
 					}
 				}
 				ClientInfo.getIPList().add(IP);
@@ -85,6 +91,15 @@ public class NetworkMgr {
 			return null;
 		}
 		return IP;
+	}
+	
+	public ArrayList<String> getIPs() {
+		return IPs;
+	}
+	
+	public void IPclear() {
+		IP = null;
+		IPs.clear();
 	}
 	
 	public void setView(ClientView view) {

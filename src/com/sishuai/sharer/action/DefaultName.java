@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.sishuai.sharer.Activator;
+import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 /**
@@ -34,7 +35,7 @@ public class DefaultName extends Action{
 	public static boolean state = false;
 	private static final Pattern namePattern = Pattern.compile("^[\u4e00-\u9fa5_a-zA-Z][\u4e00-\u9fa5_a-zA-Z0-9]*");
 	private Text text;
-	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
+	private static File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
 	private String name = null;
 	private final int height = 138;
 	private final int width = 418;
@@ -123,7 +124,7 @@ public class DefaultName extends Action{
 		Button btnCheckButton = new Button(shell, SWT.CHECK);
 		btnCheckButton.setToolTipText("When you use this plug-in again,this name is default.");
 		btnCheckButton.setSelection(true);
-		btnCheckButton.setBounds(10, 77, 98, 17);
+		btnCheckButton.setBounds(10, 77, 120, 17);
 		btnCheckButton.setText("set it to default");
 		
 		text = new Text(shell, SWT.BORDER);
@@ -135,6 +136,7 @@ public class DefaultName extends Action{
 				name = text.getText();
 				Logging.info("Getting the name of user "+ name);
 				if (btnCheckButton.getSelection()) saveName();
+				sendName();
 				shell.dispose();
 			}
 		});
@@ -148,6 +150,7 @@ public class DefaultName extends Action{
 				name = text.getText();
 				Logging.info("Getting the name of user "+ name);
 				if (btnCheckButton.getSelection()) saveName();
+				sendName();
 				shell.dispose();
 			}
 		});
@@ -170,6 +173,17 @@ public class DefaultName extends Action{
 		shell.dispose();
 		state = false;
 		return name;
+	}
+	
+	public void sendName() {
+		for (int i = 0; i < ClientInfo.getClients().size(); i++) {
+			try {
+				ClientInfo.getClients().get(i).getDataOutputStream().writeUTF("#"+name);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void run() {

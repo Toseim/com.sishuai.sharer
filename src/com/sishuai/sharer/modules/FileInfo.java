@@ -24,7 +24,7 @@ public class FileInfo implements ItemInfo{
 	private String len;
 	
 	private String filePath;
-	private int fid;
+	private boolean diffible;
 	
 	private static int fileID = 0;
 	
@@ -66,6 +66,7 @@ public class FileInfo implements ItemInfo{
 	public int getLineEdit() {
 		return lineEdit;
 	}
+	
 	public void setLineEdit(int lineEdit) {
 		this.lineEdit = lineEdit;
 	}
@@ -74,10 +75,14 @@ public class FileInfo implements ItemInfo{
 		return filePath;
 	}
 	
-	public int getfid() {
-		return fid;
+	public void setDiffible(boolean diffible) {
+		this.diffible = diffible;
 	}
-
+	
+	public boolean isDiffible() {
+		return diffible;
+	}
+	
 	@Override
 	public String getOne() {
 		// TODO Auto-generated method stub
