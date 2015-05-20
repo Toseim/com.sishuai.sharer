@@ -32,7 +32,7 @@ import com.sishuai.sharer.util.Logging;
 public class DefaultName extends Action{
 	
 	public static boolean state = false;
-	private static final Pattern namePattern = Pattern.compile("^[\u4e00-\u9fa5 _a-zA-Z]+");
+	private static final Pattern namePattern = Pattern.compile("^[\u4e00-\u9fa5_a-zA-Z][\u4e00-\u9fa5_a-zA-Z0-9]*");
 	private Text text;
 	private File file = Activator.getDefault().getStateLocation().append("default.ini").toFile();
 	private String name = null;

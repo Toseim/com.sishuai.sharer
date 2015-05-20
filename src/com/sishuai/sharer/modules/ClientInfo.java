@@ -13,8 +13,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
-import com.sishuai.sharer.action.ChatDialog;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
 import com.sishuai.sharer.util.Logging;
 import com.sishuai.sharer.util.Utils;
@@ -37,7 +37,7 @@ public class ClientInfo implements ItemInfo {
 
 	// 一些与界面相关的信息
 	private boolean isDialogOpened = false;
-	private ChatDialog chatDialog;
+	private Text dialogText;
 	private Socket socket;
 	private DataInputStream dis;
 	private DataOutputStream dos;
@@ -155,12 +155,12 @@ public class ClientInfo implements ItemInfo {
 		this.name = name;
 	}
 
-	public ChatDialog getChatDialog() {
-		return chatDialog;
+	public Text getDialog() {
+		return dialogText;
 	}
 
-	public void setChatDialog(ChatDialog chatDialog) {
-		this.chatDialog = chatDialog;
+	public void setDialog(Text dialogText) {
+		this.dialogText = dialogText;
 	}
 
 	public boolean isDialogOpened() {
@@ -224,10 +224,7 @@ public class ClientInfo implements ItemInfo {
 		BufferedOutputStream bos = null;
 		try {
 			dos.writeUTF("$");
-System.out.println(filePath);
-System.out.println(Utils.getSeparator());
 			String filename = filePath.substring(filePath.lastIndexOf(Utils.getSeparator())+1);
-System.out.println(filename);
 			dos.writeUTF(filename);
 			
 			dos.flush();
@@ -315,7 +312,7 @@ System.out.println(filename);
 									@Override
 									public void run() {
 										// TODO Auto-generated method stub
-										chatDialog.getDialog().append(string);
+										dialogText.append(string);
 									}
 								});
 							}

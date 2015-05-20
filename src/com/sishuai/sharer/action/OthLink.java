@@ -19,8 +19,8 @@ import com.sishuai.sharer.modules.net.NetworkMgr;
 import com.sishuai.sharer.util.Logging;
 
 /**
- * @author 四帅
- * 此菜单选项适用于局域网广播禁用的情况，提供手动添加ip地址的功能
+ * @author 鍥涘竻
+ * 姝よ彍鍗曢�夐」閫傜敤浜庡眬鍩熺綉骞挎挱绂佺敤鐨勬儏鍐碉紝鎻愪緵鎵嬪姩娣诲姞ip鍦板潃鐨勫姛鑳�
  */
 public class OthLink extends Action {
 	private static OthLink othLink;
@@ -33,7 +33,7 @@ public class OthLink extends Action {
 	}
 	public static OthLink getOthLink() {
 		if (othLink == null)
-			othLink = new OthLink("add new links");
+			othLink = new OthLink("add new link");
 		return othLink;
 	}
 	
@@ -42,7 +42,7 @@ public class OthLink extends Action {
 		Logging.info("Open the user network input box");
 		Display display = Display.getDefault();
 		Shell shell = new Shell(display, SWT.DIALOG_TRIM | SWT.ON_TOP);
-		//居中显示
+		//灞呬腑鏄剧ず
 		shell.setBounds((Activator.width-width)/2, (Activator.height-height)/2, width, height);
 		shell.setLayout(null);
 		
