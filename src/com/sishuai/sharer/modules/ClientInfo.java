@@ -38,6 +38,7 @@ public class ClientInfo implements ItemInfo {
 
 	// 一些与界面相关的信息
 	private boolean isDialogOpened = false;
+	private boolean toAdd = false;
 	private Text dialogText;
 	private Socket socket;
 	private DataInputStream dis;
@@ -46,7 +47,7 @@ public class ClientInfo implements ItemInfo {
 	private String temp = "";
 
 	private ArrayList<FileInfo> files;
-	private HashMap<String, Integer> fileList;
+	private HashMap<String, FileInfo> fileList;
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
 	
@@ -213,12 +214,15 @@ public class ClientInfo implements ItemInfo {
 		return getFiles().size() + "";
 	}
 	
-	public int returnID(String fileName) {
-		if (fileList.get(fileName) == null) {
-			int id = FileInfo.getPublicID();
-			fileList.put(fileName, id);
+	public int getFileId(FileInfo fileInfo) {
+		if (!fileList.containsKey(fileInfo.getFilename())) {
+			fileList.put(fileInfo.getFilename(), fileInfo);
+			fileInfo.setFid(FileInfo.getPublicID());
+		} else {
+			fileList.get(fileInfo.getFilename()).setStateIn(0);
+			fileList.get(fileInfo.getFilename()).updateTime();
 		}
-		return fileList.get(fileName);
+		return fileInfo.getFid();
 	}
 
 	public boolean sendFile(String filePath) {
@@ -233,10 +237,11 @@ public class ClientInfo implements ItemInfo {
 			long fileLen = new File(filePath).length();
 			dos.writeLong(fileLen);
 			dos.flush();
+			FileInfo fileInfo = new FileInfo(filePath, filename, fileLen);
 			bis = new BufferedInputStream(new FileInputStream(filePath));
 			bos = new BufferedOutputStream(new FileOutputStream(
 					ContentManager.getMgr().getTmpFolder()+
-					Utils.getFourFormat().format(returnID(filename))+".tmp"));
+					Utils.getFourFormat().format(getFileId(fileInfo))+".tmp"));
 			byte[] buf = new byte[(int)fileLen];
 			bis.read(buf, 0, buf.length);
 			dos.write(buf, 0, buf.length);
@@ -275,10 +280,18 @@ public class ClientInfo implements ItemInfo {
 					filename.indexOf('.')), new String(buf), name);
 			
 			Logging.info("success to accept file");
-			getFiles().add(new FileInfo(filePath, filename, fileLen));
-			if (fileList.containsKey(filename));
 			
-			newFileCount++;
+			if (!fileList.containsKey(filename)) {
+				FileInfo fileInfo = new FileInfo(filePath, filename, fileLen);
+				getFiles().add(fileInfo);
+				fileList.put(filename, fileInfo);
+				newFileCount++;
+			} else {
+				FileInfo fileInfo = fileList.get(filename);
+				fileInfo.setStateIn(1);
+				fileInfo.setDiffible(true);
+				fileInfo.updateTime();
+			}
 			ContentManager.getMgr().updateItems();
 
 		} catch (FileNotFoundException e) {

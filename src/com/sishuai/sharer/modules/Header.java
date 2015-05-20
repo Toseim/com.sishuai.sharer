@@ -11,30 +11,10 @@ import com.sishuai.sharer.modules.net.NetworkMgr;
 public class Header implements ItemInfo{
 	//可以用来提供信息
 	private static Header header;
-	private String two;
-	private String three;
-	private String four;
-	private String five;
 	
 	public static Header getHeader() {
 		if (header == null) header = new Header();
 		return header;
-	}
-
-	public void setTwo(String two) {
-		this.two = two;
-	}
-
-	public void setThree(String three) {
-		this.three = three;
-	}
-
-	public void setFour(String four) {
-		this.four = four;
-	}
-
-	public void setFive(String five) {
-		this.five = five;
 	}
 
 	@Override
@@ -49,25 +29,24 @@ public class Header implements ItemInfo{
 	@Override
 	public String getTwo() {
 		// TODO Auto-generated method stub
-		return two;
+		return null;
 	}
 
 	@Override
 	public String getThree() {
 		// TODO Auto-generated method stub
-		return three;
+		return null;
 	}
 
 	@Override
 	public String getFour() {
 		// TODO Auto-generated method stub
-		return four;
+		return null;
 	}
 
 	@Override
 	public String getFive() {
 		// TODO Auto-generated method stub
-		return five;
+		return null;
 	}
-
 }

@@ -24,7 +24,8 @@ public class FileInfo implements ItemInfo{
 	private String len;
 	
 	private String filePath;
-	private boolean diffible;
+	private boolean diffible = false;
+	private int fid;
 	
 	private static int fileID = 0;
 	
@@ -56,8 +57,8 @@ public class FileInfo implements ItemInfo{
 	public String getTimes() {
 		return fTime;
 	}
-	public void setTimes(String times) {
-		this.fTime = times;
+	public void updateTime() {
+		this.fTime = Utils.getSimpleDataFormat().format(new Date());
 	}
 	public String getLen() {
 		return len;
@@ -81,6 +82,14 @@ public class FileInfo implements ItemInfo{
 	
 	public boolean isDiffible() {
 		return diffible;
+	}
+	
+	public void setFid(int fid) {
+		this.fid = fid;
+	}
+	
+	public int getFid() {
+		return fid;
 	}
 	
 	@Override
