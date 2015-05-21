@@ -38,7 +38,6 @@ public class ClientInfo implements ItemInfo {
 
 	// 一些与界面相关的信息
 	private boolean isDialogOpened = false;
-	private boolean toAdd = false;
 	private Text dialogText;
 	private Socket socket;
 	private DataInputStream dis;
@@ -47,7 +46,7 @@ public class ClientInfo implements ItemInfo {
 	private String temp = "";
 
 	private ArrayList<FileInfo> files;
-	private HashMap<String, FileInfo> fileList;
+	private HashMap<String, FileInfo> fileList = new HashMap<>();
 	private static ArrayList<ClientInfo> clients;
 	private static ArrayList<String> iptable;
 	
@@ -217,12 +216,14 @@ public class ClientInfo implements ItemInfo {
 	public int getFileId(FileInfo fileInfo) {
 		if (!fileList.containsKey(fileInfo.getFilename())) {
 			fileList.put(fileInfo.getFilename(), fileInfo);
+			getFiles().add(fileInfo);
 			fileInfo.setFid(FileInfo.getPublicID());
 		} else {
 			fileList.get(fileInfo.getFilename()).setStateIn(0);
 			fileList.get(fileInfo.getFilename()).updateTime();
 		}
-		return fileInfo.getFid();
+		ContentManager.getMgr().updateItems();
+		return fileList.get(fileInfo.getFilename()).getFid();
 	}
 
 	public boolean sendFile(String filePath) {

@@ -3,12 +3,18 @@ package com.sishuai.sharer.views;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -28,6 +34,10 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 
 import com.sishuai.sharer.Activator;
@@ -41,6 +51,7 @@ import com.sishuai.sharer.modules.ClientInfo;
 import com.sishuai.sharer.modules.ClientTableLabelProvider;
 import com.sishuai.sharer.modules.ClientTreeContentProvider;
 import com.sishuai.sharer.modules.ContentManager;
+import com.sishuai.sharer.modules.FileInfo;
 import com.sishuai.sharer.modules.Header;
 import com.sishuai.sharer.modules.ImageMgr;
 import com.sishuai.sharer.modules.interfaces.ItemInfo;
@@ -146,6 +157,7 @@ public class ClientView extends ViewPart {
 		Logging.getLogger().setFileName("ClientView");
 		
 		createAction();
+		addDoubleClickMonitor();
 		hookContextMenu();
 		contributeToActionBars();
 		getName();
@@ -179,6 +191,30 @@ public class ClientView extends ViewPart {
 			othLink.setEnabled(true);
 			NetworkMgr.getMgr().getDatagramSocket();
 		}
+	}
+	
+	public void addDoubleClickMonitor() {
+		Logging.info("Loading double click operation");
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				// TODO Auto-generated method stub
+				IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+				Object obj = selection.getFirstElement();
+				if (obj instanceof FileInfo) {
+					FileInfo fileInfo = (FileInfo) obj;
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("Share");
+					IFile file = project.getFile(new Path("/src/LCCD/"+fileInfo.getFilename()));
+					try {
+						IDE.openEditor(page, file, "org.eclipse.jdt.ui.CompilationUnitEditor");
+					} catch (PartInitException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	public void addSelectionMonitor() {

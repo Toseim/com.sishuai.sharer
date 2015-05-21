@@ -26,6 +26,7 @@ public class FileInfo implements ItemInfo{
 	private String filePath;
 	private boolean diffible = false;
 	private int fid;
+	private ClientInfo clientInfo;
 	
 	private static int fileID = 0;
 	
@@ -38,6 +39,14 @@ public class FileInfo implements ItemInfo{
 	
 	public static int getPublicID() {
 		return ++fileID;
+	}
+	
+	public void setClientInfo(ClientInfo clientInfo) {
+		this.clientInfo = clientInfo;
+	}
+	
+	public ClientInfo getClientInfo() {
+		return clientInfo;
 	}
 	
 	public String getState() {
